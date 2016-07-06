@@ -1,0 +1,110 @@
+<!doctype HTML>
+<html ng-app = "myApp">
+
+    <meta charset="utf-8">
+    
+<head>
+	<title>MJT Data Repository</title>
+  <base href = "/index.html">
+  <script src = "/bower_components/angular/angular.js"></script>
+  <script src = "/bower_components/angular-route/angular-route.js"></script>
+  <script src = "/bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+  <script src = "/bower_components/angular-local-storage/dist/angular-local-storage.js"></script>
+  <script src="/bower_components/angular-cookies/angular-cookies.js"></script>
+  <script src = "/bower_components/moment/moment.js"></script>
+  <script src = "/bower_components/ng-csv/build/ng-csv.js"></script>
+  <script src = "/bower_components/angular-sanitize/angular-sanitize.js"></script>
+  <script src = "/bower_components/js-xlsx/dist/xlsx.core.min.js"></script>
+  <script src = "/bower_components/alasql/dist/alasql.js"></script>
+
+
+	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+
+
+<script>moment().format</script>
+</head>
+
+
+
+<style>
+  
+body {
+    padding-bottom: 100px;
+}
+
+</style>
+
+
+<body>
+
+	<div class="container">
+		<!--div ng-view-->
+      <!-- Static navbar -->
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header text-center">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" ui-sref="home">MJT Lab</a>
+          </div>
+          <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li class = "nav-link"><a ui-sref="home">Home</a></li>
+              <li class = "nav-link"><a ui-sref="subjects">Subjects</a></li>
+              <li class = "nav-link"><a ui-sref="projects">Projects</a></li>
+              <li class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More Options <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a ui-sref="addSubject">Add Subject</a></li>
+                  <li><a ui-sref="addProject">Add Project</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li class="dropdown-header">Admin Options</li>
+                  <li><a ui-sref="admin">Edit Test and Scan Types</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav pull-right">
+
+              <a ui-sref="search" role = "button" class = "btn btn-primary"><span class="glyphicon glyphicon-search"></span></a>
+
+            </ul>
+
+          </div><!--/.nav-collapse -->
+        </div><!--/.container-fluid -->
+      </nav>
+
+    
+
+
+      <!-- Main component for a primary marketing message or call to action -->
+      <div class="container">
+        <div class="row">
+        <div class="col-md-12">
+          <div ui-view></div>
+        </div>
+      
+      </div>
+
+    </div>
+
+	<script src = "/bower_components/jquery/dist/jquery.js"></script>
+	<script src = "/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+ 
+
+	<script src = "/app.js"></script>
+	<script src = "/controllers/subjects.js"></script>
+	<script src = "/controllers/projects.js"></script>
+  <script src = "/controllers/search.js"></script>
+  <script src = "/controllers/searchResults.js"></script>
+  <script src = "/controllers/scanSessions.js"></script>
+  <script src = "/controllers/authentication.js"></script>
+  <script src = "/controllers/adminOptions.js"></script>
+  <script src = "/factories/authenFact.js"></script>
+
+
+</body>
+</html>

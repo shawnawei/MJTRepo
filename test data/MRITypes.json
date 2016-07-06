@@ -1,0 +1,26 @@
+[
+{
+	"TypeName": "DTI",
+	"TypeID": "DTI",
+	"Desc": "https://en.wikipedia.org/wiki/Diffusion_MRI",
+	"Comment":""
+},
+{
+	"TypeName": "fMRI",
+	"TypeID": "fMRI",
+	"Desc": "https://en.wikipedia.org/wiki/Functional_magnetic_resonance_imaging",
+	"Comment":""
+},
+{
+	"TypeName": "T1",
+	"TypeID": "T1",
+	"Desc": "https://en.wikipedia.org/wiki/Magnetic_resonance_imaging",
+	"Comment":""
+},
+{
+	"TypeName": "T2",
+	"TypeID": "T2",
+	"Desc": "https://en.wikipedia.org/wiki/Magnetic_resonance_imaging",
+	"Comment":""
+}
+]

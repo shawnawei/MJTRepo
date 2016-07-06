@@ -1,0 +1,31 @@
+<style>
+.panel-heading h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: normal;
+    width: 75%;
+    padding-top: 8px;
+}
+</style>
+
+
+<div class="panel panel-default" ng-init="getSubjects()">
+  <div class="panel-heading">
+    <h2 class="panel-title pull-left"><strong>Subjects</strong></h2>
+    <a><button type = "button" class = "btn btn-default pull-right"><a ui-sref="addSubject">New Subject</a></button>
+    <div class= "clearfix"></div>
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div ng-repeat="subject in subjects">
+        <div class="col-md-3">
+          <div class="col-md-3">
+            <h4>{{subject.ID}}</h4>
+            <a class="btn btn-primary" ui-sref="subjectDetail({ID:subject.ID})">View Details</a>
+          </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

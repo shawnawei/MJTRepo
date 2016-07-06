@@ -1,0 +1,292 @@
+[
+{
+	"SubjectID": "0001",
+	"SubjectIDinProject": "WM01",
+	"relatedProject": "WM",
+	"ScanSessions": [
+		{
+			"SessionID": "WM01_A",
+			"ParticipantAge": 3,
+			"MEGScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":false, "Comment":""},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":false, "Comment":""},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":false, "Comment":""},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""}
+			],
+			"TestResults": {"IQScore": 120, "OtherTest": 10}
+		},
+
+		{
+			"SessionID": "WM01_B",
+			"ParticipantAge": 4,
+			"MEGScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07", "ScanPath": "C:/Users/someone/Desktop","Allowed":true, "Comment":""},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+			"TestResults": {"IQScore": 123, "ADHDScale": 8}
+		}
+	]
+},
+
+
+{
+	"SubjectID": "0002",
+	"SubjectIDinProject": "WM03",
+	"ScanSessions": [
+		{
+			"SessionID": "WM03_A",
+			"ParticipantAge": 5,
+			"MEGScans":[
+				{"ScanName": "T01", "ScanDate": "2012-01-01"},
+				{"ScanName": "T02", "ScanDate": "2012-01-01"},
+				{"ScanName": "T01", "ScanDate": "2012-01-07"},
+				{"ScanName": "T02", "ScanDate": "2012-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "MT01", "ScanDate": "2012-01-01"},
+				{"ScanName": "MT02", "ScanDate": "2012-01-01"},
+				{"ScanName": "MT01", "ScanDate": "2012-01-07"},
+				{"ScanName": "MT02", "ScanDate": "2012-01-07"}
+			],
+			"TestResults": {"IQScore": 99, "ADHDScale": 9}
+		},
+
+		{
+			"SessionID": "WM03_B",
+			"ParticipantAge": 6,
+			"MEGScans":[
+				{"ScanName": "T03", "ScanDate": "2013-01-01"},
+				{"ScanName": "T04", "ScanDate": "2013-01-01"},
+				{"ScanName": "T03", "ScanDate": "2013-01-07"},
+				{"ScanName": "T04", "ScanDate": "2013-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "MT03", "ScanDate": "2013-01-01"},
+				{"ScanName": "MT04", "ScanDate": "2013-01-01"},
+				{"ScanName": "MT03", "ScanDate": "2013-01-07"},
+				{"ScanName": "MT04", "ScanDate": "2013-01-07"}
+			],
+			"TestResults": {"IQScore": 125, "ADHDScale": 6}
+		}
+	]
+},
+
+{
+	"SubjectID": "0003",
+	"SubjectIDinProject": "WM09",
+	"ScanSessions": [
+		{
+			"SessionID": "WM09_A",
+			"ParticipantAge": 10,
+			"MEGScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+			"TestResults": {"IQScore": 123, "ADHDScale": 8}
+		},
+
+		{
+			"SessionID": "WM09_B",
+			"ParticipantAge": 10,
+			"MEGScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+			"TestResults": {}
+		}
+	]
+},
+
+{
+	"SubjectID": "0005",
+	"SubjectIDinProject": "WM07",
+	"ScanSessions": [
+		{
+			"SessionID": "WM07_A",
+			"ParticipantAge": 13,
+			"MEGScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+			"TestResults": {"IQScore": 100, "ADHDScale": 5}
+		},
+
+		{
+			"SessionID": "WM07_B",
+			"ParticipantAge": 14,
+			"MEGScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+			"TestResults": {"IQScore": 113, "ADHDScale": 4}
+		}
+	]
+},
+
+{
+	"SubjectID": "0005",
+	"SubjectIDinProject": "AA01",
+	"ScanSessions": [
+		{
+			"SessionID": "AA01_A",
+			"ParticipantAge": 10,
+			"MEGScans":[
+				{"ScanName": "AAT01", "ScanDate": "2007-01-01"},
+				{"ScanName": "AAT02", "ScanDate": "2007-01-01"},
+				{"ScanName": "AAT01", "ScanDate": "2007-01-07"},
+				{"ScanName": "AAT02", "ScanDate": "2007-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "AA01", "ScanDate": "2007-01-01"},
+				{"ScanName": "AA02", "ScanDate": "2007-01-01"},
+				{"ScanName": "AA01", "ScanDate": "2007-01-07"},
+				{"ScanName": "AA02", "ScanDate": "2007-01-07"}
+			],
+			"TestResults": {"IQScore": 127, "ADHDScale": 4}
+		}
+	]	
+},
+
+{
+	"SubjectID": "0001",
+	"SubjectIDinProject": "AA02",
+	"ScanSessions": [
+		{
+			"SessionID": "AA02_A",
+			"ParticipantAge": 3,
+			"MEGScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+				{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+				{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+				{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+			],
+			"TestResults": {"IQScore": 120, "ADHDScale": 10}
+		},
+
+		{
+			"SessionID": "AA02_B",
+			"ParticipantAge": 4,
+			"MEGScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+				{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+				{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+				{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+			],
+			"TestResults": {"IQScore": 123, "ADHDScale": 8}
+		}
+	]
+},
+
+{
+	"SubjectID": "0003",
+	"SubjectIDinProject": "POND01",
+	"ScanSessions": [
+		{
+			"SessionID": "POND01_A",
+			"ParticipantAge": 10,
+			"MEGScans":[
+				{"ScanName": "P01", "ScanDate": "2010-01-10"},
+				{"ScanName": "P02", "ScanDate": "2010-01-10"},
+				{"ScanName": "P03", "ScanDate": "2010-01-10"},
+				{"ScanName": "P04", "ScanDate": "2010-01-10"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "P07", "ScanDate": "2010-01-10"},
+				{"ScanName": "P08", "ScanDate": "2010-01-10"},
+				{"ScanName": "P05", "ScanDate": "2010-01-10"},
+				{"ScanName": "P06", "ScanDate": "2010-01-10"}
+			],
+			"TestResults": {"IQScore": 113, "ADHDScale": 1}
+		},
+
+		{
+			"SessionID": "POND01_B",
+			"ParticipantAge": 10,
+			"MEGScans":[
+				{"ScanName": "PP03", "ScanDate": "2011-04-01"},
+				{"ScanName": "PP04", "ScanDate": "2011-04-01"},
+				{"ScanName": "PP03", "ScanDate": "2011-04-07"},
+				{"ScanName": "PP04", "ScanDate": "2011-04-07"}
+			],
+
+			"MRIScans":[
+				{"ScanName": "PP03", "ScanDate": "2011-04-01"},
+				{"ScanName": "PP04", "ScanDate": "2011-04-01"},
+				{"ScanName": "PP03", "ScanDate": "2011-04-07"},
+				{"ScanName": "PP04", "ScanDate": "2011-04-07"}
+			],
+			"TestResults": {"IQScore": 123, "ADHDScale": 8}
+		}
+	]
+}
+]

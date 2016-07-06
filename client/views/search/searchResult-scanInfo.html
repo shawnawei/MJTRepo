@@ -1,0 +1,250 @@
+<style>
+
+table {
+    border: 1px solid #D3D3D3;
+    text-align: center;
+    width: 100%
+}
+
+th {
+	border: 1px solid white;
+	text-align: center;
+  	background-color: #D3D3D3
+}
+
+td {
+	border: 1px solid white;
+	text-align: center;
+  	height:50px;
+  	background-color: #ECECEC
+}
+
+
+#keywords li {
+    display:inline-block;
+    background-color: 	#484848  ;
+    color: white;
+    padding: 5px 10px;
+    margin-left:0px;
+    border-radius: 4px 4px 0 0;
+}
+
+#keywords ul{
+	list-style: none; /* Remove list bullets */
+    padding: 0;
+    margin: 0;
+}
+
+.arrow-up {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;
+}
+
+.arrow-down {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid black;
+}
+
+
+
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+    	$('[data-toggle="popover"]').popover(); 
+});
+</script>
+
+
+<div>
+
+
+<div style = "width:76%; float:left;">
+<h3><strong>Search Scan by Criteria Results: </strong></h3>
+</div>
+<br><br>
+
+<div style = "width:10%; float:right;"> 
+
+<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-show="(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span> Export</button>
+
+</div>
+
+<div style = "width:12%; float:right;">
+
+<button class = "btn btn-sm btn-default" data-toggle="modal" data-target=".searchkeywords"><span class = "glyphicon glyphicon-tags"></span> Keywords</button>
+
+<div class="modal fade searchkeywords" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    	<div class = "modal-header">
+      		<h4>Search Keywords</h4>
+      	</div>
+      	<div class = "modal-body" style="text-align: left; word-wrap: break-word">
+      	<p><strong>Age at Scan: </strong>{{requestID.minAge}} to {{requestID.maxAge}} </p>
+      	<p><strong>Approval:</strong> {{requestID.Allowed}}</p>
+      	<p><strong>MEG Type:</strong> {{requestID.MEGType}}</p>
+      	<p><strong>MRI Type:</strong> {{requestID.MRIType}}</p>
+      	<p><strong>Search in Projects:</strong> {{requestID.Projects}}</p>
+      	<p><strong>Search for Subjects (Global ID):</strong> {{requestID.SubjectGID}}</p>
+      	<p><strong>Search for Subjects (in Project ID):</strong> {{requestID.SubjectPID}}</p>
+      	<p><strong>Search for Subjects (Sex):</strong> {{requestID.SubjectSex}}</p>
+      	<p><strong>Search for Subjects (Diagnosis):</strong> {{requestID.SubjectDiagnosis}}</p>
+      	</div>
+    </div>
+  </div>
+</div>
+
+{{SubjectSex}}
+</div>
+
+<br>
+
+<br>
+
+	<div class = "container col-md-12">
+	<table ng-init = "getScanSessionsByInfo()" class = "form-horizontal">
+
+	    <thead class = "table table-stripe table-bordered">
+	    <tr>
+	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(scanSessions)">All</a><a class="btn btn-xs" ng-click = "deselectAll(scanSessions)">Clear</a></th>
+	    	<th ng-click= "sortData('_id.SessionID')">Session ID<i ng-class = "getSortClass('_id.SessionID')"></i></th>
+	    	<th>MEGs</th>
+	    	<th>MRIs</th>
+	    	<th>Clinial Tests</th>
+	    	<th ng-click= "sortData('_id.SubjectID')">Subject ID <i ng-class = "getSortClass('_id.SubjectID')"></i></th>
+	    </tr>
+	    </thead>
+	    
+	    <tbody ng-repeat = "scanSession in scanSessions | orderBy:sortColumn:reverseSort" >
+	    <tr>
+	    	<th scope = "row"><input type="checkbox" ng-model = "scanSession.selected" ng-click = "getSelectedScanSession(scanSession)"></th>
+          	<td class = "col-md-1">
+          		<span class="field-tip">{{scanSession._id.SessionID}}
+    				<span class="tip-content">
+					<li>For Project: {{scanSession._id.relatedProject}}
+    				</li>
+    				<li>in-Project ID: {{scanSession._id.SubjectIDinProject}}
+    				</li></span>
+				</span>
+			</td>
+
+          	<td class = "col-md-3"><button class = "btn btn-default btn-xs" ng-repeat = "MEGscan in scanSession.MEGScans" data-toggle="modal" data-target=".MEGDetail-{{scanSession._id.SessionID}}-{{MEGscan.ScanName}}" data-backdrop="static" data-keyboard="false"> {{MEGscan.ScanType}}
+          	
+        
+			<div class="modal fade MEGDetail-{{scanSession._id.SessionID}}-{{MEGscan.ScanName}}" tabindex="-1" role="dialog">
+			  <div class="modal-dialog modal-sm">
+			    <div class="modal-content">
+			    	<div class = "modal-header">
+			      		<span class="close">x</span>
+			      		<h4>{{scanSession.SessionID}}: {{MEGscan.ScanName}} Scan Details</h4>
+			      	</div>
+			      	<div class = "modal-body" style="text-align: left">
+			      	<p><strong>Scan Date:</strong> {{MEGscan.ScanDate |  date: 'yyyy-MM-dd'}}</p>
+			      	<p><strong>Scan Type:</strong> {{MEGscan.ScanType}}</p>
+			      	<p><strong>Scan Path:</strong> {{MEGscan.ScanPath}}</p>
+			      	<p><strong>Age at Scan:</strong> {{MEGscan.AgeAtScan}}</p>
+			      	<p><strong>Approved:</strong> {{MEGscan.Allowed}}</p>
+			      	<p><strong>Comment:</strong> {{MEGscan.Comment}}</p>
+			      	</div>
+			    </div>
+			  </div>
+			</div>
+
+          	</button></td>
+
+          	<td class = "col-md-3"><button class = "btn btn-default btn-xs " ng-repeat = "MRIscan in scanSession.MRIScans" data-toggle="modal" data-target=".MRIDetail-{{scanSession._id.SessionID}}-{{MRIscan.ScanName}}" data-backdrop="static" data-keyboard="false">{{MRIscan.ScanType}}
+
+          		<div class="modal fade MRIDetail-{{scanSession._id.SessionID}}-{{MRIscan.ScanName}}" tabindex="-1" role="dialog">
+			 	 <div class="modal-dialog modal-sm">
+			   	 <div class="modal-content">
+			    	<div class = "modal-header">
+			      		<span class="close">x</span>
+			      		<h4>{{scanSession._id.SessionID}}: {{MRIscan.ScanName}} Scan Details</h4>
+			      	</div>
+			      	<div class = "modal-body" style="text-align: left">
+			      	<p><strong>Scan Date:</strong> {{MRIscan.ScanDate |  date: 'yyyy-MM-dd'}}</p>
+			      	<p><strong>Scan Type:</strong> {{MRIscan.ScanType}}</p>
+			      	<p><strong>Scan Path:</strong> {{MRIscan.ScanPath}}</p>
+			      	<p><strong>Age at Scan:</strong> {{MRIscan.AgeAtScan}}</p>
+			      	<p><strong>Allowed:</strong> {{MRIscan.Allowed}}</p>
+			      	<p><strong>Comment:</strong> {{MRIscan.Comment}}</p>
+			      	</div>
+			   	 </div>
+			 	 </div>
+				</div>
+
+
+          	</button></td>
+
+          	<td class = "col-md-2" style = "text-align: left"><li class = "btn btn-default btn-xs" ng-repeat = "test in scanSession.TestResults"  data-toggle="modal" data-target=".TestDetail-{{scanSession._id.SessionID}}-{{test.Type}}" data-backdrop="static">{{test.Type}}
+
+          		<div class="modal fade TestDetail-{{scanSession._id.SessionID}}-{{test.Type}}" tabindex="-1" role="dialog">
+			 	 <div class="modal-dialog modal-sm">
+			   	 <div class="modal-content">
+			    	<div class = "modal-header">
+			      		<span class="close">x</span>
+			      		<h4>{{scanSession._id.SessionID}}: {{test.Type}} Test Details</h4>
+			      	</div>
+			      	<div class = "modal-body" style="text-align: left">
+			      	<p><strong>Test Date:</strong> {{test.TestDate |  date: 'yyyy-MM-dd'}}</p>
+			      	<p><strong>Test Result:</strong> {{test.Result}}</p>
+			      	<p><strong>Age at Test:</strong> {{test.Age}}</p>
+			      	<p><strong>Comment:</strong> {{test.Comment}}</p>
+			      	</div>
+			   	 </div>
+			 	 </div>
+				</div>
+
+          	</li></td>
+          	<td class = "col-md-1"><a href ="subjects/{{scanSession._id.SubjectID}}">{{scanSession._id.SubjectID}}</a>
+			</td>
+	    </tr>
+	    </tbody>
+
+	</table>
+
+	<br><br><br>
+
+	</div>
+
+<br><br><br>
+
+</div>
+
+
+<style>
+
+/* Hover tooltips */
+.field-tip {
+    position:relative;
+    cursor:help;
+}
+.field-tip .tip-content {
+    position:absolute;
+    visibility:hidden;
+    text-align: left;
+    bottom:-70px; /* - top padding */
+    width:200px;
+    padding:10px;
+    color:#fff;
+    background:#333;
+    opacity:0;
+    -webkit-transition:opacity 250ms ease-out;
+       -moz-transition:opacity 250ms ease-out;
+        -ms-transition:opacity 250ms ease-out;
+         -o-transition:opacity 250ms ease-out;
+            transition:opacity 250ms ease-out;
+}
+.field-tip:hover .tip-content {
+	visibility: visible;
+    right:-50px;
+    opacity:1;
+}
+</style>

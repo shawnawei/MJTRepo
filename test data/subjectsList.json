@@ -1,0 +1,87 @@
+[
+{
+"ID": "0001",
+"Sex": "Male",
+"Handedness": "Right",
+"Diagnosis": "Pre-term",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM01",
+		"ScanSessions": ["WM01_A", "WM01_B"]
+		
+	},
+
+	{
+		"ProjectID": "AA",
+		"SubjectIDinProject": "AA02",
+		"ScanSessions": ["AA02_A","AA02_B"]
+	}
+]
+},
+
+{
+"ID": "0002",
+"Sex": "Female",
+"Handedness": "Right",
+"Diagnosis": "Control",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM03",
+		"ScanSessions": ["WM03_A", "WM03_B"]
+		
+	}
+]
+},
+
+{
+"ID": "0003",
+"Sex": "Female",
+"Handedness": "Right",
+"Diagnosis": "Pre-term",
+"Projects":[
+	{
+		"ProjectID": "POND",
+		"SubjectIDinProject": "POND01",
+		"ScanSessions": [ "POND01_A", "POND01_B"]
+		
+	},
+
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM09",
+		"ScanSessions": ["WM09_A","WM09_B"]
+		
+	}
+]
+},
+
+{
+"ID": "0005",
+"Sex": "Male",
+"Handedness": "Left",
+"Diagnosis": "Autism",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM07",
+		"ScanSessions": [ "WM07_A", "WM07_B"]
+		
+	},
+
+	{
+		"ProjectID": "AA",
+		"SubjectIDinProject": "AA01",
+		"ScanSessions": ["AA01_A"]	
+	}
+]
+}
+]
+
+
+
+
+
+
+

@@ -1,0 +1,278 @@
+<style>
+
+table {
+    border: 1px solid #D3D3D3;
+    text-align: center;
+    width: 100%
+}
+
+th {
+	border: 1px solid white;
+	text-align: center;
+  	background-color: #D3D3D3
+}
+
+td {
+	border: 1px solid white;
+	text-align: center;
+  	height:50px;
+  	background-color: #ECECEC
+}
+
+
+#keywords li {
+    display:inline;
+    background-color: #484848  ;
+    color: white;
+    padding: 5px 10px;
+    margin-left:10px;
+    border-radius: 4px 4px 0 0;
+}
+
+.arrow-up {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;
+}
+
+.arrow-down {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid black;
+}
+
+
+
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+    	$('[data-toggle="popover"]').popover(); 
+});
+
+	$('#myModal').modal({show: false});
+</script>
+
+
+<div class = "container">
+
+<div style = "width:87%; float:left;">
+<h3><strong>Search Scan by Scan Criteria Results: </strong></h3>
+</div>
+
+<br>
+
+
+<div style = "width:13%; float:right;">
+
+<button class = "btn btn-sm btn-default" data-toggle="modal" data-target=".searchkeywords"><span class = "glyphicon glyphicon-tags"> Keywords</span></button>
+
+<div class="modal fade searchkeywords" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    	<div class = "modal-header">
+      		<h4>Search Keywords</h4>
+      	</div>
+      	<div class = "modal-body" style="text-align: left; word-wrap: break-word">
+      	<p><strong>Age at Scan: </strong>{{requestID.minAge}} to {{requestID.maxAge}} </p>
+      	<p><strong>Approval:</strong> {{requestID.Allowed}}</p>
+      	<p><strong>MEG Type:</strong> {{requestID.MEGType}}</p>
+      	<p><strong>MRI Type:</strong> {{requestID.MRIType}}</p>
+      	<p><strong>Search in Projects:</strong> {{requestID.Projects}}</p>
+      	<p><strong>Search for Subjects (Global ID):</strong> {{requestID.SubjectGID}}</p>
+      	<p><strong>Search for Subjects (in Project ID):</strong> {{requestID.SubjectPID}}</p>
+      	</div>
+    </div>
+  </div>
+</div>
+
+
+
+<br><br>
+<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-show="(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"> Export</span></button>
+
+</div>
+{{scanSessions}}
+<br><br>
+
+<div class = "container col-md-12" ng-init = "getScanSessionsByInfo()" >
+	<div ng-repeat = "scanSession in scanSessions" >
+	<table class = "form-horizontal">
+		
+		<table>
+		    <thead class = "table table-stripe table-bordered">
+		    <tr style = "height:30px;">
+		    	<th class = "col-md-1"><button class="btn btn-link">All</button></th>
+		    	<th class = "col-md-11" colspan = "8">
+		    		<div class = "form-group row">
+		    			<div class = "col-md-11">
+			    			<h4><strong>{{scanSession._id.SessionID}}</strong></h4>
+			    		</div>
+			    		<div class = "col-md-1">
+						<div class = "btn" data-toggle="modal" data-target=".sessionDetail-{{scanSession._id.SessionID}}"><span class = "glyphicon glyphicon-info-sign"></span></div>
+						</div>
+
+		    			<div class="modal fade sessionDetail-{{scanSession._id.SessionID}}" tabindex="-1" role="dialog">
+						  <div class="modal-dialog modal-sm">
+						    <div class="modal-content">
+						    	<div class = "modal-header">
+						      		<h4>{{scanSession._id.SessionID}} Session Details</h4>
+						      	</div>
+						      	<div class = "modal-body" style="text-align: left">
+						      	<p><strong>For Project:</strong> {{scanSession._id.relatedProject}}</p>
+						      	<p><strong>in-Project ID:</strong> {{scanSession._id.SubjectIDinProject}}</p>
+						      	<p><strong>Subject Global ID:</strong> {{scanSession._id.SubjectID}}</p>
+						      	</div>
+						    </div>
+						  </div>
+						</div>
+						</div>
+
+				</th>
+		    </tr>
+		    </thead>
+	    </table>
+
+	    <table class = "col-md-6">
+
+		    <thead>
+		    <tr style = "height:50px;">
+		    	<th rowspan = "2"  class = "col-md-1"><button class="btn btn-link">All</button></th>
+		    	<th colspan = "3">MEG Scans</th>
+		    </tr>
+		    <tr style = "height:40px;">
+		    	<th>Type</th>
+		    	<th>Age</th>
+		    	<th>Details</th>
+		    </tr>
+		    </thead>
+	    
+		    <tbody>
+			    <tr ng-repeat = "MEGScan in scanSession.MEGScans">
+			    	<th scope = "row"><input type="checkbox"></th>
+					<td>{{MEGScan.ScanType}}</td>
+					<td>{{MEGScan.AgeAtScan}}</td>
+					<td>
+						<button class = "btn btn-default btn-xs" data-toggle="modal" data-target=".MEGDetail-{{scanSession._id.SessionID}}-{{MEGScan.ScanName}}" data-backdrop="static" data-keyboard="false">{{MEGScan.ScanName}}
+
+
+						<div class="modal fade MEGDetail-{{scanSession._id.SessionID}}-{{MEGScan.ScanName}}" tabindex="-1" role="dialog">
+						  <div class="modal-dialog modal-sm">
+						    <div class="modal-content">
+						    	<div class = "modal-header">
+						      		<span class="close">x</span>
+						      		<h4>{{scanSession._id.SessionID}}: {{MEGScan.ScanName}} Scan Details</h4>
+						      	</div>
+						      	<div class = "modal-body" style="text-align: left">
+						      	<p><strong>Scan Date:</strong> {{MEGScan.ScanDate |  date: 'yyyy-MM-dd'}}</p>
+						      	<p><strong>Scan Path:</strong> {{MEGScan.ScanPath}}</p>
+						      	<p><strong>Approved:</strong> {{MEGScan.Allowed}}</p>
+						      	<p><strong>Comment:</strong> {{MEGScan.Comment}}</p>
+						      	</div>
+						    </div>
+						  </div>
+						</div>
+
+
+						</button>
+					</td>
+				</tr>
+		    </tbody>
+	    </table>
+
+	    <table class = "col-md-6 col-offset-6">
+
+		    <thead>
+		    <tr style = "height:50px;">
+		    	<th rowspan = "2"  class = "col-md-1"><button class="btn btn-link">All</button></th>
+		    	<th colspan = "3">MRI Scans</th>
+		    </tr>
+		    <tr style = "height:40px;">
+		    	<th>Type</th>
+		    	<th>Age</th>
+		    	<th>Details</th>
+		    </tr>
+		    </thead>
+	    
+		    <tbody>
+			    <tr ng-repeat = "MRIScan in scanSession.MRIScans">
+			    	<th scope = "row"><input type="checkbox"></th>
+					<td>{{MRIScan.ScanType}}</td>
+					<td>{{MRIScan.AgeAtScan}}</td>
+					<td>
+						<button class = "btn btn-default btn-xs" data-toggle="modal" data-target=".MRIDetail-{{scanSession._id.SessionID}}-{{MRIScan.ScanName}}" data-backdrop="static" data-keyboard="false">{{MRIScan.ScanName}}
+
+
+						<div class="modal fade MRIDetail-{{scanSession._id.SessionID}}-{{MRIScan.ScanName}}" tabindex="-1" role="dialog">
+						  <div class="modal-dialog modal-sm">
+						    <div class="modal-content">
+						    	<div class = "modal-header">
+						      		<span class="close">x</span>
+						      		<h4>{{scanSession._id.SessionID}}: {{MRIScan.ScanName}} Scan Details</h4>
+						      	</div>
+						      	<div class = "modal-body" style="text-align: left">
+						      	<p><strong>Scan Date:</strong> {{MRIScan.ScanDate |  date: 'yyyy-MM-dd'}}</p>
+						      	<p><strong>Scan Path:</strong> {{MRIScan.ScanPath}}</p>
+						      	<p><strong>Approved:</strong> {{MRIScan.Allowed}}</p>
+						      	<p><strong>Comment:</strong> {{MRIScan.Comment}}</p>
+						      	</div>
+						    </div>
+						  </div>
+						</div>
+
+
+						</button>
+					</td>
+				</tr>
+		    </tbody>
+
+	    </table>
+
+	    <br><br>
+
+	</table>
+	
+	</div>
+
+
+	</div>
+
+
+</div>
+
+
+
+
+<style>
+
+/* Hover tooltips */
+.field-tip {
+    position:relative;
+    cursor:help;
+}
+.field-tip .tip-content {
+    position:absolute;
+    visibility:hidden;
+    text-align: left;
+    bottom:-70px; /* - top padding */
+    width:200px;
+    padding:10px;
+    color:#fff;
+    background:#333;
+    opacity:0;
+    -webkit-transition:opacity 250ms ease-out;
+       -moz-transition:opacity 250ms ease-out;
+        -ms-transition:opacity 250ms ease-out;
+         -o-transition:opacity 250ms ease-out;
+            transition:opacity 250ms ease-out;
+}
+.field-tip:hover .tip-content {
+	visibility: visible;
+    right:-50px;
+    opacity:1;
+}
+</style>

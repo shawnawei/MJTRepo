@@ -1,0 +1,111 @@
+<style>
+
+table {
+    border: 1px solid #D3D3D3;
+    text-align: center;
+    width: 100%
+}
+
+th {
+	border: 1px solid white;
+	text-align: center;
+  	background-color: #D3D3D3
+}
+
+td {
+	border: 1px solid white;
+	text-align: center;
+  	height:50px;
+  	background-color: #ECECEC
+}
+
+
+#keywords li {
+    display:inline-block;
+    background-color: 	#484848  ;
+    color: white;
+    padding: 5px 10px;
+    margin-left:10px;
+    border-radius: 4px 4px 0 0;
+}
+
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+    	$('[data-toggle="popover"]').popover(); 
+});
+</script>
+
+
+<div style = "width:80%; float:left;">
+<h3><strong>Search Subjects by Criteria Result: </strong></h3>
+</div>
+<br>
+
+
+<div style = "width:9%; float:right;">
+<!-- <button class = "btn btn-sm btn-default" ng-click="exportData()" ng-show="(subjects|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span></button> -->
+
+<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-show="(subjects|filter:{selected: true}).length" filename = "subjects_info.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
+</div>
+
+<div style = "width:11%; float:right;">
+
+<button class = "btn btn-sm btn-default" data-toggle="modal" data-target=".searchkeywords"><span class = "glyphicon glyphicon-tags"></span>  Keywords</button>
+
+<div class="modal fade searchkeywords" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+    	<div class = "modal-header">
+      		<h4>Search Keywords</h4>
+      	</div>
+      	<div class = "modal-body" style="text-align: left; word-wrap: break-word">
+      	<p><strong>Sex: </strong>{{requestID.Sex}} </p>
+      	<p><strong>Diagnosis:</strong> {{requestID.Diagnosis}}</p>
+      	<p><strong>Handedness:</strong> {{requestID.Handedness}}</p>
+      	<p><strong>Projects:</strong> {{requestID.Projects}}</p>
+      	</div>
+    </div>
+  </div>
+</div>
+
+<br><br>
+
+</div>
+
+	<div class = "container col-md-12">
+	<table ng-init = "getSubjectsResult()" class = "form-horizontal">
+
+	    <thead class = "table table-stripe table-bordered">
+	    <tr>
+	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(subjects)">All</a><a class="btn btn-xs" ng-click = "deselectAll(subjects)">Clear</a></th>
+	    	<th>Subject ID</th>
+	    	<th>Sex</th>
+	    	<th>Diagnosis</th>
+	    	<th>Handedness</th>
+	    	<th>in Projects</th>
+	    </tr>
+	    </thead>
+	    
+	    <tbody>
+	    <tr ng-repeat = "subject in subjects">
+	    	<th scope = "row"><input type="checkbox" ng-model = "subject.selected" ng-click = "getSelectedSubjects(subject)"></th>
+          	<td><a href = "subjects/{{subject.ID}}">{{subject.ID}}</a></td>
+          	<td>{{subject.Sex}}</td>
+          	<td>{{subject.Diagnosis}}</td>
+          	<td>{{subject.Handedness}}</td>
+          	<td><a ng-repeat = 'project in subject.Projects' href = "ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs">{{project.ProjectID}} - {{project.SubjectIDinProject}} </button></a></td>
+	    </tr>
+	    </tbody>
+	</table>
+
+	<br><br><br><br>
+
+
+	</div>
+
+
+</div>
+
+

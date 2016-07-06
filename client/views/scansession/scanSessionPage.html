@@ -1,0 +1,205 @@
+<style>
+ul#scanList li
+{
+	display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:10px
+}
+
+
+</style>
+
+<nav>
+  <a ng-init="getScanSession()" class="nav-link" href="/subjects/{{scanSession.SubjectID}}">Go Back</a>
+</nav>
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"><strong>Subject ID: </strong>{{scanSession.SubjectIDinProject}}
+      <div class = "pull-right">
+
+        <a class = "btn btn-sm" href = "/ScanInfo/{{scanSession['relatedProject']}}/{{scanSession['SubjectIDinProject']}}/add">New Session</a>
+
+    </div>
+    </h3>
+  </div>
+
+
+  <div class="panel-body">
+    <div class="row">
+      <div ng-repeat="sessionID in scanSession.ScanSessions">
+        
+
+        <div class="panel panel-info" >
+      <div class="panel-heading" role="tab" id="heading-{{$index}}"> 
+        <h4 class="panel-title"> 
+        <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{sessionID['SessionID']}}</strong></a> 
+        <div class = "pull-right">
+
+
+         <a class = "btn" ng-click="exportData()"><span class = "glyphicon glyphicon-save"></span></a>|
+
+          <a class = "btn" href = "/ScanInfo/{{scanSession.relatedProject}}/{{scanSession.SubjectIDinProject}}/{{sessionID.SessionID}}/edit"><span class = "glyphicon glyphicon-pencil"></span></a>|
+
+          <a class = "btn" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
+
+
+          <!-- Modal -->
+        <div class="modal fade" id="myModal-{{$index}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
+              </div>
+              <div class="modal-body">
+                    {{sessionID['SessionID']}} will be permenantly deleted, are you sure?
+              </div>
+              <div class="modal-footer">
+                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        </div>
+ 
+        </h4> </div>
+
+        <div id="collapse-{{$index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{$index}}"> 
+
+
+         <div class="panel-body">
+          <ul>
+            <div><li><h4><strong>MEG Scans: </strong></h4>
+            <p>
+
+              <table class = "table table-stripe table-bordered">
+              <thead>
+                <tr>
+                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(sessionID.MEGScans)">All</a><a class="btn btn-xs" ng-click = "deselectAll(sessionID.MEGScans)">Clear</a></th>
+                  <th>Scan Name</th>
+                  <th>Scan Type</th>
+                  <th>Scan Date</th>
+                  <th class = "col-md-1">Age at Scan</th>
+                  <th>Scan Path</th>
+                  <th>Approved</th>
+                  <th>Comments</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat = "MEGScan in sessionID.MEGScans">
+                  <th scope = "row"><input type="checkbox" ng-model = "MEGScan.selected"></th>
+                  <td>{{MEGScan.ScanName}}</td>
+                  <td><a>{{MEGScan.ScanType}}</a></td>
+                  <td>{{MEGScan.ScanDate | date: 'yyyy-MM-dd'}}</td>
+                  <td class = "col-md-1">{{MEGScan.AgeAtScan}}</td>
+                  <td>{{MEGScan.ScanPath}}</td>
+                  <td>{{MEGScan.Allowed}}</td>
+                  <td>{{MEGScan.Comment}}</td>
+                </tr>
+              </tbody>
+            </table>
+
+
+
+
+            </p>
+            </li></div>
+
+
+           <div> <li><h4><strong>MRI Scans: </strong></h4>
+           <p>
+            	<table class = "table table-stripe table-bordered">
+              <thead>
+                <tr>
+                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(sessionID.MRIScans)">All</a><a class="btn btn-xs" ng-click = "deselectAll(sessionID.MRIScans)">Clear</a></th>
+                  <th>Scan Name</th>
+                  <th>Scan Type</th>
+                  <th>Scan Date</th>
+                  <th class = "col-md-1">Age at Scan</th>
+                  <th>Scan Path</th>
+                  <th>Approved</th>
+                  <th>Comments</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat = "MRIScan in sessionID.MRIScans">
+                  <th scope = "row"><input type="checkbox" ng-model = "MRIScan.selected"></th>
+                  <td>{{MRIScan.ScanName}}</td>
+                  <td><a>{{MRIScan.ScanType}}</a></td>
+                  <td>{{MRIScan.ScanDate | date: 'yyyy-MM-dd'}}</td>
+                  <td class = "col-md-1">{{MRIScan.AgeAtScan}}</td>
+                  <td>{{MRIScan.ScanPath}}</td>
+                  <td>{{MRIScan.Allowed}}</td>
+                  <td>{{MRIScan.Comment}}</td>
+                </tr>
+              </tbody>
+            </table>
+           	</p>
+            </li></div>
+            
+
+
+            <div><li><h4><strong>Clinical Test Results: </strong></h4>
+            <div>
+            <table class = "table table-stripe table-bordered">
+              <thead>
+                <tr>
+                  <th class = "col-md-1"><button class="btn btn-link">All</button></th>
+                  <th>Test Type</th>
+                  <th>Test Result</th>
+                  <th>Test Date</th>
+                  <th>Age at Test</th>
+                  <th>Comment</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat = "test in sessionID.TestResults">
+                  <th  class = "col-md-1" scope = "row"><input type="checkbox"></th>
+                  <td><a>{{test.Type}}</a></td>
+                  <td>{{test.Result}}</td>
+                  <td>{{test.TestDate| date: 'yyyy-MM-dd'}}</td>
+                  <td>{{test.Age}}</td>
+                  <td>{{test.Comment}}</td>
+                </tr>
+              </tbody>
+            </table>
+            </div>
+            </li></div>
+
+            
+          </ul>
+         </div> 
+        </div>
+      </div>
+      </div>
+    </div>
+
+    
+
+
+   </div>
+ 
+  
+
+ </div>
+
+
+   

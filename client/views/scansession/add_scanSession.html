@@ -1,0 +1,246 @@
+<!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
+REDESIGN THE PAGE IF TIME PREMITS-->
+<style>
+h4
+{
+	text-decoration: underline;
+}
+
+div.heading
+{
+	background: #005  no-repeat scroll center;
+	margin-left: 0em;
+	margin-right: 15em;
+	width:60em;
+	height:.1em;
+}
+
+textarea
+{
+	height:7em;
+	word-wrap: break-word;
+}
+
+input[type = 'checkbox']
+{
+	width:15px;
+    height:15px;
+}
+</style>
+
+
+<div class = "jumbotron vertical-center">
+
+    <h2><strong>Add a Session</strong></h2>
+
+    <div class = "heading"></heading></div>
+    <br>
+      <form ng-submit="addScanSession()" method = "post" class = "form-horizontal">
+      	
+      	<container>
+      	<br>
+      	<h4>Scan Information</h4>
+      	<br>
+        <div class="form-group row">
+          <label class= "form-control-label col-sm-2">Session ID:</label>
+          <div class="col-sm-4">
+          	<input type="text" class="form-control" ng-model="newSession.SessionID" placeholder="">
+          </div>
+        </div>
+
+        </container>
+        <br>
+
+        <section>
+
+        <div class = "form-group row">
+          <div class = "col-md-2"><h4>MEG Scans</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addMEGScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+        <div class = "well" ng-repeat = "MEGScan in newSession.MEGScans">
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Name:</label>
+            <div class="col-sm-3">
+            	<input type = "text" class="form-control" ng-model="MEGScan.ScanName" placeholder=" ">
+            </div>
+
+            <label class= "form-control-label col-sm-2">Scan Date:</label>
+            <div class="col-sm-3">
+            <input type = "date" class="form-control" ng-model="MEGScan.ScanDate" placeholder=" ">
+            </div>
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMEGScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          </div>
+
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Path:</label>
+            <div class="col-sm-8">
+            <input type = "text" class="form-control" ng-model="MEGScan.ScanPath" placeholder="C:/">
+            </div>
+
+            <label class= "form-control-label col-sm-1">Allowed:</label>
+            <div class="col-sm-1">
+            <input type = "checkbox" class = "form-control" ng-model = "MEGScan.Allowed"> 
+            </div>
+          </div>
+
+         <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Type:</label>
+             <div class = "col-md-3">
+                <select class = "form-control" ng-model="MEGScan.Type">
+                  <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
+                </select>
+              </div>
+
+            <label class= "form-control-label col-md-2">Comment:</label>
+            <div class="col-md-5">
+            <textarea class="form-control" ng-model="MEGScan.Comment" placeholder=" "></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        </section>
+
+
+        <section>
+        <div class = "form-group row">
+          <div class = "col-md-2"><h4>MRI Scans</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addMRIScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+        <div class = "well" ng-repeat = "MRIScan in newSession.MRIScans">
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Name:</label>
+            <div class="col-sm-3">
+              <input type = "text" class="form-control" ng-model="MRIScan.ScanName" placeholder=" ">
+            </div>
+
+            <label class= "form-control-label col-sm-2">Scan Date:</label>
+            <div class="col-sm-3">
+            <input type = "date" class="form-control" ng-model="MRIScan.ScanDate" placeholder=" ">
+            </div>
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMRIScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          </div>
+
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Path:</label>
+            <div class="col-sm-8">
+            <input type = "text" class="form-control" ng-model="MRIScan.ScanPath" placeholder="C:/">
+            </div>
+
+            <label class= "form-control-label col-sm-1">Allowed:</label>
+            <div class="col-sm-1">
+            <input type = "checkbox" class = "form-control" ng-model = "MRIScan.Allowed"> 
+            </div>
+          </div>
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Type:</label>
+            <div class = "col-md-3">
+                <select class = "form-control" ng-model="MRIScan.Type">
+                  <option ng-repeat="MRIType in MRITypes">{{MRIType}}</option>
+                </select>
+              </div>
+
+            <label class= "form-control-label col-md-2">Comment:</label>
+            <div class="col-md-5">
+            <textarea class="form-control" ng-model="MRIScan.Comment" placeholder=" "></textarea>
+            </div>
+          </div>
+
+
+        </div>
+
+        </section>
+
+       <container>
+        
+          <div class = "form-group row" ng-init = "getTestTypes()">
+          <div class = "col-md-2"><h4>Test Results</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addTestType()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+
+        <div class="well" ng-repeat = "test in newSession.TestResults">
+          
+            <div class = "form-group row">
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Type:</label>
+              </div>
+              <div class = "col-md-3">
+                <select class = "form-control" ng-model="test.Type">
+                  <option ng-repeat="testType in testTypes">{{testType}}</option>
+                </select>
+              </div>
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Result:</label>
+              </div>
+
+              <div class = "col-md-3">
+                <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
+              </div>
+
+
+              <div class = "col-md-1 btn-group btn-group-sm">
+                <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+              
+            </div>
+
+            <div class = "form-group row">
+
+              
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Date:</label>
+              </div>
+
+              <div class = "col-md-3">
+                <input class = "form-control" type="date" ng-model="test.TestDate" placeholder=''>
+              </div>
+
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Comment:</label>
+              </div>
+              <div class = "col-md-5">
+                <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
+              </div>
+
+            </div>
+   
+        </div>
+        </container>
+       
+      <br>
+        <button type="submit" class="btn btn-primary pull-right">Add Session</button>
+      <br>
+    
+      </form>
+  </div>

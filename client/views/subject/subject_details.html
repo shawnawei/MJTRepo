@@ -1,0 +1,78 @@
+
+<!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
+REDESIGN THE PAGE IF TIME PREMITS-->
+
+
+<nav>
+  <a class="nav-link" ui-sref="subjects">Go Back</a>
+</nav>
+
+
+<div class = "jumbotron jumbotron-fluiod">
+  <div class="panel panel-default" ng-init="getSubject()">
+
+    <div class="panel-heading">
+      <h3 class="panel-title"><strong>Subject ID: </strong>{{subject.ID}}</h3>
+    </div>
+
+    <div class="panel-body">
+    <section>
+      <div class = "well text-center verticle-align: left">
+        <div class="col-md-2"><strong>Sex: </strong>{{subject.Sex}}</div>
+        <div class="col-md-3"><strong>Handedness: </strong>{{subject.Handedness}}</div>
+        <div class="col-md-3"><strong>Diagnosis: </strong>{{subject.Diagnosis}}</div>
+        <div class="col-md-4"><strong>Date of Birth: </strong>{{subject.DateOfBirth | date:'yyyy-MM-dd'}} </div>
+        <br>
+      </div>
+      </section>
+
+      <h5> <strong>Projects Enrolled: </strong></h5>
+      <class ng-repeat="project in subject.Projects">
+      <div class="panel panel-info" >
+      <div class="panel-heading" role="tab" id="heading-{{$index}}"> 
+        <h4 class="panel-title"> 
+        <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{project.ProjectID}}</strong></a>  
+        </h4> </div>
+
+        <div id="collapse-{{$index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{$index}}"> 
+
+
+         <div class="panel-body">
+          <ul>
+            <li><strong>Subject ID in {{project['ProjectID']}}: </strong>
+            <a href = "ScanInfo/{{project['ProjectID']}}/{{project['SubjectIDinProject']}}">{{project['SubjectIDinProject']}}</a></li>
+            <p>
+            </li>
+            </p>
+          </ul>
+         </div> 
+        </div>
+      </div>
+      </class>
+      </div>
+
+    </div>
+  </div>
+
+  <div class = "pull-right">
+  <a href = "subjects/{{subject.ID}}/edit">Edit</a> | <a class = "btn" data-toggle="modal" data-target="#myDeleteModal">Delete</a>
+  </div>
+
+
+  <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
+          </div>
+          <div class="modal-body">
+                {{subject.ID}} will be permenantly deleted, are you sure?
+          </div>
+          <div class="modal-footer">
+            <a type = "button" class="btn btn-danger" data-dismiss="modal" ng-click = "removeSubject(subject.ID)">Delete(!)</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>

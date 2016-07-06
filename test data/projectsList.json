@@ -1,0 +1,47 @@
+[
+{
+  "ProjectID":"WM",
+  "ProjectName":"Working Memory",
+  "SubjectsID":[
+  	{"GlobalID":"0001","inProjectID":"WM01"},
+  	{"GlobalID":"0002","inProjectID":"WM03"},
+  	{"GlobalID":"0003","inProjectID":"WM09"},
+  	{"GlobalID":"0005","inProjectID":"WM07"}
+  ]
+},
+
+{
+	"ProjectID":"POND",
+	"ProjectName":"POND",
+	"SubjectsID":[
+		{"GlobalID":"0003","inProjectID":"POND01","_id":"5751e9bcaa37157c0059bdd0"}
+	]
+},
+
+{
+	"_id":"5751ea17aa37157c0059bdd4",
+	"ProjectID":"RS",
+	"ProjectName":"Research Study",
+	"SubjectsID":[]
+},
+
+{
+	"_id":"5751eab5aa37157c0059bdd8",
+  	"ProjectID":"AA",
+	"ProjectName":"Advanced Armour",
+	"SubjectsID":[
+		{"GlobalID":"0001","inProjectID":"AA02","_id":"5751eab5aa37157c0059bdda"},
+		{"GlobalID":"0005","inProjectID":"AA01","_id":"5751eab5aa37157c0059bdd9"}
+	]
+},
+
+{
+	"_id":"5751eb43aa37157c0059bde1",
+	"ProjectID":"BB",
+	"ProjectName":"Breaking Bad",
+	"SubjectsID":[
+		{"inProjectID":"BB01","GlobalID":"MJTtest1","_id":"5751ff62e29ee5141fe3ca75"},
+		{"GlobalID":"MJTtest2","inProjectID":"BB02","_id":"5751ffaee29ee5141fe3ca7e"}
+	]
+}
+]

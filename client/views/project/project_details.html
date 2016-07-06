@@ -1,0 +1,51 @@
+<nav>
+  <a class="nav-link" ui-sref="projects">Go Back</a>
+</nav>
+
+<div class = "jumbotron jumbotron-fluiod">
+  <div class="panel panel-default" ng-init="getProject()">
+
+    <div class="panel-heading">
+      <h3 class="panel-title"><strong>Project Name: </strong>{{project.ProjectName}}</h3>
+    </div>
+
+    <div class="panel-body">
+    <section class = "container">
+      <div class = "well text-center">
+        <div class="col-md-5"><strong>Project ID: </strong>{{project.ProjectID}}</div>
+        <div class="col-md-5"><strong>Project Name: </strong>{{project.ProjectName}}</div>
+      </div>
+      </section>
+
+    <section class = "container">
+      <h5> <strong>Subjects Enrolled: </strong></h5>
+      <div ng-repeat="subject in project.SubjectsID">
+        <div class = "nav nav-pills col-md-2" type="button" class = "btn btn-info"><a href ="/ScanInfo/{{project['ProjectID']}}/{{subject.inProjectID}}"><strong>{{subject.inProjectID}}</strong></a></div>
+      </div>
+    </section>
+
+    </div>
+  </div>
+
+    <div class = "pull-right">
+  <a ui-sref = "editProject({ProjectID: project.ProjectID})">Edit</a> | <a class = "btn" data-toggle="modal" data-target="#myDeleteModal"">Delete</a>
+  </div>
+
+
+   <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
+          </div>
+          <div class="modal-body">
+                {{project.ProjectID}} will be permenantly deleted, are you sure?
+          </div>
+          <div class="modal-footer">
+            <a type = "button" class="btn btn-danger" data-dismiss="modal" ng-click = "removeProject(project.ProjectID)">Delete(!)</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  </div>

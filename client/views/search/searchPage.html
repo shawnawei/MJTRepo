@@ -1,0 +1,510 @@
+<link href = "css/tableStyle.css" rel= "stylesheet">
+
+<div class = "jumbotron">
+
+ <h2><strong>Search</strong></h2>
+    <br>
+      <!-- search nav tabs by project, subject, MEG, MRI-->
+
+
+<!--============================== Nav tabs =========================== -->
+      <ul class="nav nav-tabs" role="tablist">
+        <li role = "presentation" class = "active">
+          <a class="nav-link" data-toggle="tab" aria-controls = "searchSubject" data-target ="#searchSubject" role="tab">Subject</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" aria-controls = "searchProject" data-target="#searchProject" role="tab">Project</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" aria-controls = "searchScan" data-target="#searchScan" role="tab">Scans</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" aria-controls = "searchAdvance" data-target="#searchAdvance" role="tab">Advance</a>
+        </li>
+      </ul>
+
+ 
+<!--============================ Tab panes =====================================-->
+  <br><br> 
+  <div class="tab-content">
+<!--================================= SUBJECT SEARCH =======================================-->    
+      
+        <div class="tab-pane active" id="searchSubject" role="tabpanel">
+
+
+          <div class = "container">
+            <form ng-submit="searchSubjectByGlobalID(search.ID)" ng-init = "getSubjects()" class = "form-horizontal">
+                <div class="form-group row">
+                  <div class = "col-md-4">
+                    <label class = "form-control-label">Find Subject by Global ID: </label>
+                  </div>
+                
+                <div class = "col-md-3">
+                  <input type="text" class="form-control" ng-model = "search.ID" placeholder="ie. MJTtest1">
+                </div>
+
+              <button type="submit" class="btn btn-primary  col-md-offset-4">Find</button></div>
+            </form>
+          </div>
+
+        <div class = "container">
+            <form ng-submit="searchSubjectByinProjectID(search.SubjectIDinProject)" ng-init = "getSubjects()" class = "form-horizontal">
+                <div class="form-group row">
+                  <div class = "col-md-4">
+                    <label class = "form-control-label">Find Subject by in-Project ID: </label>
+                  </div>
+                
+                <div class = "col-md-3">
+                  <input type="text" class="form-control" ng-model = "search.SubjectIDinProject" placeholder="ie. WM01">
+                </div>
+
+              <button type="submit" class="btn btn-primary col-md-offset-4">Find</button></div>
+            </form>
+          </div>
+
+
+      <br>
+      <div class = "heading"></div>
+      <br><br>
+
+
+
+            <form ng-submit="searchSubjectByOther(search)" class = "form-horizontal">
+
+              <div><h4><strong>Find Subject by Other Information: </strong></h4></div>
+              <br>
+                <div class="form-group row">
+                    <label class = "form-control-label col-md-2" for="Sex"> Sex: </label>
+                    <div class = "col-md-3">
+                      <select name= "Sex" id = "Sex" class="form-control" ng-model = "search.Sex">
+                      <option value = "">Any</option>
+                      <option value = "Female">Female</option>
+                      <option value = "Male">Male</option>
+                      <option value = "Other">Other</option>
+                      <option value = "Unknown">Unknown</option>
+                      </select>
+                    </div>  
+
+
+                    <label class = "form-control-label col-md-offset-1 col-md-2" for="Handedness"> Handedness: </label>
+                    <div class = "col-md-3">
+                      <select name= "Handedness" id = "Handedness" class="form-control" ng-model = "search.Handedness">
+                        <option value = "">Any</option>
+                        <option value = "Left">Left</option>
+                        <option value = "Right">Right</option>
+                        <!--option value = "Ambidextrous">Ambidextrous</option-->
+                        <option value = "Unknown">Unknown</option>
+                      </select>
+                    </div>
+                </div>
+              
+                <div class="form-group row">
+                    <label class = "form-control-label col-md-2" for="Diagnosis"> Diagnosis: </label>
+                    <div class = "col-md-3">
+                      <select name= "Diagnosis" id = "Diagnosis" class="form-control"  ng-model = "search.Diagnosis">
+                        <option value = "">Any</option>
+                        <option value = "ASD">ASD</option>
+                        <option value = "Pre-term">Pre-term</option>
+                        <option value = "Control">Control</option>
+                        <option value = "Other">Other</option>
+                        <option value = "Unknown">Unknown</option>
+                      </select>
+                    </div>
+
+                    <label class = "form-control-label col-md-3 col-md-offset-1">Permission to Contact: </label>
+
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-1">Yes 
+                       <input type="checkbox" ng-true-value = "true">
+                    </div>
+
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-1">No  
+                       <input type="checkbox" ng-true-value = "false">
+                    </div>
+
+                </div>
+
+                <div class="form-group row">
+
+                 <label class = "form-control-label col-md-2">Current Age: </label>
+
+                    <div style="margin:5;padding:5" class = "form-group-row col-md-1">
+                       All <input type="checkbox"  ng-true-value="{min:0, max:100}">
+                    </div>
+
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-1">
+                      <input type="number" class="form-control" placeholder="Min">
+                    </div>
+                    
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-1">
+                      <input type="number" class="form-control" placeholder="Max">
+                    </div>
+
+                    <div ng-init = "getProjects()">
+                    <label class = "form-control-label col-md-2 col-md-offset-1" for="inProject">In Project(s): </label>
+                    <div class = "col-md-4">
+                      <select name= "inProject" id = "select-project" class="form-control" ng-model = "search.Projects" multiple = "multiple">
+                        <option value = "">All</option>
+                        <option value = "disabled" disabled>---------------</option>
+                        <option ng-repeat = "project in projects" value = "{{project.ProjectID}}">{{project.ProjectID}}</option>
+                      </select>
+                    </div>
+                    </div>
+
+              </div>
+                    
+                
+              <br>
+              <p><button type="submit" class="btn btn-primary pull-right">Find</button></p>
+            </form>
+            <br> <br>
+
+        </div>
+
+
+
+
+<!--================================= PROJECT SEARCH =======================================-->
+        <div class="tab-pane" id="searchProject" role="tabpanel">
+        
+
+        <container>
+
+            <div class = "container">
+            <form ng-submit="searchProjectByID(search.ProjectID)" ng-init = "getProjects()" class = "form-horizontal">
+                <div class="form-group row">
+                  <div class = "col-md-4">
+                    <label class = "form-control-label">Find Project by Project ID: </label>
+                  </div>
+                
+                <div class = "col-md-3">
+                  <input type="text" class="form-control" ng-model = "search.ProjectID" placeholder="ie. WM">
+                </div>
+
+              <button type="submit" class="btn btn-primary col-md-offset-4">Find</button>
+              </div>
+            </form>
+            </div>
+    
+
+        <div class = "container">
+            <form ng-submit="searchProjectByName(search.ProjectName)" ng-init = "getProjects()" class = "form-horizontal">
+                <div class="form-group row">
+                  <div class = "col-md-4">
+                    <label class = "form-control-label">Find Project by Project Name: </label>
+                  </div>
+                
+                <div class = "col-md-6">
+                  <input type="text" class="form-control" ng-model = "search.ProjectName" placeholder="ie. Working Memory">
+                </div>
+
+              <button type="submit" class="btn btn-primary col-md-offset-1">Find</button>
+              </div>
+            </form>
+          </div>
+
+
+
+          <br> <br>
+
+          </container>
+        </div>
+
+
+<!--================================= Scan SEARCH =======================================-->
+
+    <div class="tab-pane " id="searchScan" role="tabpanel">
+        
+      <div class = "container">
+
+        <div class = "container">
+          <form ng-submit="searchScanByGID(search.SubjectID)" ng-init = "getScanSessions()" class = "form-horizontal">
+              <div class="form-group row">
+                <div class = "col-md-6">
+                  <label class = "form-control-label">Find Scan Session by Subject's Global ID: </label>
+                </div>
+              
+              <div class = "col-md-3">
+                <input type="text" class="form-control" ng-model = "search.SubjectID" placeholder="ie. MJTtest1">
+              </div>
+
+            <button type="submit" class="btn btn-primary col-md-offset-2">Find</button></div>
+          </form>
+        </div>
+
+        <div class = "container">
+            <form ng-submit="searchScanByPID(search.SubjectIDinProject)" ng-init = "getSubjects()" class = "form-horizontal">
+                <div class="form-group row">
+                  <div class = "col-md-6">
+                    <label class = "form-control-label">Find Scan Session by Subject's in-Project ID: </label>
+                  </div>
+                
+                <div class = "col-md-3">
+                  <input type="text" class="form-control" ng-model = "search.SubjectIDinProject" placeholder="ie. WM01">
+                </div>
+
+              <button type="submit" class="btn btn-primary col-md-offset-2">Find</button></div>
+            </form>
+        </div>
+
+
+        <div class = "container">
+          <form ng-submit="searchScanBySessionID(search.ScanSessions)" class = "form-horizontal">
+
+              <div class="form-group row">
+                <div class = "col-md-6">
+                  <label class = "form-control-label"> Find Scan Session by Session ID: </label>
+                </div>
+
+                  <div class = "col-md-3">
+                    <input type="text" class="form-control" ng-model = "search.ScanSessions.SessionID" placeholder = "ie. WM01_A">
+                  </div>
+
+                  <div ng-model = "search.ScanSessions.ParticipantAge.min" value = "0" placeholder="Min"></div>
+               
+                  <div ng-model = "search.ScanSessions.ParticipantAge.max" value = "100" placeholder="Max"></div>
+        
+
+                  <div ng-init = "search.ScanSessions.ParticipantAge = {min:0, max:100}" ng-model="search.ScanSessions.ParticipantAge" ng-true-value="{min:0, max:100}">
+                  </div>
+              <button type="submit" class="btn btn-primary col-md-offset-2">Find</button></div><br>
+              
+      
+          </form>
+      </div>
+
+
+
+      </div>
+
+
+      <br>
+      <div class = "heading"></div>
+      <div class = "heading"></div>
+      <br><br>
+
+<!--======================= SEARCH BY OTHER INFORMATION ==================-->
+      <div class = "container">
+          <form ng-submit="searchScanByInfo(scanDetail, filterSubjects, filterSubjectsInfo, allProjects, MRITypes, MEGTypes, allSubjects, allinProjectIDs)" class = "form-horizontal">
+
+          <div ng-init = "getProjectIDs(); getSubjectIDs(); getinProjectIDs()">
+            <div ng-model = "allProjects"></div>
+            <div ng-model = "allSubjects"></div>
+            <div ng-model = "allinProjectIDs"></div>
+          </div>
+
+           <div><h4><strong>Find Scans by Detail Criteria: </strong></h4></div>
+            <br>
+
+              <div class = "form-group row">
+
+                  <label class = "form-control-label col-md-5">Subject Filter (Leave empty for all subjects): </label>
+                  <div class = "col-md-3"> 
+                  <button type="button" class="btn btn-secondary btn-xs" ng-click= "addSubject(); removeSubjectInfo(0)" ><span class="glyphicon glyphicon-plus"></span> By ID</button>
+                  <button type="button" class="btn btn-secondary btn-xs" ng-click= "addSubjectInfo()" ><span class="glyphicon glyphicon-search"></span> By Info</button>
+                  </div>
+              </div>
+
+
+              <div class = "form-group-row col-md-12" ng-repeat ='subjectInfo in filterSubjectsInfo'>
+                <div class="form-group row">
+
+                  <label class= "form-control-label col-sm-1">Sex:</label>
+                  <div class="col-sm-3">
+                    <select ng-model="subjectInfo.Sex" class="form-control" ng-init="subjectInfo.Sex = All">
+                      <option value="All">All</option>
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Unknown">Unknown</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <label class= "form-control-label col-sm-2">Diagnosis:</label>
+                  <div class="col-sm-3">
+                    <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="subjectInfo.Diagnosis" ng-init="subjectInfo.Diagnosis = All" placeholder=" ">
+                        <option value = "All">All</option>
+                        <option value = "ASD">ASD</option>
+                        <option value = "Pre-term">Pre-term</option>
+                        <option value = "Control">Control</option>
+                        <option value = "Other">Other</option>
+                        <option value = "Unknown">Unknown</option>
+                    </select>
+                  </div>
+
+                  
+                  <div class = "col-md-1 btn-group btn-group-sm">
+                     <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeSubjectInfo($index)"><span class="glyphicon glyphicon-minus"></span></button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            
+
+
+              <div class = "form-group-row col-md-12" ng-repeat ='subject in filterSubjects'>
+                <div class = "col-md-2"> <strong>Please enter: </strong></div> 
+                <div class = "col-md-3">
+                  <input type="text" class="form-control" ng-model = "subject.SubjectID" placeholder="Global ID">
+                </div>
+                <div class = "col-md-1">or</div> 
+                <div class = "col-md-3">
+                 <input type="text" class="form-control" ng-model = "subject.inProjectID" placeholder="in Project ID">
+                </div>
+
+                <div class = "col-md-1 btn-group btn-group-sm">
+                  <button type="button" class="btn btn-secondary btn-xs" ng-click = "removeSubject($index)"><span class="glyphicon glyphicon-minus"></span></button>
+                 </div>
+
+
+              </div>
+
+              
+              <br><br>
+
+              <div class = "col-md-12">
+                <br><br>
+              </div>
+
+              <div class = "form-group row">
+
+                <label class = "form-control-label col-md-2" ng-init = "getProjects()">In Project(s): </label>
+                  <select ng-model = "scanDetail.Projects" class = "col-md-3" multiple id = "multiselect">
+                    <option>All</option>
+                    <option disabled>         </option>
+                    <option ng-repeat="project in projects">{{project.ProjectID}}</option>
+                  </select>
+              </div>
+
+              <br>
+
+              <div class="form-group row" ng-init = "getMRITypes();getMEGTypes()">
+                <label class = "form-control-label col-md-2">MEG Type: </label>
+                 <select ng-model = "scanDetail.MEGType" class = "col-md-3" multiple id = "multiselect">
+                    <option>All</option>
+                    <option>None</option>
+                    <option disabled>         </option>
+                    <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
+                 </select>
+
+
+                 <label class = "form-control-label col-md-offset-2 col-md-2">MRI Type: </label>
+                   <select ng-model = "scanDetail.MRIType" class = "col-md-3" multiple id = "multiselect">
+                      <option>All</option>
+                      <option>None</option>
+                      <option disabled>       </option>
+                      <option ng-repeat="MRIType in MRITypes">{{MRIType}}</option>
+                   </select>
+              </div>
+              
+              <br>
+              
+              <div class="form-group row">
+
+               <label class = "form-control-label col-md-2">Age at Scan: </label>
+                <div style="margin:0;padding:0" class = "form-group-row col-md-1">
+                  <input type="text" class="form-control" ng-model = "scanDetail.ParticipantAge.min" placeholder="Min">
+                </div>
+                
+                <div style="margin:0;padding:0" class = "form-group-row col-md-1">
+                  <input type="text" class="form-control" ng-model = "scanDetail.ParticipantAge.max" placeholder="Max">
+                </div>
+
+                <div style="margin:5;padding:5" class = "form-group-row col-md-2" ng-init = "scanDetail.ParticipantAge = {min:0, max:100}">
+                   All Age  <input type="checkbox" ng-model="scanDetail.ParticipantAge" ng-true-value="{min:0, max:100}">
+                </div>
+
+                <label class = "form-control-label col-md-2 col-md-offset-1">Scan Allowed: </label>
+
+                <div style="margin:0;padding:0" class = "form-group-row col-md-1">True  
+                   <input type="checkbox" ng-model="scanDetail.Allowed" ng-true-value = "true">
+                </div>
+
+                <div style="margin:0;padding:0" class = "form-group-row col-md-1">False 
+                   <input type="checkbox" ng-model="scanDetail.Allowed" ng-true-value = "false">
+                </div>
+
+                <div style="margin:0;padding:0" class = "form-group-row col-md-1">Both
+                   <input type="checkbox" ng-model="scanDetail.Allowed" ng-true-value = ''>
+                </div>
+              </div>
+              
+
+              <br>
+
+
+
+            <br><br> 
+            <p><button type="submit" class="btn btn-primary pull-right">Find</button></p>
+          </form>
+      </div>
+
+      <br><br>
+      <div class = "heading"></div>
+      <br><br>
+
+
+
+<!--======================== SEARCH BY TEST RESULTS ======================-->
+        
+      <div class = "container">
+
+        <form ng-submit="searchScanByTestResult(test)" ng-init="getTestTypes()" class = "form-horizontal">
+
+         <div class="form-group row">
+         <div><h4><strong>Find scan sessions with following test types: </strong></h4></div>
+          <div><button type="button" class="btn btn-sm" ng-click="addTestType()" ><span class="glyphicon glyphicon-plus"></span> Add Test Type</button></div>
+          </div>
+
+            <div class="form-group row" ng-repeat = "test in searchTestType">
+             <label class= "form-control-label col-md-2">Test Type:</label>
+            <div class = "col-md-2"> 
+              <select class = "form-control" ng-model="test.Type">
+                 <option ng-repeat="testType in testTypes">{{testType}}</option>
+              </select>
+            </div>
+
+            <!--label class= "form-control-label col-md-2">Test Result:</label>
+            <div class = "col-md-3">
+              <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
+            </div-->
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+                 <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+        </div>
+
+            
+          <br>
+          <p><button type="submit" class="btn btn-primary pull-right">Find</button></p>
+        </form>
+      </div>
+
+
+    </div>
+
+
+<!--================================= ADVANCE SEARCH =======================================-->
+        <div class="tab-pane" id="searchAdvance" role="tabpanel">
+        Advance Search
+
+
+        </div>
+
+      </div>
+</div>
+
+
+
+<br><br><br><br>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('#select-project').multiselect();
+    });
+</script>

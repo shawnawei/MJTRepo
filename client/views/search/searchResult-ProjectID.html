@@ -1,0 +1,99 @@
+<style>
+
+table {
+    border: 1px solid #D3D3D3;
+    text-align: center;
+    width: 100%
+}
+
+th {
+	border: 1px solid white;
+	text-align: center;
+  	background-color: #D3D3D3
+}
+
+td {
+	border: 1px solid white;
+	text-align: center;
+  	height:50px;
+  	background-color: #ECECEC
+}
+
+</style>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+    	$('[data-toggle="popover"]').popover(); 
+});
+</script>
+
+
+<div>
+
+
+<div style = "width:90%; float:left;">
+<h3><strong>Search Project by Project ID: {{requestID}} </strong></h3>
+</div>
+<br>
+<br>
+
+
+<div style = "width:10%; float:right;">
+<!-- <button class = "btn btn-sm btn-default" ng-click="exportData()" ng-show="(subjects|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span></button> -->
+
+<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-show="(projects|filter:{selected: true}).length" filename = "projectid_{{requestID}}.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
+
+</div>
+
+<br>
+
+	<div class = "container col-md-12">
+	<table ng-init = "searchProjectsByID()" class = "form-horizontal">
+
+	    <thead class = "table table-stripe table-bordered">
+	    <tr>
+	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(projects)">All</a><a class="btn btn-xs" ng-click = "deselectAll(projects)">Clear</a></th>
+	    	<th>Project ID</th>
+	    	<th>Project Name</th>
+	    	<th>Subjects Enrolled <p>(Global ID - inProject ID)</p></th>
+	    	<th>Other Information</th>
+	    </tr>
+	    </thead>
+	    
+	    <tbody>
+	    <tr ng-repeat = "project in projects">
+	    	<th scope = "row"><input type="checkbox" ng-model = "project.selected" ng-click = "getSelectedProjects(project)"></th>
+          	<td><a href = "projects/{{project.ProjectID}}">{{project.ProjectID}}</a></td>
+          	<td>{{project.ProjectName}}</td>
+          	<td class = "col-md-4"><a ng-repeat = "subject in project.SubjectsID" href = "ScanInfo/{{project.ProjectID}}/{{subject.inProjectID}}"><button class = "btn btn-default btn-xs">{{subject.GlobalID}} - {{subject.inProjectID}}</button></a></td>
+          	<td>Other</td>
+	    </tr>
+	    </tbody>
+	</table>
+	</div>
+
+
+</div>
+
+<div id = "exportable" style = "display:none">
+	<table>
+
+	    <thead class = "table table-stripe table-bordered">
+	    <tr>
+	    	<th>Project ID</th>
+	    	<th>Project Name</th>
+	    	<th>Subjects Enrolled <p>(Global ID - inProject ID)</p></th>
+	    	<th>Other Information</th>
+	    </tr>
+	    </thead>
+	    
+	    <tbody>
+	    <tr ng-repeat = "project in projects| filter: {selected: true}"">
+          	<td>{{project.ProjectID}}</td>
+          	<td>{{project.ProjectName}}</td>
+          	<td class = "col-md-4"><button ng-repeat = "subject in project.SubjectsID">{{subject.GlobalID}} - {{subject.inProjectID}}{{!$last?', ':''}}</button></td>
+          	<td>Other</td>
+	    </tr>
+	    </tbody>
+	</table>
+</div>

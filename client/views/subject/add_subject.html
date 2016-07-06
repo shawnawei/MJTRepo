@@ -1,0 +1,189 @@
+<!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
+REDESIGN THE PAGE IF TIME PREMITS-->
+
+<style>
+h4
+{
+  text-decoration: underline;
+}
+
+div.heading
+{
+  background: #005  no-repeat scroll center;
+  margin-left: 0em;
+  margin-right: 15em;
+  width:60em;
+  height:.1em;
+}
+
+textarea
+{
+  height:7em;
+  word-wrap: break-word;
+}
+
+input[type = 'checkbox']
+{
+  width:15px;
+    height:15px;
+}
+</style>
+
+<nav>
+  <a class="nav-link" ui-sref="subjects">Go Back</a>
+</nav>
+
+<div class = "jumbotron verticle-center">
+
+    <h2><strong>Add a Subject</strong></h2>
+
+    <div class = "heading"></heading></div>
+    <br>
+
+    <form ng-submit="addSubject()" method = "post" class="form-horizontal">
+      <h5>* Required fields</h5>
+
+      <br>
+
+    <container>
+      <h4>Subject Information</h4><br>
+        <div class="form-group row">
+          <label class="form-control-label col-md-2">Subject ID* :</label>
+          <div class = "col-md-3">
+            <input type="text" class="form-control" ng-model="subject.ID" placeholder=" ">
+          </div>
+
+          <label class="col-md-2 col-md-offset-1 form-control-label">Sex:</label>
+           <div class = "col-md-3">
+          <select ng-model="subject.Sex" class="form-control">
+            <option value=" "> </option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Unknown">Unknown</option>
+            <option value="Other">Other</option>
+          </select>
+         </div>
+
+        </div>
+
+        <div class="form-group row">
+          <label class="col-md-2 form-control-label">Handedness: </label>
+           <div class = "col-md-3">
+          <select name= "Handedness" id = "Handedness" class="form-control" ng-model="subject.Handedness" placeholder=" ">
+
+            <option value = ""> </option>
+            <option value = "Left">Left</option>
+            <option value = "Right">Right</option>
+            <!--option value = "Ambidextrous">Ambidextrous</option-->
+            <option value = "Unknown">Unknown</option>
+          </select>
+         </div>
+
+         <label class="col-md-2 col-md-offset-1 form-control-label">Diagnosis: </label>
+          <div class = "col-md-3">
+          <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="subject.Diagnosis" placeholder=" ">
+              <option value = ""> </option>
+              <option value = "ASD">ASD</option>
+              <option value = "Pre-term">Pre-term</option>
+              <option value = "Control">Control</option>
+              <option value = "Other">Other</option>
+              <option value = "Unknown">Unknown</option>
+          </select>
+          </div>
+
+        </div>
+
+
+        <div class="form-group row">
+          <label class="col-md-2 form-control-label">MRN: </label>
+           <div class = "col-md-3">
+            <input type="number" class="form-control" ng-model="subject.MRN" placeholder=" ">
+         </div>
+
+         <label class="col-md-3 col-md-offset-1 form-control-label">Permission to Contact: </label>
+          <div class = "col-md-3">
+              <div class = "form-group-row">
+                   <input type="checkbox" ng-model="subject.ContactPermit" ng-true-value = "true"> Yes
+                   <input type="checkbox" ng-model="subject.ContactPermit" ng-true-value = "false"> No
+                </div>
+          </div>
+
+        </div>
+
+        
+
+        <div class="form-group row">
+          <label class="form-control-label col-md-2">Date of Birth :</label>
+          <div class = "col-md-3">
+            <input type="date" class="form-control" ng-model="subject.DateOfBirth" placeholder=" ">
+          </div>
+
+          <label class="form-control-label col-md-offset-1 col-md-2">Other :</label>
+          <div class = "col-md-4">
+            <textarea class="form-control" ng-model="subject.Other" placeholder=" "></textarea>
+          </div>
+
+        </div>
+
+
+
+
+
+
+      </container>
+
+<!--=============================for projects enrolled =====================-->
+       
+    
+        
+    <br>
+      <container>
+        <h4>Project Participation</h4><br>
+        <div class="form-group row">
+          <label class="col-md-2 form-control-label">Project(s): </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addProject()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+          <div class="form-group row" ng-repeat = 'project in subject.Projects'>
+          <div class="col-md-3">
+              <input type="text" class="form-control" name="project.ProjectID" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/>
+          </div>
+          <div class="col-md-4">
+              <input type="text" class="form-control" name="project[0].subjectID" ng-model = "project.SubjectIDinProject" placeholder="Subject ID in Project" />
+          </div>
+
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeProject($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          <!--div>
+            <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="add_subject.html#addScanSession" aria-expanded="false" aria-controls="addScanSession">Add Scan Session</a>
+            <br /> <br>
+            <div class = "well collapse" id = "addScanSession">
+            <form id = "scanSessionForm">
+    
+                <div class="form-group">
+                  <label class="col-md-3 control-label">Session ID</label>
+                   <div class = "col-md-3">
+                  <input type="text" class = "form-control" ng-model="session.sessionID" placeholder="ie. WM01_A" >
+                 </div>
+                </div>
+
+ 
+            </form>
+            <a name = 'addScanSession'></a></div>
+
+          </div-->
+        </div>
+      </container>
+
+
+        <p class = "container"><div class="form-group pull-right"><div class="col-xs-2">
+            <button type="submit" class="btn btn-primary">Add Subject</button>
+        </div></div></p>
+
+      </form>
+
+  </div>

@@ -1,0 +1,549 @@
+<style>
+ul#scanList li
+{
+	display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center;
+    width:100%;
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:30px;
+}
+
+td {
+  height:30px;
+}
+
+</style>
+
+
+<div class="container" ng-init="getMEGTypes()">
+
+<div class = "row">
+<h3><strong>MEG Scan Types</strong></h3>
+
+<button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
+</div>
+<br><br>
+
+	<div class = "container col-md-12">
+		<table class = "table-stripe table-bordered">
+			<thead>
+				<tr>
+					<th>Scan Type ID</th>
+					<th>Scan Type Name</th>
+					<th>Category</th>
+					<th>Description</th>
+					<th>Comment</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr ng-repeat = "MEGType in MEGTypes">
+				  <td>{{MEGType.TypeID}}</td>
+		          <td>{{MEGType.TypeName}}</td>
+		          <td>{{MEGType.TypeCateg}}</td>
+		          <td><a href = "{{MEGType.Desc}}">{{MEGType.Desc}}</a></td>
+		          <td>{{MEGType.Comment}}</td>
+		          <td>
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editMEG-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteMEG-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
+
+		          	<!-- edit mri type-->
+					<div class="modal fade" id="editMEG-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">Edit MEG Type: {{MEGType.TypeName}}</h4>
+			              </div>
+
+			             <form role= "form" ng-submit = "editMEGTypes(MEGType)">
+			              <div class="modal-body">
+
+			              	<div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Scan Type ID:</label>
+            					<div class="col-md-5">
+            						<input disabled type = "text" class="form-control" ng-model="MEGType.TypeID" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Scan Type Name:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="MEGType.TypeName" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Description:</label>
+            					<div class="col-md-9">
+            						<input type = "text" class="form-control" ng-model="MEGType.Desc">
+            					</div>
+				            </div>	
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Comment:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="MEGType.Comment">
+            					</div>
+				            </div>			              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "submit" class="btn btn-success"  data-dismiss="modal" ng-click = "editMEGTypes(MEGType)" onclick="javascript:window.location.reload()">Update</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+			        </div>
+
+		          	<!-- delete test type-->
+					<div class="modal fade" id="deleteMEG-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h3 class="modal-title" id="myModalLabel"><strong>WARNING!</strong></h3>
+			              </div>
+			              <div class="modal-body">
+			                    MEG type: <strong>{{MEGType.TypeName}}</strong>, will be permenantly deleted, are you sure?
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeMEGType(MEGType)">Delete (danger!)</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+			            </div>
+			          </div>
+			        </div>
+
+
+		          </td>
+		        </tr>
+			</tbody>
+
+		</table>
+	</div>
+
+	<!-- add new meg type-->
+	<div class="modal fade" id="addMEGType" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add New MEG Type</h4>
+          </div>
+
+         <form role= "form" ng-submit = "addMEGType(newMEGType)">
+          <div class="modal-body">
+
+          	<div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type ID:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeID" >
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type Name:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeName">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Category:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeCateg" placeholder="RS or Task">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Description:</label>
+				<div class="col-md-9">
+					<input type = "text" class="form-control" ng-model="newMEGType.Desc" >
+				</div>
+            </div>	
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Comment:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.Comment">
+				</div>
+            </div>			              	
+            
+                
+          </div>
+          <div class="modal-footer">
+            <a type = "submit" class="btn btn-success" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "addMEGType(newMEGType)">Add</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+		</form>
+
+        </div>
+      </div>
+    </div>
+
+
+</div>
+
+
+
+<br><br><br><br>
+
+
+
+<div class="container" ng-init="getMRITypes()">
+
+<div class = "row">
+<h3><strong>MRI Scan Types</strong></h3>
+
+<button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMRIType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
+</div>
+<br><br>
+
+	<div class = "container col-md-12">
+		<table class = "table-stripe table-bordered">
+			<thead>
+				<tr>
+					<th>Scan Type ID</th>
+					<th>Scan Type Name</th>
+					<th>Description</th>
+					<th>Comment</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr ng-repeat = "MRIType in MRITypes">
+
+		          <td>{{MRIType.TypeID}}</td>
+		          <td>{{MRIType.TypeName}}</td>
+		          <td><a href = "{{MRIType.Desc}}">{{MRIType.Desc}}</a></td>
+		          <td>{{MRIType.Comment}}</td>
+		          <td>
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editMRI-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteMRI-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
+		          	
+		          	<!-- edit mri type-->
+					<div class="modal fade" id="editMRI-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">Edit MRI Type: {{MRIType.TypeName}}</h4>
+			              </div>
+
+			             <form role= "form" ng-submit = "editMRITypes(MRIType)">
+			              <div class="modal-body">
+
+			              	<div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Scan Type ID:</label>
+            					<div class="col-md-5">
+            						<input disabled type = "text" class="form-control" ng-model="MRIType.TypeID" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Scan Type Name:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="MRIType.TypeName" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Description:</label>
+            					<div class="col-md-9">
+            						<input type = "text" class="form-control" ng-model="MRIType.Desc">
+            					</div>
+				            </div>	
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Comment:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="MRIType.Comment">
+            					</div>
+				            </div>			              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "submit" class="btn btn-success"  data-dismiss="modal" ng-click = "editMRITypes(MRIType)" onclick="javascript:window.location.reload()">Update</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+			        </div>
+
+		          	<!-- delete test type-->
+					<div class="modal fade" id="deleteMRI-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h3 class="modal-title" id="myModalLabel"><strong>WARNING!</strong></h3>
+			              </div>
+			              <div class="modal-body">
+			                    MRI type: <strong>{{MRIType.TypeName}}</strong>, will be permenantly deleted, are you sure?
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeMRIType(MRIType)">Delete (danger!)</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+			            </div>
+			          </div>
+			        </div>
+
+
+
+		          </td>
+		        </tr>
+			</tbody>
+
+		</table>
+	</div>
+
+	<!-- add new mri type-->
+	<div class="modal fade" id="addMRIType" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add New MRI Type</h4>
+          </div>
+
+         <form role= "form" ng-submit = "addMRIType(newMRIType)">
+          <div class="modal-body">
+
+          	<div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type ID:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMRIType.TypeID" >
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type Name:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMRIType.TypeName">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Description:</label>
+				<div class="col-md-9">
+					<input type = "text" class="form-control" ng-model="newMRIType.Desc" >
+				</div>
+            </div>	
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Comment:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMRIType.Comment">
+				</div>
+            </div>			              	
+            
+                
+          </div>
+          <div class="modal-footer">
+            <a type = "submit" class="btn btn-success" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "addMRIType(newMRIType)">Add</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+		</form>
+
+        </div>
+      </div>
+    </div>
+
+</div>
+
+
+
+<br><br><br><br>
+
+
+
+<div class="container" ng-init="getTestTypes()">
+
+<div class = "row">
+<h3><strong>Clinical Test Types</strong></h3>
+
+<button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addTestType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
+</div>
+
+
+<br><br>
+
+	<div class = "container col-md-12">
+		<table class = "table-stripe table-bordered">
+			<thead>
+				<tr>
+					<th>Test ID</th>
+					<th>Test Name</th>
+					<th>Description</th>
+					<th>Comment</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr ng-repeat = "testType in testTypes">
+				  <td>{{testType.TestID}}</td>
+		          <td>{{testType.TestName}}</td>
+		          <td><a href = "{{testType.TestDesc}}">{{testType.TestDesc}}</a></td>
+		          <td>{{testType.Comment}}</td>
+		          <td>
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editTest-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteTest-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
+		          
+					
+		          	<!-- edit test type-->
+					<div class="modal fade" id="editTest-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">Edit Test Type: {{testType.TestName}}</h4>
+			              </div>
+
+			             <form role= "form" ng-submit = "editTestTypes(testType)">
+			              <div class="modal-body">
+
+			              	<div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Test ID:</label>
+            					<div class="col-md-5">
+            						<input disabled type = "text" class="form-control" ng-model="testType.TestID" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Test Name:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="testType.TestName" placeholder="{{testType.TestName}}">
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Description:</label>
+            					<div class="col-md-9">
+            						<input type = "text" class="form-control" ng-model="testType.TestDesc" value = "{{testType.TestDesc}}" placeholder="{{testType.TestDesc}}">
+            					</div>
+				            </div>	
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Comment:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="testType.Comment" default = "{{testType.Comment}}" placeholder="{{testType.Comment}}">
+            					</div>
+				            </div>			              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "submit" class="btn btn-success"  data-dismiss="modal" ng-click = "editTestTypes(testType)">Update</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+			        </div>
+
+		          	<!-- delete test type-->
+					<div class="modal fade" id="deleteTest-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h3 class="modal-title" id="myModalLabel"><strong>WARNING!</strong></h3>
+			              </div>
+			              <div class="modal-body">
+			                    Test type: <strong>{{testType.TestName}}</strong>, will be permenantly deleted, are you sure?
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeTestType(testType)">Delete (danger!)</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+			            </div>
+			          </div>
+			        </div>
+
+		          </td>
+		        </tr>
+			</tbody>
+
+		</table>
+	</div>
+
+	<!-- add new test type-->
+	<div class="modal fade" id="addTestType" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add New Test Type</h4>
+          </div>
+
+         <form role= "form" ng-submit = "addTestType(newTestType)">
+          <div class="modal-body">
+
+          	<div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Test ID:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newTestType.TestID" >
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Test Name:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newTestType.TestName">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Description:</label>
+				<div class="col-md-9">
+					<input type = "text" class="form-control" ng-model="newTestType.TestDesc" >
+				</div>
+            </div>	
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Comment:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newTestType.Comment">
+				</div>
+            </div>			              	
+            
+                
+          </div>
+          <div class="modal-footer">
+            <a type = "submit" class="btn btn-success" data-dismiss="modal" onclick="javascript:window.location.reload()" ng-click = "addTestType(newTestType)">Add</a>
+            <button type="button" class="btn btn-primary" onclick="javascript:window.location.reload()"  data-dismiss="modal">Close</button>
+          </div>
+		</form>
+
+        </div>
+      </div>
+    </div>
+
+</div>
+
+
+<br><br><br><br>
+
+
+

@@ -1,0 +1,31 @@
+.arrow-up {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 5px solid black;
+}
+
+.arrow-down {
+	width:0;
+	height:0;
+	border-left: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-top: 5px solid black;
+}
+
+div.heading
+{
+  background: #888  no-repeat scroll center;
+  margin-left: 0em;
+  margin-right: 15em;
+  width:60em;
+  height:.05em;
+}
+
+
+input[type = 'checkbox']
+{
+  width:15px;
+    height:15px;
+}

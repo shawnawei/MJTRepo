@@ -1,0 +1,31 @@
+<style>
+.panel-heading h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: normal;
+    width: 75%;
+    padding-top: 8px;
+}
+</style>
+
+<div class="panel panel-default" ng-init="getProjects()">
+  <div class="panel-heading">
+    <h3 class="panel-title pull-left"><strong>Projects</strong></h3>
+    <a><button type = "button" class = "btn btn-default pull-right"><a ui-sref="addProject">New Project</a></button>
+    <div class= "clearfix"></div>
+
+  </div>
+  <div class="panel-body">
+    <div class="row">
+      <div ng-repeat="project in projects">
+        <div class="col-md-3">
+          <div class="col-md-3">
+            <h4>{{project['ProjectID']}}</h4>
+            <a class="btn btn-primary" ui-sref="projectDetail({ProjectID: project.ProjectID})">View Details</a>
+          </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

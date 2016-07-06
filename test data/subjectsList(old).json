@@ -1,0 +1,336 @@
+[
+{
+"ID": "0001",
+"Sex": "Male",
+"Handedness": "Right",
+"Diagnosis": "Pre-born",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM01",
+		"ScanSessions": [
+			{
+				"SessionID": "WM01_A",
+				"ParticipantAge": 3,
+				"MEGScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+				"TestResults": {"IQScore": 120, "ADHDScale": 10}
+			},
+
+			{
+				"SessionID": "WM01_B",
+				"ParticipantAge": 4,
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+				"TestResults": {"IQScore": 123, "ADHDScale": 8}
+			}
+		]
+		
+	},
+
+	{
+		"ProjectID": "AA",
+		"SubjectIDinProject": "AA02",
+		"ScanSessions": [
+			{
+				"SessionID": "AA02_A",
+				"ParticipantAge": 3,
+				"MEGScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+				"TestResults": {"IQScore": 120, "ADHDScale": 10}
+			},
+
+			{
+				"SessionID": "AA02_B",
+				"ParticipantAge": 4,
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+				"TestResults": {"IQScore": 123, "ADHDScale": 8}
+			}
+		]
+		
+	}
+]
+},
+
+{
+"ID": "0002",
+"Sex": "Female",
+"Handedness": "Right",
+"Diagnosis": "Control",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM03",
+		"ScanSessions": [
+			{
+				"SessionID": "WM03_A",
+				"ParticipantAge": 5,
+				"MEGScans":[
+					{"ScanName": "T01", "ScanDate": "2012-01-01"},
+					{"ScanName": "T02", "ScanDate": "2012-01-01"},
+					{"ScanName": "T01", "ScanDate": "2012-01-07"},
+					{"ScanName": "T02", "ScanDate": "2012-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "MT01", "ScanDate": "2012-01-01"},
+					{"ScanName": "MT02", "ScanDate": "2012-01-01"},
+					{"ScanName": "MT01", "ScanDate": "2012-01-07"},
+					{"ScanName": "MT02", "ScanDate": "2012-01-07"}
+				],
+				"TestResults": {"IQScore": 99, "ADHDScale": 9}
+			},
+
+			{
+				"SessionID": "WM03_B",
+				"ParticipantAge": 6,
+				"MEGScans":[
+					{"ScanName": "T03", "ScanDate": "2013-01-01"},
+					{"ScanName": "T04", "ScanDate": "2013-01-01"},
+					{"ScanName": "T03", "ScanDate": "2013-01-07"},
+					{"ScanName": "T04", "ScanDate": "2013-01-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "MT03", "ScanDate": "2013-01-01"},
+					{"ScanName": "MT04", "ScanDate": "2013-01-01"},
+					{"ScanName": "MT03", "ScanDate": "2013-01-07"},
+					{"ScanName": "MT04", "ScanDate": "2013-01-07"}
+				],
+				"TestResults": {"IQ core": 125, "ADHDScale": 6}
+			}
+		]
+		
+	}
+]
+},
+
+{
+"ID": "0003",
+"Sex": "Female",
+"Handedness": "Right",
+"Diagnosis": "Pre-born",
+"Projects":[
+	{
+		"ProjectID": "POND",
+		"SubjectIDinProject": "POND01",
+		"ScanSessions": [
+			{
+				"SessionID": "POND01_A",
+				"ParticipantAge": 10,
+				"MEGScans":[
+					{"ScanName": "P01", "ScanDate": "2010-01-10"},
+					{"ScanName": "P02", "ScanDate": "2010-01-10"},
+					{"ScanName": "P03", "ScanDate": "2010-01-10"},
+					{"ScanName": "P04", "ScanDate": "2010-01-10"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "P07", "ScanDate": "2010-01-10"},
+					{"ScanName": "P08", "ScanDate": "2010-01-10"},
+					{"ScanName": "P05", "ScanDate": "2010-01-10"},
+					{"ScanName": "P06", "ScanDate": "2010-01-10"}
+				],
+				"TestResults": {"IQScore": 113, "ADHDScale": 1}
+			},
+
+			{
+				"SessionID": "POND01_B",
+				"ParticipantAge": 10,
+				"MEGScans":[
+					{"ScanName": "PP03", "ScanDate": "2011-04-01"},
+					{"ScanName": "PP04", "ScanDate": "2011-04-01"},
+					{"ScanName": "PP03", "ScanDate": "2011-04-07"},
+					{"ScanName": "PP04", "ScanDate": "2011-04-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "PP03", "ScanDate": "2011-04-01"},
+					{"ScanName": "PP04", "ScanDate": "2011-04-01"},
+					{"ScanName": "PP03", "ScanDate": "2011-04-07"},
+					{"ScanName": "PP04", "ScanDate": "2011-04-07"}
+				],
+				"TestResults": {"IQScore": 123, "ADHDScale": 8}
+			}
+		]
+		
+	},
+
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM09",
+		"ScanSessions": [
+			{
+				"SessionID": "WM09_A",
+				"ParticipantAge": 10,
+				"MEGScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+				"TestResults": {"IQScore": 123, "ADHDScale": 8}
+			},
+
+			{
+				"SessionID": "WM09_B",
+				"ParticipantAge": 10,
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+				"TestResults": {}
+			}
+		]
+		
+	}
+]
+},
+
+{
+"ID": "0005",
+"Sex": "Male",
+"Handedness": "Left",
+"Diagnosis": "Autism",
+"Projects":[
+	{
+		"ProjectID": "WM",
+		"SubjectIDinProject": "WM07",
+		"ScanSessions": [
+			{
+				"Session ID": "WM07_A",
+				"ParticipantAge": 13,
+				"MEGScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "CMT01", "ScanDate": "2010-01-01"},
+					{"ScanName": "CMT02", "ScanDate": "2010-01-01"},
+					{"ScanName": "LMT01", "ScanDate": "2010-01-07"},
+					{"ScanName": "LMT02", "ScanDate": "2010-01-07"}
+				],
+				"TestResults": {"IQScore": 100, "ADHDScale": 5}
+			},
+
+			{
+				"SessionID": "WM07_B",
+				"ParticipantAge": 14,
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+
+				"MEGScans":[
+					{"ScanName": "CMT03", "ScanDate": "2011-01-01"},
+					{"ScanName": "CMT04", "ScanDate": "2011-01-01"},
+					{"ScanName": "LMT03", "ScanDate": "2011-01-07"},
+					{"ScanName": "LMT04", "ScanDate": "2011-01-07"}
+				],
+				"TestResults": {"IQScore": 113, "ADHDScale": 4}
+			}
+		]
+		
+	},
+
+	{
+		"ProjectID": "AA",
+		"SubjectIDinProject": "AA01",
+		"ScanSessions": [
+			{
+				"SessionID": "AA01_A",
+				"ParticipantAge": 10,
+				"MEGScans":[
+					{"ScanName": "AAT01", "ScanDate": "2007-01-01"},
+					{"ScanName": "AAT02", "ScanDate": "2007-01-01"},
+					{"ScanName": "AAT01", "ScanDate": "2007-01-07"},
+					{"ScanName": "AAT02", "ScanDate": "2007-01-07"}
+				],
+
+				"MRIScans":[
+					{"ScanName": "AA01", "ScanDate": "2007-01-01"},
+					{"ScanName": "AA02", "ScanDate": "2007-01-01"},
+					{"ScanName": "AA01", "ScanDate": "2007-01-07"},
+					{"ScanName": "AA02", "ScanDate": "2007-01-07"}
+				],
+				"TestResults": {"IQScore": 127, "ADHDScale": 4}
+			}
+		]
+		
+	}
+]
+}
+]
+
+
+
+
+
+
+

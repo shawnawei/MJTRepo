@@ -1,0 +1,16 @@
+[
+{
+	"TypeID":"RS",
+	"TypeName": "Resting State",
+	"TypeCateg":"Resting State",
+	"Desc": "https://en.wikipedia.org/wiki/Resting_state_fMRI",
+	"Comment":""
+},
+{
+	"TypeID": "WM",
+	"TypeCateg":"Task",
+	"TypeName":"Task - Working Memory",
+	"Desc": "https://en.wikipedia.org/wiki/Working_memory",
+	"Comment":""
+}
+]

@@ -1,0 +1,93 @@
+<style>
+h4
+{
+  text-decoration: underline;
+}
+
+div.heading
+{
+  background: #005  no-repeat scroll center;
+  margin-left: 0em;
+  margin-right: 15em;
+  width:60em;
+  height:.1em;
+}
+
+textarea
+{
+  height:7em;
+  word-wrap: break-word;
+}
+
+input[type = 'checkbox']
+{
+  width:15px;
+    height:15px;
+}
+</style>
+
+<nav ng-init = "getProject()">
+  <a class="nav-link" href="/projects/{{project.ProjectID}}">Go Back</a>
+</nav>
+
+<div class = "jumbotron vertical-center" ng-init = "getProject()">
+ 
+  <h2><strong>Edit a Project</strong></h2>
+
+    <div class = "heading"></heading></div>
+    <br>
+
+      <form ng-submit="updateProject()" class = "form-horizontal">
+
+      <h5>* Required fields</h5>
+
+      <br>
+
+        <container>
+        <div class="form-group row">
+            <label class = "form-control-label col-md-2">Project ID* : </label>
+          <div class = "col-md-5">
+          <input type="text" class="form-control" ng-model="project.ProjectID" placeholder="">
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <div class="form-group row">
+          <label class = "form-control-label col-md-2">Project Name* : </label>
+          <div class = "col-md-10">
+            <input type = "text" ng-model="project.ProjectName" class="form-control">
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <div class = "form-group row">
+          <label class = "form-control-label col-md-2">Subjects: </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addSubject()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>  
+
+
+            <div class="form-group row" ng-repeat = 'subject in project.SubjectsID'>
+              <div class = "col-md-4">
+              <input type = "text" class="form-control" name="subject{{$index}}.inProjectID" ng-model = "subject.inProjectID" placeholder="in Project ID">
+              </div>
+              <div class = "col-md-4">
+              <input type = "text" class="form-control" name="subject{{$index}}.GlobalID" ng-model = "subject.GlobalID" placeholder="Global ID">
+              </div>
+              
+              <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click= "removeSubject($index)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+            </div>
+        
+        </container>
+
+        <br>
+       
+        <button type="submit" class="btn btn-primary pull-right">Update Project</button>
+      </form>
+
+  </div>

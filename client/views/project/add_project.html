@@ -1,0 +1,116 @@
+<!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
+REDESIGN THE PAGE IF TIME PREMITS-->
+
+<style>
+h4
+{
+  text-decoration: underline;
+}
+
+div.heading
+{
+  background: #005  no-repeat scroll center;
+  margin-left: 0em;
+  margin-right: 15em;
+  width:60em;
+  height:.1em;
+}
+
+textarea
+{
+  height:7em;
+  word-wrap: break-word;
+}
+
+input[type = 'checkbox']
+{
+  width:15px;
+    height:15px;
+}
+</style>
+
+<nav>
+  <a class="nav-link" ui-sref="projects">Go Back</a>
+</nav>
+
+<div class = "jumbotron vertical-center">
+ 
+  <h2><strong>Add a Project</strong></h2>
+
+    <div class = "heading"></heading></div>
+    <br>
+
+      <form ng-submit="addProject()" method = "post" class = "form-horizontal">
+
+      <h5>* Required fields</h5>
+
+      <br>
+
+        <container>
+        <div class="form-group row">
+            <label class = "form-control-label col-md-2">Project ID* : </label>
+          <div class = "col-md-5">
+          <input type="text" class="form-control" ng-model="project.ProjectID" placeholder="">
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <div class="form-group row">
+          <label class = "form-control-label col-md-2">Project Name* : </label>
+          <div class = "col-md-10">
+            <input type = "text" ng-model="project.ProjectName" class="form-control">
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <div class = "form-group row">
+          <label class = "form-control-label col-md-2">Subjects: </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addSubject()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>  
+
+
+            <div class="form-group row" ng-repeat = 'subject in project.SubjectsID'>
+              <div class = "col-md-4">
+              <input type = "text" class="form-control" name="subject{{$index}}.inProjectID" ng-model = "subject.inProjectID" placeholder="in Project ID">
+              </div>
+              <div class = "col-md-4">
+              <input type = "text" class="form-control" name="subject{{$index}}.GlobalID" ng-model = "subject.GlobalID" placeholder="Global ID">
+              </div>
+              
+              <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click= "removeSubject($index)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+            </div>
+        </container>
+
+        <br>
+       
+        <button type="submit" class="btn btn-primary pull-right">Add Project</button>
+      </form>
+
+  </div>
+
+
+<!--script>
+var i = 1;
+
+function addSubject(){
+  var div = document.createElement('div');
+  div.innerHTML = hello;
+  div.innerHTML =' < <div name = "subject_'+i'"> div class = "col-md-4"> <input type = "text" class="form-control" ng-model="project.SubjectsID['+i+'].inProjectID" placeholder="in Project ID"> </div><div class = "col-md-4"><input type = "text" class="form-control" ng-model="project.SubjectsID['+i+'].GlobalID" placeholder="Global ID"></div><div class = "col-md-2 btn-group btn-group-sm"><button type="button" class="btn btn-secondary btn-sm" id = "addSubject()" onClick = "addSubject()"><span class="glyphicon glyphicon-plus"></span></button><button type="button" class="btn btn-secondary btn-sm" onClick = "removeSubject(this)"><span class="glyphicon glyphicon-minus"></span></button></div> </div>';
+  document.getElementByID(add_subject).appendChild(div);
+  i++;
+
+}
+
+function removeSubject(div){
+  document.getElementByID('kids').removeChild(div.parentNode);
+  
+}
+
+
+</script-->

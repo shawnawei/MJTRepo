@@ -1,0 +1,995 @@
+[
+  {
+    "SubjectID": "0001",
+    "SubjectIDinProject": "WM01",
+    "relatedProject": "WM",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 3,
+        "SessionID": "WM01_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "ScanType": "",
+            "AgeAtScan": "",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      },
+      {
+        "ParticipantAge": 4,
+        "SessionID": "WM01_B",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "SubjectID": "0002",
+    "SubjectIDinProject": "WM03",
+    "relatedProject": "WM",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 5,
+        "SessionID": "WM03_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2012-01-01T00:00:00.000Z",
+            "ScanName": "MT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-01T00:00:00.000Z",
+            "ScanName": "MT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-07T00:00:00.000Z",
+            "ScanName": "MT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-07T00:00:00.000Z",
+            "ScanName": "MT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2012-01-01T00:00:00.000Z",
+            "ScanName": "T01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-01T00:00:00.000Z",
+            "ScanName": "T02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-07T00:00:00.000Z",
+            "ScanName": "T01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2012-01-07T00:00:00.000Z",
+            "ScanName": "T02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      },
+      {
+        "ParticipantAge": 6,
+        "SessionID": "WM03_B",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2013-01-01T00:00:00.000Z",
+            "ScanName": "MT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-01T00:00:00.000Z",
+            "ScanName": "MT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-07T00:00:00.000Z",
+            "ScanName": "MT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-07T00:00:00.000Z",
+            "ScanName": "MT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2013-01-01T00:00:00.000Z",
+            "ScanName": "T03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-01T00:00:00.000Z",
+            "ScanName": "T04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-07T00:00:00.000Z",
+            "ScanName": "T03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2013-01-07T00:00:00.000Z",
+            "ScanName": "T04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "SubjectID": "0005",
+    "SubjectIDinProject": "AA01",
+    "relatedProject": "AA",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 10,
+        "SessionID": "AA01_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2007-01-01T00:00:00.000Z",
+            "ScanName": "AA01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-01T00:00:00.000Z",
+            "ScanName": "AA02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-07T00:00:00.000Z",
+            "ScanName": "AA01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-07T00:00:00.000Z",
+            "ScanName": "AA02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2007-01-01T00:00:00.000Z",
+            "ScanName": "AAT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-01T00:00:00.000Z",
+            "ScanName": "AAT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-07T00:00:00.000Z",
+            "ScanName": "AAT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2007-01-07T00:00:00.000Z",
+            "ScanName": "AAT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "SubjectID": "0005",
+    "SubjectIDinProject": "WM07",
+    "relatedProject": "WM",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 13,
+        "SessionID": "WM07_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      },
+      {
+        "ParticipantAge": 14,
+        "SessionID": "WM07_B",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "_id": "57570e1e33796a6816098bf9"
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "_id": "57570e1e33796a6816098bf8"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "_id": "57570e1e33796a6816098bf7"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "_id": "57570e1e33796a6816098bf6"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "SubjectID": "0003",
+    "SubjectIDinProject": "POND01",
+    "relatedProject": "POND",
+    "ScanSessions": [
+      {
+        "_id": "57570f8f33796a6816098c52",
+        "SessionID": "POND01_A",
+        "ParticipantAge": 10,
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanName": "PP03",
+            "ScanDate": "2011-04-01T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c59",
+            "ScanName": "PP04",
+            "ScanDate": "2011-04-01T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c58",
+            "ScanName": "PP03",
+            "ScanDate": "2011-04-07T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c57",
+            "ScanName": "PP04",
+            "ScanDate": "2011-04-07T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "_id": "57570f8f33796a6816098c56",
+            "ScanName": "PP03",
+            "ScanDate": "2011-04-01T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c55",
+            "ScanName": "PP04",
+            "ScanDate": "2011-04-01T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c54",
+            "ScanName": "PP03",
+            "ScanDate": "2011-04-07T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "_id": "57570f8f33796a6816098c53",
+            "ScanName": "PP04",
+            "ScanDate": "2011-04-07T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "SubjectID": "0001",
+    "SubjectIDinProject": "AA02",
+    "relatedProject": "AA",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 3,
+        "SessionID": "AA02_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ]
+      },
+      {
+        "ParticipantAge": 4,
+        "SessionID": "AA02_B",
+        "_id": "57570ed133796a6816098c2d",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "_id": "57570ed133796a6816098c35"
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "_id": "57570ed133796a6816098c34"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "_id": "57570ed133796a6816098c33"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "_id": "57570ed133796a6816098c32"
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "_id": "57570ed133796a6816098c31"
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "_id": "57570ed133796a6816098c30"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "_id": "57570ed133796a6816098c2f"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "_id": "57570ed133796a6816098c2e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_id": "57448742ca189a6b66a8de56",
+    "SubjectID": "0003",
+    "SubjectIDinProject": "WM09",
+    "relatedProject": "WM",
+    "ScanSessions": [
+      {
+        "ParticipantAge": 10,
+        "SessionID": "WM09_A",
+        "_id": "57570dcd33796a6816098bd9",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "_id": "57570dcd33796a6816098be1"
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "_id": "57570dcd33796a6816098be0"
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "_id": "57570dcd33796a6816098bdf"
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "_id": "57570dcd33796a6816098bde"
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT01",
+            "_id": "57570dcd33796a6816098bdd"
+          },
+          {
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanName": "CMT02",
+            "_id": "57570dcd33796a6816098bdc"
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT01",
+            "_id": "57570dcd33796a6816098bdb"
+          },
+          {
+            "ScanDate": "2010-01-07T00:00:00.000Z",
+            "ScanName": "LMT02",
+            "_id": "57570dcd33796a6816098bda"
+          }
+        ]
+      },
+      {
+        "ParticipantAge": 10,
+        "SessionID": "WM09_B",
+        "_id": "57570dcd33796a6816098bd0",
+        "MRIScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "_id": "57570dcd33796a6816098bd8"
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "_id": "57570dcd33796a6816098bd7"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "_id": "57570dcd33796a6816098bd6"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "_id": "57570dcd33796a6816098bd5"
+          }
+        ],
+        "MEGScans": [
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT03",
+            "_id": "57570dcd33796a6816098bd4"
+          },
+          {
+            "ScanDate": "2011-01-01T00:00:00.000Z",
+            "ScanName": "CMT04",
+            "_id": "57570dcd33796a6816098bd3"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT03",
+            "_id": "57570dcd33796a6816098bd2"
+          },
+          {
+            "ScanDate": "2011-01-07T00:00:00.000Z",
+            "ScanName": "LMT04",
+            "_id": "57570dcd33796a6816098bd1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "_id": "5755bac5d83d36a00e238487",
+    "SubjectID": "MJTtest1",
+    "SubjectIDinProject": "BB01",
+    "__v": 0,
+    "relatedProject": "BB",
+    "ScanSessions": [
+      {
+        "_id": "5755bac5d83d36a00e238488",
+        "ParticipantAge": 12,
+        "SessionID": "BB01_A",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [],
+        "MEGScans": []
+      }
+    ]
+  },
+  {
+    "_id": "5755d81001c90ae0199b766c",
+    "SubjectID": "MJTtest2",
+    "SubjectIDinProject": "BB02",
+    "__v": 0,
+    "ScanSessions": []
+  },
+  {
+    "_id": "5756e64b2eadbdc424e1e706",
+    "SubjectID": "MJTtest3",
+    "SubjectIDinProject": "BB03",
+    "__v": 0,
+    "relatedProject": "BB",
+    "ScanSessions": [
+      {
+        "SessionID": "BB03_A",
+        "ParticipantAge": 13,
+        "_id": "5757407cf997aef024721269",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanName": "CMT02",
+            "ScanDate": "2010-01-02T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "_id": "5757407cf997aef02472126a",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "Comment": "no comment 1",
+            "ScanName": "CMT01",
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true,
+            "_id": "5757407cf997aef02472126b"
+          }
+        ]
+      },
+      {
+        "SessionID": "BB03_B",
+        "TestResults": [
+          {
+            "Type": "Other",
+            "Result": 10
+          },
+          {
+            "Type": "IQScore",
+            "Result": 100
+          }
+        ],
+        "MRIScans": [
+          {
+            "ScanName": "CMT02",
+            "ScanDate": "2010-01-02T00:00:00.000Z",
+            "Comment": "no comment 2",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true
+          }
+        ],
+        "MEGScans": [
+          {
+            "Comment": "no comment 1",
+            "ScanName": "CMT01",
+            "ScanDate": "2010-01-01T00:00:00.000Z",
+            "ScanPath": "C:/Users/someone/Desktop",
+            "Allowed": true,
+            "_id": "5757407cf997aef02472126b"
+          }
+        ]
+      }
+    ]
+  }
+]
