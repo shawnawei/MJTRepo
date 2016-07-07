@@ -691,12 +691,12 @@ module.exports.searchSubjectsByID = function(IDs){
 	});
 }
 
-module.exports.getSubjectsByInfo = function(sex, handedness, diagnosis, projects){
+module.exports.getSubjectsByInfo = function(sex, handedness, diagnosis, contact,age, mrn, projects){
 	return Promise.resolve()
 	.then(function(){
-		console.log(sex, handedness, diagnosis, projects);
+		console.log(sex, handedness, diagnosis, contact, age, mrn, projects);
 
-		var query = querySubjectInfo(sex, handedness, diagnosis, projects);
+		var query = querySubjectInfo(sex, handedness, diagnosis, contact, age, mrn, projects);
 		return Subject.findAsync(query);
 	});
 }
@@ -798,8 +798,9 @@ function formUpdatedSubjectArray (oldsubject, newsubject){
 	return updatedArray;
 }
 
-function querySubjectInfo (sex, handedness, diagnosis, projects) {
-	var query = {Sex:sex, Handedness:handedness, Diagnosis:diagnosis, 'Projects.ProjectID':{$in:projects}};
+function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn, projects) {
+	var query = {Sex:sex, Handedness:handedness, Diagnosis:diagnosis, 
+		ContactPermit:contact, MRN:mrn, 'Projects.ProjectID':{$in:projects}};
 	
 	if (sex == 'All')
 	{
@@ -816,11 +817,26 @@ function querySubjectInfo (sex, handedness, diagnosis, projects) {
 		delete query.Diagnosis;
 	}
 
+	if (contact == 'All')
+	{
+		delete query.ContactPermit;
+	}
+
+	if (mrn == 'All')
+	{
+		delete query.MRN;
+	}
+
+	// if (age == 'All')
+	// {
+	// 	delete query.Age;
+	// }
+
 	if (projects[0] == 'All')
 	{
 		delete query['Projects.ProjectID'];
 	}
-
+//{MRN:{$regex:".*" + userInput + ".*", $options:'i'}}
 	return query;
 }
 

@@ -386,6 +386,15 @@ module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID){
 	})
 	.then(function () {
 		var query = [
+		{$lookup:
+			{
+				from:'subjectsList',
+				localField: 'SubjectID',
+				foreignField: 'ID',
+				as:"SubjectInfo"
+			}
+		},
+		{$unwind: '$SubjectInfo'},
 		{$unwind: '$ScanSessions'},
 		{$match: {SubjectIDinProject: {$regex:".*" + subjectID + ".*", $options:'i'}}}
 		];
@@ -402,8 +411,17 @@ module.exports.searchScanSessionBySubjectID = function(id){
 	})
 	.then(function () {
 		var query = [
-		{$unwind: '$ScanSessions'},
-		{$match: {SubjectID: {$regex:".*" + id + ".*", $options:'i'}}}
+			{$lookup:
+			{
+				from:'subjectsList',
+				localField: 'SubjectID',
+				foreignField: 'ID',
+				as:"SubjectInfo"
+			}
+			},
+			{$unwind: '$SubjectInfo'},
+			{$unwind: '$ScanSessions'},
+			{$match: {SubjectID: {$regex:".*" + id + ".*", $options:'i'}}}
 		];
 		return ScanSession.aggregateAsync(query);
 	});
@@ -459,6 +477,15 @@ function queryScanSessionID (sessionID){
 		sessionID = '';
 	}
 	var query = [
+	{$lookup:
+		{
+			from:'subjectsList',
+			localField: 'SubjectID',
+			foreignField: 'ID',
+			as:"SubjectInfo"
+		}
+	},
+	{$unwind: '$SubjectInfo'},
 	{$unwind: '$ScanSessions'},
 	{$match:
 		{'ScanSessions.SessionID':
@@ -479,17 +506,16 @@ function queryScanInfo (scanInfo){
 	var minAge = +ageRange[0];
 	var MEGType = scanInfo.MEGType;
 	var MRIType = scanInfo.MRIType;
+	var testType = scanInfo.testType;
 	var Projects = scanInfo.Projects;
 	var SubjectGID = scanInfo.SubjectGID;
 	var SubjectPID = scanInfo.SubjectPID
 	
 
-
-
 	if (scanInfo.Allowed != 'All')
 	{
 		var allowed = getBool(scanInfo.Allowed);
-		console.log(maxAge, minAge, allowed, Projects, SubjectGID, SubjectPID);
+		console.log(maxAge, minAge, allowed, testType, Projects, SubjectGID, SubjectPID);
 
 
 		if (MEGType[0] == 'None')
@@ -540,6 +566,22 @@ function queryScanInfo (scanInfo){
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -547,13 +589,16 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MRIScans':{$addToSet:"$ScanSessions.MRIScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
+			
+			{$unwind:'$_id.SubjectInfo'}
 
 			];
 		}
@@ -606,6 +651,22 @@ function queryScanInfo (scanInfo){
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -613,13 +674,16 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MEGScans':{$addToSet:"$ScanSessions.MEGScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
+			
+			{$unwind:'$_id.SubjectInfo'}
 
 			];
 
@@ -692,7 +756,24 @@ function queryScanInfo (scanInfo){
 					]
 				}
 			},
+
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+			
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -700,20 +781,21 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MEGScans':{$addToSet:"$ScanSessions.MEGScans"},
 					'MRIScans':{$addToSet:"$ScanSessions.MRIScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
 
-			];
+			{$unwind:'$_id.SubjectInfo'}
+			]
 
 		}
-		
-		
+				
 	}
 	
 
@@ -769,6 +851,22 @@ function queryScanInfo (scanInfo){
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -776,13 +874,16 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MRIScans':{$addToSet:"$ScanSessions.MRIScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
+			
+			{$unwind:'$_id.SubjectInfo'}
 
 			];
 		}
@@ -834,6 +935,22 @@ function queryScanInfo (scanInfo){
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -841,13 +958,16 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MEGScans':{$addToSet:"$ScanSessions.MEGScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
+			
+			{$unwind:'$_id.SubjectInfo'}
 
 			];
 
@@ -920,6 +1040,22 @@ function queryScanInfo (scanInfo){
 			},
 
 			{$unwind:'$ScanSessions.TestResults'},
+			{$match:
+				{$and: [
+					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+			
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+
+			},
 
 			{$group:
 				{
@@ -927,20 +1063,22 @@ function queryScanInfo (scanInfo){
 						"SessionID":'$ScanSessions.SessionID', 
 						"relatedProject":'$$ROOT.relatedProject',
 						"SubjectIDinProject":'$$ROOT.SubjectIDinProject',
-						"SubjectID":'$$ROOT.SubjectID'
+						"SubjectID":'$$ROOT.SubjectID',
+						"SubjectInfo":'$$ROOT.SubjectInfo'
 					},
 					'MEGScans':{$addToSet:"$ScanSessions.MEGScans"},
 					'MRIScans':{$addToSet:"$ScanSessions.MRIScans"},
 					'TestResults':{$addToSet: "$ScanSessions.TestResults"}
 				}
 				
-			}
+			},
+
+			{$unwind:'$_id.SubjectInfo'}
 
 			];
 
 		}
-		
-		
+				
 	}
 	
 

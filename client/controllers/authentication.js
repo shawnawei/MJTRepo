@@ -8,7 +8,7 @@ myApp.controller('authenController', [ '$scope', '$http', '$location','localStor
 
 		$http.post('/raw/login', User)
 		.success(function(response){
-			authenFact.setAccessToken(User);
+			authenFact.setAccessToken(response);
 			$location.path('/home');
 		})
 		.error(function(response){

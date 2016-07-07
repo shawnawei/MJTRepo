@@ -114,7 +114,7 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 		templateUrl:'views/search/searchResult-subPID.html'
 	})
 	.state("searchResult-SubjectInfo", {
-		url:'/searchResult-SubjectInfo?Sex&Handedness&Diagnosis&Projects',
+		url:'/searchResult-SubjectInfo?Sex&Handedness&Diagnosis&Contact&Age&MRN&Projects',
 		controller:'searchSubjectInfoController',
 		templateUrl:'views/search/searchResult-subInfo.html'
 	})
@@ -151,7 +151,7 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 
 	.state("searchResult-ScanInfo", {
 		url:'/searchResult-ScanInfo?minAge&maxAge&Allowed&MEGType&MRIType'+
-		'&Projects&SubjectGID&SubjectPID',
+		'&testType&Projects&SubjectGID&SubjectPID',
 		controller:'searchScanInfoController',
 		templateUrl:'views/search/searchResult-scanInfo.html'
 	})

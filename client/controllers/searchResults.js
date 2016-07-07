@@ -200,6 +200,21 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 			requestSubject.Handedness = 'All';
 		}
 
+		if(requestSubject.Contact == undefined || requestSubject.Contact == '')
+		{
+			requestSubject.Contact = 'All';
+		}
+
+		if(requestSubject.MRN == undefined || requestSubject.MRN == '')
+		{
+			requestSubject.MRN = 'All';
+		}
+
+		if(requestSubject.Age == undefined || requestSubject.Age == '')
+		{
+			requestSubject.Age = 'All';
+		}
+
 		if(requestSubject.Projects == undefined)
 		{
 			requestSubject.Projects = 'All';
@@ -208,10 +223,12 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 		$scope.requestID = requestSubject;
 
 		$state.go('searchResult-SubjectInfo', {Sex: requestSubject.Sex}, {Handedness:requestSubject.Handedness},
-			{Diagnosis:requestSubject.Diagnosis},{Projects:requestSubject.Projects});
+			{Diagnosis:requestSubject.Diagnosis},{Contact:requestSubject.Contact},{Age:requestSubject.Age},
+			{MRN:requestSubject.MRN},{Projects:requestSubject.Projects});
 
 		$http.get('/raw/subjectInfo/' + requestSubject.Sex +'/' + requestSubject.Handedness +'/' 
-			+ requestSubject.Diagnosis +'/' + requestSubject.Projects)
+			+ requestSubject.Diagnosis +'/' + requestSubject.Contact+ '/' + requestSubject.Age
+			+'/' + requestSubject.MRN + '/' + requestSubject.Projects)
 		.then(function(response){
 			if(response.data == "no match!" ){
 				$scope.subjects = [];
@@ -271,6 +288,7 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 			'Diagnosis',
 			'Projects(-ID)',
 			'Handedness',
+			'MRN',
 			'Contact for future studies',
 			'Comment'];
 	}
@@ -708,12 +726,14 @@ myApp.controller('searchScanInfoController', ['$state', '$scope', '$http', '$loc
 
 		$state.go('searchResult-ScanInfo', {'minAge': requestScan.minAge, 'maxAge':requestScan.maxAge,
 		'Allowed': requestScan.Allowed, 'MEGType': requestScan.MEGType, 'MRIType': requestScan.MRIType, 
-		'Projects':requestScan.Projects,'SubjectGID': requestScan.SubjectGID, 'SubjectPID': requestScan.SubjectPID});
+		'testType': requestScan.testType,'Projects':requestScan.Projects,
+		'SubjectGID': requestScan.SubjectGID, 'SubjectPID': requestScan.SubjectPID});
 
 		$http.get('raw/FindScanSessionsInfo/'+ ageRange 
 			+ '/' + requestScan.Allowed 
 			+ '/' + requestScan.MEGType
 			+ '/' + requestScan.MRIType
+			+ '/' + requestScan.testType
 			+ '/' + requestScan.Projects
 			+ '/' + requestScan.SubjectGID
 			+ '/' + requestScan.SubjectPID)
@@ -923,6 +943,8 @@ function formatToExcel_ScanSessions (selectedScanSession) {
 		{
 			var scanSession = {
 				'SUBJECT ID': selectedScanSession[num].SubjectID,
+				'Sex': selectedScanSession[num].SubjectInfo.Sex,
+				'Diagnosis': selectedScanSession[num].SubjectInfo.Diagnosis,
 				'SESSION ID': selectedScanSession[num].ScanSessions.SessionID,
 				'IN PROJECT': selectedScanSession[num].relatedProject + "/" + selectedScanSession[num].SubjectIDinProject
 			}
@@ -1019,6 +1041,21 @@ function formatToExcel_ScanSessionsInfo (selectedScanSession) {
 		var MRIs = selectedScanSession[num].MRIScans;
 		var Tests = selectedScanSession[num].TestResults;
 
+		
+		//following three ifs are for when user request "none" to any of these types
+		if (MEGs == undefined)
+		{
+			MEGs = [];
+		}
+		if (MRIs == undefined)
+		{
+			MRIs = [];
+		}
+		if (Tests == undefined)
+		{
+			Tests = [];
+		}
+
 		var columnNum = Math.max(MEGs.length, MRIs.length, Tests.length);
 
 		
@@ -1026,6 +1063,8 @@ function formatToExcel_ScanSessionsInfo (selectedScanSession) {
 		{
 			var scanSession = {
 				'SUBJECT ID': selectedScanSession[num]._id.SubjectID,
+				'SEX':selectedScanSession[num]._id.SubjectInfo.Sex,
+				'DIAGNOSIS':selectedScanSession[num]._id.SubjectInfo.Diagnosis,
 				'SESSION ID': selectedScanSession[num]._id.SessionID,
 				'IN PROJECT': selectedScanSession[num]._id.relatedProject + "/" + selectedScanSession[num]._id.SubjectIDinProject
 			}
@@ -1102,6 +1141,9 @@ function formatToExcel_ScanSessionsInfo (selectedScanSession) {
 				scanSession.TEST_AgeAtTest = Tests[i].Age;
 				scanSession.TEST_Comment = Tests[i].Comment;
 			}
+
+
+
 			tobeExported.push(scanSession);
 		}
 

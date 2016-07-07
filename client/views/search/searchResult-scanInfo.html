@@ -91,6 +91,7 @@ td {
       	<p><strong>Approval:</strong> {{requestID.Allowed}}</p>
       	<p><strong>MEG Type:</strong> {{requestID.MEGType}}</p>
       	<p><strong>MRI Type:</strong> {{requestID.MRIType}}</p>
+      	<p><strong>Test Type:</strong> {{requestID.testType}}</p>
       	<p><strong>Search in Projects:</strong> {{requestID.Projects}}</p>
       	<p><strong>Search for Subjects (Global ID):</strong> {{requestID.SubjectGID}}</p>
       	<p><strong>Search for Subjects (in Project ID):</strong> {{requestID.SubjectPID}}</p>
@@ -101,7 +102,7 @@ td {
   </div>
 </div>
 
-{{SubjectSex}}
+
 </div>
 
 <br>
@@ -143,7 +144,7 @@ td {
 			    <div class="modal-content">
 			    	<div class = "modal-header">
 			      		<span class="close">x</span>
-			      		<h4>{{scanSession.SessionID}}: {{MEGscan.ScanName}} Scan Details</h4>
+			      		<h4>{{scanSession._id.SessionID}}: {{MEGscan.ScanName}} Scan Details</h4>
 			      	</div>
 			      	<div class = "modal-body" style="text-align: left">
 			      	<p><strong>Scan Date:</strong> {{MEGscan.ScanDate |  date: 'yyyy-MM-dd'}}</p>
@@ -203,7 +204,38 @@ td {
 				</div>
 
           	</li></td>
-          	<td class = "col-md-1"><a href ="subjects/{{scanSession._id.SubjectID}}">{{scanSession._id.SubjectID}}</a>
+
+          	<td class = "col-md-1">
+
+	          	<div class = "btn btn-default btn-xs" data-toggle="modal" data-target =".subjectinfo_{{scanSession._id.SessionID}}" data-backdrop="static">{{scanSession._id.SubjectID}}
+	          	
+
+	          	<div class="modal fade subjectinfo_{{scanSession._id.SessionID}}" tabindex="-1" role="dialog">
+				 	<div class="modal-dialog modal-sm">
+				   	 <div class="modal-content">
+				    	<div class = "modal-header">
+				      		<span class="close">x</span>
+				      		<h4>{{scanSession._id.SessionID}} Subject Information</h4>
+				      	</div>
+				      	<div class = "modal-body" style="text-align: left">
+				      	<p><strong>Project:</strong> {{scanSession._id.relatedProject}} as {{scanSession._id.SubjectIDinProject}}</p>
+				      	<p><strong>Global ID:</strong> {{scanSession._id.SubjectInfo.ID}}</p>
+				      	<p><strong>Sex:</strong> {{scanSession._id.SubjectInfo.Sex}}</p>
+				      	<p><strong>Diagnosis:</strong> {{scanSession._id.SubjectInfo.Diagnosis}}</p>
+				      	<p><strong>Handedness:</strong> {{scanSession._id.SubjectInfo.Handedness}}</p>
+				      	<p><strong>Date of Birth:</strong> {{scanSession._id.SubjectInfo.DateOfBirth|  date: 'yyyy-MM-dd'}}</p>
+				      	<p><strong>Also in Projects:</strong>
+					      	<li ng-repeat = "project in scanSession._id.SubjectInfo.Projects">
+					      		{{project.ProjectID}}
+					      	</li>
+				      	</p>
+				      	<p><strong>Comment:</strong> {{scanSession._id.SubjectInfo.Other}}</p>
+				      	</div>
+				   	 </div>
+				 	</div>
+				</div>
+				</div>
+
 			</td>
 	    </tr>
 	    </tbody>

@@ -178,7 +178,37 @@ td {
 				</div>
 
           	</li></td>
-          	<td class = "col-md-1"><a href ="subjects/{{scanSession.SubjectID}}">{{scanSession.SubjectID}}</a>
+          	<td class = "col-md-1">
+
+	          	<div class = "btn btn-default btn-xs" data-toggle="modal" data-target =".subjectinfo_{{scanSession.ScanSessions.SessionID}}" data-backdrop="static">{{scanSession.SubjectID}}
+	          	
+
+	          	<div class="modal fade subjectinfo_{{scanSession.ScanSessions.SessionID}}" tabindex="-1" role="dialog">
+				 	<div class="modal-dialog modal-sm">
+				   	 <div class="modal-content">
+				    	<div class = "modal-header">
+				      		<span class="close">x</span>
+				      		<h4>{{scanSession.ScanSessions.SessionID}} Subject Information</h4>
+				      	</div>
+				      	<div class = "modal-body" style="text-align: left">
+				      	<p><strong>Project:</strong> {{scanSession.relatedProject}} as {{scanSession.SubjectIDinProject}}</p>
+				      	<p><strong>Global ID:</strong> {{scanSession.SubjectInfo.ID}}</p>
+				      	<p><strong>Sex:</strong> {{scanSession.SubjectInfo.Sex}}</p>
+				      	<p><strong>Diagnosis:</strong> {{scanSession.SubjectInfo.Diagnosis}}</p>
+				      	<p><strong>Handedness:</strong> {{scanSession.SubjectInfo.Handedness}}</p>
+				      	<p><strong>Date of Birth:</strong> {{scanSession.SubjectInfo.DateOfBirth|  date: 'yyyy-MM-dd'}}</p>
+				      	<p><strong>in Projects:</strong>
+					      	<li ng-repeat = "project in scanSession.SubjectInfo.Projects">
+					      		{{project.ProjectID}}
+					      	</li>
+				      	</p>
+				      	<p><strong>Comment:</strong> {{scanSession.SubjectInfo.Other}}</p>
+				      	</div>
+				   	 </div>
+				 	</div>
+				</div>
+				</div>
+
 			</td>
 	    </tr>
 	    </tbody>

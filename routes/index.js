@@ -40,7 +40,7 @@ router.get('/', function(req, res) {
 
 //=============================== LOGIN/USER AUTHEN =======================
 
-router.post('/raw/login', passport.authenticate('local'), function(req, res){
+router.post('/raw/login', passport.authenticate('ldapauth'), function(req, res){
 
 	console.log(req.body);
 	res.json(req.user);
@@ -579,14 +579,17 @@ router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(
 });
 
 //search subject by demographic information
-router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Projects', ensureAuthenticated, function(req, res) {
+router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Projects', ensureAuthenticated, function(req, res) {
 
 	var Sex = req.params.Sex;
 	var Handedness = req.params.Handedness;
 	var Diagnosis = req.params.Diagnosis;
+	var Contact = req.params.Contact;
+	var Age = req.params.Age;
+	var MRN = req.params.MRN;
 	var Projects = req.params.Projects.split(',');
 	console.log(Projects);
-	subject.getSubjectsByInfo(Sex, Handedness, Diagnosis, Projects)
+	subject.getSubjectsByInfo(Sex, Handedness, Diagnosis, Contact, Age, MRN, Projects)
 	.then(function(subjects) {
 		if(subjects == '')
 		{
@@ -663,13 +666,14 @@ router.get('/raw/FindScanSessionsSessionID/:SessionID', ensureAuthenticated, fun
 
 
 //search scan sessions by detail information
-router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:Projects/:SubjectGID/:SubjectPID'
+router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/:Projects/:SubjectGID/:SubjectPID'
 	, ensureAuthenticated, function(req, res) {
 
 	var AgeRange = req.params.Age.split(',');
 	var Allowed = req.params.Allowed;
 	var MEGType = req.params.MEGType.split(',');
 	var MRIType = req.params.MRIType.split(',');
+	var testType = req.params.testType.split(',');
 	var Projects = req.params.Projects.split(',');
 	var SubjectGID = req.params.SubjectGID.split(',');
 	var SubjectPID = req.params.SubjectPID.split(',');
@@ -679,6 +683,7 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:Projects/
 		Allowed: Allowed,
 		MEGType: MEGType,
 		MRIType: MRIType,
+		testType: testType,
 		Projects: Projects,
 		SubjectGID: SubjectGID,
 		SubjectPID:SubjectPID

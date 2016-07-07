@@ -37,15 +37,15 @@ input[type = 'checkbox']
     <div class = "heading"></div>
     <br>
       <form ng-submit="editScanSession()" ng-init="getSingleScanSession()" class = "form-horizontal">
-      	
+      	<h5>* Required fields</h5>
       	<container>
       	<br>
       	<h4>Scan Information</h4>
       	<br>
         <div class="form-group row">
-          <label class= "form-control-label col-sm-2">Session ID:</label>
+          <label class= "form-control-label col-sm-2">Session ID*:</label>
           <div class="col-sm-4">
-          	<input type="text" class="form-control" ng-model="scanSession.SessionID" placeholder="">
+          	<input required type="text" class="form-control" ng-model="scanSession.SessionID" placeholder="">
           </div>
 
         

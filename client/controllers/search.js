@@ -36,15 +36,18 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 		var sex = searchObj.Sex;
 		var handedness = searchObj.Handedness;
 		var diagnosis = searchObj.Diagnosis;
+		var contactpermit = searchObj.ContactPermit;
+		var age = searchObj.CurrentAge;
+		var MRN = searchObj.MRN;
 
 		if(searchObj.Projects !='')
 		{
 			var projects = searchObj.Projects;
 		}
 
-		$location.path('/searchResult-SubjectInfo')
-		.search({
-			'Sex':sex, 'Handedness':handedness, 'Diagnosis':diagnosis, 'Projects':projects
+		$location.path('/searchResult-SubjectInfo').search({
+			'Sex':sex, 'Handedness':handedness, 'Diagnosis':diagnosis, 'Contact': contactpermit,
+			'Age': age, 'MRN':MRN ,'Projects':projects
 		});
 	}
 
@@ -68,6 +71,10 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 //=============================== Scan Sessions ==============================
 
+	$scope.filterSubjects = [];
+	$scope.filterSubjectsInfo = [];
+	$scope.searchTestType = [];
+
 	$scope.getScanSessions = function(){
 		$http.get('/raw/scanSessions').success(function(response){
 			$scope.scanSessions = response;
@@ -88,33 +95,8 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 		$location.path('/searchResult-ScanSessionID').search({'SessionID':sessionID});
 	}
 
-
-	$scope.filterSubjects = [];
-	$scope.filterSubjectsInfo = [];
-
-	$scope.addSubject = function(){
-		$scope.filterSubjectsInfo = [];
-		$scope.filterSubjects.push({SubjectID: '', inProjectID: ''});
-	}
-
-	$scope.addSubjectInfo = function(){
-		//only one element in the array
-		$scope.filterSubjects = [];
-		$scope.filterSubjectsInfo = [];
-		$scope.filterSubjectsInfo.push({Sex:'', Diagnosis:''});
-	}
-
-	$scope.removeSubject = function(index){
-		$scope.filterSubjects.splice(index,1);
-	}
-
-	$scope.removeSubjectInfo = function(index){
-		$scope.filterSubjectsInfo.splice(index,1);
-	}
-
-
-	$scope.searchScanByInfo = function(searchObj, filterSubjects, filterSubjectsInfo, allProjects, MRITypes, MEGTypes,
-		allGIDs, allPIDs){
+	$scope.searchScanByInfo = function(searchObj, filterSubjects, filterSubjectsInfo, searchTestType, allProjects,
+	 MRITypes, MEGTypes, allTestTypes,allGIDs, allPIDs){
 
 		if(filterSubjectsInfo.length != 0)
 		{
@@ -151,7 +133,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 			})
 
 			.then(function(){
-				console.log(filterSubjects);
+				
 
 				var ageAtScanmin = searchObj.ParticipantAge.min;
 				var ageAtScanmax = searchObj.ParticipantAge.max;
@@ -159,7 +141,23 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 				var MEGType = searchObj.MEGType;
 				var MRIType = searchObj.MRIType;
 				var projects = searchObj.Projects;
+				var testTypes = [];
 
+				if (searchTestType.length == 0)
+				{
+					testTypes = allTestTypes;
+				}
+
+				if(searchTestType.length > 0)
+				{
+					for (var n in searchTestType)
+					{
+						testTypes.push(searchTestType[n].Type);
+					}
+				}
+				
+				console.log(filterSubjects, searchTestType);
+				
 				if (filterSubjects.length != 0)
 				{
 					var GID = [];
@@ -217,6 +215,16 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 					MRIType = ['None'];
 				}
 
+				if (MRIType == null || MRIType[0] == "All")
+				{
+					MRIType = MRITypes;
+				}
+				
+				if (MRIType[0] == "None")
+				{
+					MRIType = ['None'];
+				}
+
 				if (projects == null || projects[0] == "All")
 				{
 					
@@ -225,13 +233,13 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 
 				$location.path('/searchResult-ScanInfo').search({'minAge': ageAtScanmin, 'maxAge':ageAtScanmax,
-				'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'Projects':projects, 
+				'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'testType':testTypes, 'Projects':projects, 
 				'SubjectGID': GID, 'SubjectPID': PID});
 			})
 		}
 
 		else {
-			console.log(filterSubjects);
+			
 
 			var ageAtScanmin = searchObj.ParticipantAge.min;
 			var ageAtScanmax = searchObj.ParticipantAge.max;
@@ -239,7 +247,24 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 			var MEGType = searchObj.MEGType;
 			var MRIType = searchObj.MRIType;
 			var projects = searchObj.Projects;
+			var testTypes = [];
 
+
+				if (searchTestType.length == 0 || searchTestType == undefined)
+				{
+					testTypes = allTestTypes;
+				}
+
+				if(searchTestType.length > 0)
+				{
+					for (var t in searchTestType)
+					{
+						testTypes.push(searchTestType[t].Type);
+					}
+				}
+			
+			console.log(filterSubjects, testTypes);
+			
 			if (filterSubjects.length != 0)
 			{
 				var GID = [];
@@ -305,7 +330,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 
 			$location.path('/searchResult-ScanInfo').search({'minAge': ageAtScanmin, 'maxAge':ageAtScanmax,
-			'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'Projects':projects, 
+			'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'testType':testTypes, 'Projects':projects, 
 			'SubjectGID': GID, 'SubjectPID': PID});
 		}	
 		
@@ -313,6 +338,35 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 
 	
+	$scope.addSubject = function(){
+		$scope.filterSubjectsInfo = [];
+		$scope.filterSubjects.push({SubjectID: '', inProjectID: ''});
+	}
+
+	$scope.addSubjectInfo = function(){
+		//only one element in the array
+		$scope.filterSubjects = [];
+		$scope.filterSubjectsInfo = [];
+		$scope.filterSubjectsInfo.push({Sex:'', Diagnosis:''});
+	}
+
+	$scope.removeSubject = function(index){
+		$scope.filterSubjects.splice(index,1);
+	}
+
+	$scope.removeSubjectInfo = function(index){
+		$scope.filterSubjectsInfo.splice(index,1);
+	}
+
+	$scope.addTestType = function(){
+		$scope.searchTestType.push({Type:'', Result:''});
+	}
+
+	$scope.removeTestType = function(index){
+		$scope.searchTestType.splice(index,1);
+	}
+
+
 	$scope.getProjects = function(){
 		$http.get('/raw/projects').success(function(response){
 			$scope.projects = response;
@@ -387,21 +441,6 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 			}
 			$scope.MEGTypes = MEGTypes;
 		});
-	}
-
-
-	$scope.searchScanByTestResult = function(testRequest){
-
-	}
-
-
-	$scope.searchTestType = [];
-	$scope.addTestType = function(){
-		$scope.searchTestType.push({Type:'', Result:''});
-	}
-
-	$scope.removeTestType = function(index){
-		$scope.searchTestType.splice(index,1);
 	}
 
 

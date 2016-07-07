@@ -115,20 +115,28 @@
                     <label class = "form-control-label col-md-3 col-md-offset-1">Permission to Contact: </label>
 
                     <div style="margin:0;padding:0" class = "form-group-row col-md-1">Yes 
-                       <input type="checkbox" ng-true-value = "true">
+                       <input type="checkbox" ng-model= "search.ContactPermit" ng-true-value = "true">
                     </div>
 
                     <div style="margin:0;padding:0" class = "form-group-row col-md-1">No  
-                       <input type="checkbox" ng-true-value = "false">
+                       <input type="checkbox" ng-model = "search.ContactPermit" ng-true-value = "false">
+                    </div>
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-1">All  
+                       <input type="checkbox" ng-model = "search.ContactPermit" ng-true-value = "">
                     </div>
 
                 </div>
 
                 <div class="form-group row">
 
-                 <label class = "form-control-label col-md-2">Current Age: </label>
+                 <label class = "form-control-label col-md-2">MRN: </label>
 
-                    <div style="margin:5;padding:5" class = "form-group-row col-md-1">
+                 <div class = "col-md-3">
+                  <input type="number" class="form-control" ng-model = "search.MRN" placeholder="ie.12345678">
+                </div>
+
+
+                    <!-- <div style="margin:5;padding:5" class = "form-group-row col-md-1">
                        All <input type="checkbox"  ng-true-value="{min:0, max:100}">
                     </div>
 
@@ -138,7 +146,7 @@
                     
                     <div style="margin:0;padding:0" class = "form-group-row col-md-1">
                       <input type="number" class="form-control" placeholder="Max">
-                    </div>
+                    </div> -->
 
                     <div ng-init = "getProjects()">
                     <label class = "form-control-label col-md-2 col-md-offset-1" for="inProject">In Project(s): </label>
@@ -285,12 +293,13 @@
 
 <!--======================= SEARCH BY OTHER INFORMATION ==================-->
       <div class = "container">
-          <form ng-submit="searchScanByInfo(scanDetail, filterSubjects, filterSubjectsInfo, allProjects, MRITypes, MEGTypes, allSubjects, allinProjectIDs)" class = "form-horizontal">
+          <form ng-submit="searchScanByInfo(scanDetail, filterSubjects, filterSubjectsInfo, searchTestType, allProjects, MRITypes, MEGTypes, testTypes, allSubjects, allinProjectIDs)" class = "form-horizontal">
 
-          <div ng-init = "getProjectIDs(); getSubjectIDs(); getinProjectIDs()">
+          <div ng-init = "getProjectIDs(); getSubjectIDs(); getinProjectIDs();getTestTypes()">
             <div ng-model = "allProjects"></div>
             <div ng-model = "allSubjects"></div>
             <div ng-model = "allinProjectIDs"></div>
+            <div ng-model = "testTypes"></div>
           </div>
 
            <div><h4><strong>Find Scans by Detail Criteria: </strong></h4></div>
@@ -342,8 +351,6 @@
               </div>
 
             
-
-
               <div class = "form-group-row col-md-12" ng-repeat ='subject in filterSubjects'>
                 <div class = "col-md-2"> <strong>Please enter: </strong></div> 
                 <div class = "col-md-3">
@@ -358,11 +365,45 @@
                   <button type="button" class="btn btn-secondary btn-xs" ng-click = "removeSubject($index)"><span class="glyphicon glyphicon-minus"></span></button>
                  </div>
 
-
               </div>
 
               
-              <br><br>
+              <br>
+
+              <div class = "col-md-12">
+                <br>
+              </div>
+
+
+
+              <div class = "form-group row">
+
+                  <label class = "form-control-label col-md-5">Clinical Test Filter (Leave empty for all tests): </label>
+                  <div class = "col-md-3"> 
+                  <button type="button" class="btn btn-xs" ng-click="addTestType()" ><span class="glyphicon glyphicon-plus"></span> Add Test Type</button>
+                  </div>
+              </div>
+
+
+              <div class="form-group row col-md-12" ng-init="getTestTypes()" ng-repeat = "test in searchTestType">
+                 <label class= "form-control-label col-md-2">Test Type:</label>
+                <div class = "col-md-2"> 
+                  <select class = "form-control" ng-model="test.Type">
+                     <option ng-repeat="testType in testTypes">{{testType}}</option>
+                  </select>
+                </div>
+
+                <label class= "form-control-label col-md-2">Test Result:</label>
+                <div class = "col-md-3">
+                  <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
+                </div>
+
+                
+                <div class = "col-md-1 btn-group btn-group-sm">
+                     <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
+                </div>
+
+              </div>
 
               <div class = "col-md-12">
                 <br><br>
@@ -441,15 +482,15 @@
           </form>
       </div>
 
-      <br><br>
+<!--       <br><br>
       <div class = "heading"></div>
-      <br><br>
+      <br><br> -->
 
 
 
 <!--======================== SEARCH BY TEST RESULTS ======================-->
         
-      <div class = "container">
+      <!-- <div class = "container">
 
         <form ng-submit="searchScanByTestResult(test)" ng-init="getTestTypes()" class = "form-horizontal">
 
@@ -466,10 +507,10 @@
               </select>
             </div>
 
-            <!--label class= "form-control-label col-md-2">Test Result:</label>
+            <label class= "form-control-label col-md-2">Test Result:</label>
             <div class = "col-md-3">
               <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
-            </div-->
+            </div>
 
             
             <div class = "col-md-1 btn-group btn-group-sm">
@@ -482,7 +523,7 @@
           <br>
           <p><button type="submit" class="btn btn-primary pull-right">Find</button></p>
         </form>
-      </div>
+      </div> -->
 
 
     </div>

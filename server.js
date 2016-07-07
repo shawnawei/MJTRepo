@@ -52,10 +52,8 @@ function verifyUser (username, password, done){
 
 passport.use(new LDAPStrategy({
 	server: {
-        url: 'ldap://localhost:389',
-        bindDn: 'cn=root',
-        bindCredentials: 'secret',
-        searchBase: 'ou=passport-ldapauth',
+        url: 'ldap://neuroimageweb.sickkids.ca:389',
+        searchBase: 'cn=accounts,dc=neuroimage,dc=sickkids,dc=ca',
         searchFilter: '(uid={{username}})'
       }
 }));
