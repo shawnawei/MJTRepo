@@ -1,5 +1,6 @@
 var myApp = angular.module('myApp', 
-	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv']);
+	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv', 'ngMessages',
+	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime']);
 
 myApp.config(function($stateProvider, $urlRouterProvider, 
 	$urlMatcherFactoryProvider, $locationProvider){

@@ -6,6 +6,8 @@ myApp.controller('authenController', [ '$scope', '$http', '$location','localStor
 
 	$scope.HomeLogin = function(User){
 
+		authenFact.setAccessToken(false);
+
 		$http.post('/raw/login', User)
 		.success(function(response){
 			authenFact.setAccessToken(response);
@@ -33,8 +35,8 @@ myApp.controller('homeController', [ '$state','$scope', '$http', '$location', 'l
 	function($state, $scope, $http, $location, localStorageService, authenFact){
 	console.log('homeController loaded');
 
-	console.log(authenFact);
-	console.log("hi " + authenFact.getAccessToken());
+	console.log(authenFact.getAccessToken());
+	
 
 	if (!authenFact.getAccessToken())
 	{
@@ -98,7 +100,7 @@ myApp.controller('homeController', [ '$state','$scope', '$http', '$location', 'l
 	}
 
 	$scope.logOut = function(){
-		console.log("bye " + authenFact.getAccessToken().username);
+		console.log("bye " + authenFact.getAccessToken().displayName);
 
 		if(authenFact.getAccessToken())
 		{

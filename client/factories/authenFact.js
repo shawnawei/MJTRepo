@@ -17,3 +17,17 @@ myApp.factory('authenFact', ['localStorageService', function(localStorageService
 
 	return authenFact;
 }])
+
+myApp.factory('oneTimeAuthen', [function(){
+	var oneTimeAuthen = {};
+
+	oneTimeAuthen.setAccessToken = function(accessToken){
+		oneTimeAuthen.authenToken = accessToken;
+	};
+
+	oneTimeAuthen.getAccessToken = function(){
+		return oneTimeAuthen.authenToken;
+	};
+
+	return oneTimeAuthen;
+}])

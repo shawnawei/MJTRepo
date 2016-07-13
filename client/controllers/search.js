@@ -30,7 +30,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 		$location.path('/searchResult-inProjectID').search('inProjectID',id);
 	}
 
-	
+	$scope.model1 = [];
 
 	$scope.searchSubjectByOther = function(searchObj){
 		var sex = searchObj.Sex;
@@ -56,7 +56,14 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 	$scope.getProjects = function(){
 		$http.get('/raw/projects').success(function(response){
-			$scope.projects = response;
+			var projectOpts = [];
+			for (var num in response)
+			{
+				console.log("hi" + num + response[num]);
+				projectOpts.push({id:num, label:response[num].ProjectID});
+			}
+			$scope.projects = projectOpts;
+
 		});
 	}
 
@@ -121,7 +128,8 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 			console.log(Sex, Diagnosis);
 
-			$http.get('/raw/subjectInfo/' + Sex +'/' + Handedness +'/' + Diagnosis +'/' + Projects)
+			$http.get('/raw/subjectInfo/' + Sex +'/' + Handedness +'/' + Diagnosis +'/'
+			+ 'All/All/All' + '/' + Projects)
 			.then(function(response){
 				var matchingSubject = response.data;
 				
@@ -133,7 +141,6 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 			})
 
 			.then(function(){
-				
 
 				var ageAtScanmin = searchObj.ParticipantAge.min;
 				var ageAtScanmax = searchObj.ParticipantAge.max;
@@ -231,6 +238,8 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 					projects = allProjects;
 				}
 
+				console.log(GID, PID);
+
 
 				$location.path('/searchResult-ScanInfo').search({'minAge': ageAtScanmin, 'maxAge':ageAtScanmax,
 				'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'testType':testTypes, 'Projects':projects, 
@@ -240,7 +249,6 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 		else {
 			
-
 			var ageAtScanmin = searchObj.ParticipantAge.min;
 			var ageAtScanmax = searchObj.ParticipantAge.max;
 			var allowed = searchObj.Allowed;
@@ -262,8 +270,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 						testTypes.push(searchTestType[t].Type);
 					}
 				}
-			
-			console.log(filterSubjects, testTypes);
+
 			
 			if (filterSubjects.length != 0)
 			{
@@ -328,6 +335,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 				projects = allProjects;
 			}
 
+			console.log(GID, PID);
 
 			$location.path('/searchResult-ScanInfo').search({'minAge': ageAtScanmin, 'maxAge':ageAtScanmax,
 			'Allowed': allowed, 'MEGType': MEGType, 'MRIType': MRIType, 'testType':testTypes, 'Projects':projects, 
@@ -335,7 +343,6 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 		}	
 		
 	}
-
 
 	
 	$scope.addSubject = function(){

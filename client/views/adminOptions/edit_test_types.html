@@ -23,13 +23,13 @@ td {
 
 </style>
 
-
-<div class="container" ng-init="getMEGTypes()">
+<div ng-init = "checkAuthen()">
+<div  class="container" ng-init="getMEGTypes()">
 
 <div class = "row">
 <h3><strong>MEG Scan Types</strong></h3>
 
-<button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
+<button  class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
 </div>
 <br><br>
 
@@ -542,8 +542,16 @@ td {
 
 </div>
 
+<!-- <br><br>
+
+<h4>Convert to JSON</h4>
+	<input type = "file" id = "rawFile" >
+	<br><br>
+	<button onclick = "exportToJson()">Export to JSON</button>
+ -->
 
 <br><br><br><br>
+</div>
 
 
 

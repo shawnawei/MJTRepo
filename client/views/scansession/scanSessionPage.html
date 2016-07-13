@@ -20,15 +20,16 @@ th {
 </style>
 
 <nav>
-  <a ng-init="getScanSession()" class="nav-link" href="/subjects/{{scanSession.SubjectID}}">Go Back</a>
+  <a ng-init="getScanSession(); getAuthenList(!forbidden)" class="nav-link" href="/projects/{{scanSession.relatedProject}}">To project page</a>
 </nav>
 
+<br>
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title"><strong>Subject ID: </strong>{{scanSession.SubjectIDinProject}}
       <div class = "pull-right">
 
-        <a class = "btn btn-sm" href = "/ScanInfo/{{scanSession['relatedProject']}}/{{scanSession['SubjectIDinProject']}}/add">New Session</a>
+        <a class = "btn btn-sm" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject)">New Session</a>
 
     </div>
     </h3>
@@ -47,11 +48,11 @@ th {
         <div class = "pull-right">
 
 
-         <a class = "btn" ng-click="exportData()"><span class = "glyphicon glyphicon-save"></span></a>|
+         <a class = "btn" ng-click="exportData()"><span class = "glyphicon glyphicon-save"></span></a>
 
-          <a class = "btn" href = "/ScanInfo/{{scanSession.relatedProject}}/{{scanSession.SubjectIDinProject}}/{{sessionID.SessionID}}/edit"><span class = "glyphicon glyphicon-pencil"></span></a>|
+          <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
 
-          <a class = "btn" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
+          <a class = "btn" ng-hide= "!editable" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
 
 
           <!-- Modal -->
@@ -63,7 +64,7 @@ th {
                 <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
               </div>
               <div class="modal-body">
-                    {{sessionID['SessionID']}} will be permenantly deleted, are you sure?
+                    Scan session {{sessionID['SessionID']}} and it's associated scans will be permenantly deleted, are you sure?
               </div>
               <div class="modal-footer">
                 <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>

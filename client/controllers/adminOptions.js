@@ -11,6 +11,16 @@ myApp.controller('adminController', ['$state', '$scope', '$http', '$location', '
 		$state.go('login');
 	}
 
+	
+	$scope.checkAuthen = function(){
+		if (authenFact.getAccessToken().uid != 'shawnawei')
+		{
+			$state.go('home');
+			alert("You are not authorized to edit this page" + " !");
+		}
+	}
+	
+
 	$scope.getTestTypes = function(){
 		$http.get('raw/testTypes').success(function(response){
 			$scope.testTypes = response;
@@ -111,6 +121,41 @@ myApp.controller('adminController', ['$state', '$scope', '$http', '$location', '
 			window.location.href= '/admin/edit_test_types';
 		});
 	}
+
+
+// //============================ for convert excel to json ====================
+
+// 	var oFileIn;
+// 	$(function() {
+// 	    oFileIn = document.getElementById('rawFile');
+// 	    if(oFileIn.addEventListener) {
+// 	        oFileIn.addEventListener('change', filePicked, false);
+// 	    }
+// 	});
+
+
+// 	function filePicked(oEvent) {
+// 	    // Get The File From The Input
+// 	    var oFile = oEvent.target.files[0];
+// 	    var sFilename = oFile.name;
+// 	    // Create A File Reader HTML5
+// 	    var reader = new FileReader();
+
+// 	    // Ready The Event For When A File Gets Selected
+// 	    reader.onload = function(e) {
+// 	        var data = e.target.result;
+// 	        console.log(data);
+	       
+// 	    };
+
+// 	    reader.readAsBinaryString(oFile); 
+// 	    if(data != undefined)
+// 	    {
+// 	    	 $http.post('/raw/exportToJson/', data).success(function(response){
+// 			});
+// 	    }
+	   
+// 	}
 
 }]);
 

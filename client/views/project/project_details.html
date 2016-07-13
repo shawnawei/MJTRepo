@@ -3,7 +3,8 @@
 </nav>
 
 <div class = "jumbotron jumbotron-fluiod">
-  <div class="panel panel-default" ng-init="getProject()">
+  <div class="panel panel-default" ng-init="getProject(); getAuthenList(oldProjectID)">
+  <div ng-init = oldProjectID></div>
 
     <div class="panel-heading">
       <h3 class="panel-title"><strong>Project Name: </strong>{{project.ProjectName}}</h3>
@@ -28,8 +29,9 @@
   </div>
 
     <div class = "pull-right">
-  <a ui-sref = "editProject({ProjectID: project.ProjectID})">Edit</a> | <a class = "btn" data-toggle="modal" data-target="#myDeleteModal"">Delete</a>
-  </div>
+      <a class = "btn btn-sm btn-danger" ng-click = " getAuthenEditList(project.ProjectID)" ng-hide = "!editable">Edit</a> 
+      <a class = "btn btn-sm btn-danger"  data-toggle="modal" ng-hide = "!editable" data-target="#myDeleteModal">Delete</a>
+    </div>
 
 
    <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -40,7 +42,8 @@
             <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
           </div>
           <div class="modal-body">
-                {{project.ProjectID}} will be permenantly deleted, are you sure?
+                <p><strong>{{project.ProjectID}}</strong> and it's associated scan sessions will all be permenantly deleted!</p>
+                <p>Are you sure?</p>
           </div>
           <div class="modal-footer">
             <a type = "button" class="btn btn-danger" data-dismiss="modal" ng-click = "removeProject(project.ProjectID)">Delete(!)</a>

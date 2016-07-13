@@ -16,7 +16,7 @@ var SessionIDSchema = new Schema({
 
 	"MEGScans": [{
 		"ScanName": String,
-		"ScanDate": Date,
+		"ScanDate": String,
 		"ScanPath": String,
 		"Allowed": Boolean,
 		"ScanType": {type: String, ref:'MEGScanTypes'},
@@ -26,7 +26,7 @@ var SessionIDSchema = new Schema({
 
 	"MRIScans": [{
 		"ScanName": String,
-		"ScanDate": Date,
+		"ScanDate": String,
 		"ScanPath": String,
 		"Allowed": Boolean,
 		"ScanType": {type: String, ref:'MRIScanTypes'},
@@ -38,7 +38,7 @@ var SessionIDSchema = new Schema({
 		"Type": {type:String, ref:'TestTypes'},
 		"Result": String,
 		"Comment": String,
-		"TestDate": Date,
+		"TestDate": String,
 		"Age": Number
 	}]
 
@@ -49,6 +49,10 @@ var ScanSessionsSchema = new Schema({
 	"SubjectID": {type: String, required: true, ref: 'Subject'},
 	"relatedProject": {type: String, ref:'Project'},
 	"SubjectIDinProject": {type: String, unique: true, required: true, ref:'Project'},
+	"AccessAuthen": [{
+		"uid":{type: String, required: true, ref:'AuthenList'},
+		"ViewOnly": {type: Boolean}
+	}],
 	"ScanSessions": [SessionIDSchema],
 });
 
@@ -65,12 +69,18 @@ module.exports.getScanSessions = function(){
 }
 
 //get one session by subject ID in project
-module.exports.getScanSessionBySubjectIDinProject = function(projectID, subjectID){
+module.exports.getScanSessionBySubjectIDinProject = function(projectID, subjectID, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
-	}).then(function () {
-		return ScanSession.findOneAsync({relatedProject: projectID, SubjectIDinProject: subjectID});
+	})
+	.then(function () {
+		var query = {
+			relatedProject: projectID, 
+			SubjectIDinProject: subjectID,
+			'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}
+		};
+		return ScanSession.findOneAsync(query);
 	});
 }
 
@@ -87,13 +97,17 @@ module.exports.getScanSessionBySubjectID = function(id){
 }
 
 //get one session by the session ID
-module.exports.getScanSessionBySessionID = function(projectID, subjectID, scanID){
+module.exports.getScanSessionBySessionID = function(projectID, subjectID, scanID, uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
 	})
 	.then(function () {
-		var query = {SubjectIDinProject: subjectID, relatedProject: projectID};
+		var query = {
+			SubjectIDinProject: subjectID, 
+			relatedProject: projectID,
+			'AccessAuthen.uid': {$in:[uid, 'AllUsers', 'AllUser']}
+		};
 		return ScanSession.findOneAsync(query, {ScanSessions: {$elemMatch:{SessionID: scanID}}});
 	});
 }
@@ -180,10 +194,11 @@ module.exports.updateScanSessionBasicInfo = function(projectID, subjectID, scanS
 		var update = {
 			SubjectID: scanSession.SubjectID,
 			relatedProject: scanSession.relatedProject,
-			SubjectIDinProject: scanSession.SubjectIDinProject
+			SubjectIDinProject: scanSession.SubjectIDinProject,
+			AccessAuthen: scanSession.AccessAuthen
 		};
-		var option = {runValidators: true, context: 'query'};
-		return ScanSession.findOneAndUpdateAsync(query, update, option);
+		var option = {runValidators: true, context: 'query', multi:true};
+		return ScanSession.updateAsync(query, update, option);
 	});
 	
 }
@@ -368,18 +383,23 @@ module.exports.deleteEntireScanSessionByinProjectID = function(subjectID){
 //============================ Search ===================================
 
 //get one session by subject's in project ID
-module.exports.getScanSessionByMatchingSubjectIDinProject = function(subjectID){
+module.exports.getScanSessionByMatchingSubjectIDinProject = function(subjectID, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
 	})
 	.then(function () {
-		return ScanSession.findAsync({SubjectIDinProject:{$regex:".*" + subjectID + ".*", $options:'i'}});
+		var query = {
+			SubjectIDinProject:{$regex:".*" + subjectID + ".*", $options:'i'},
+			"AccessAuthen.uid":{$in: [_uid, 'AllUser', 'AllUsers']}
+		};
+
+		return ScanSession.findAsync(query);
 	});
 }
 
 //get one session by subject's in project ID
-module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID){
+module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
@@ -396,7 +416,12 @@ module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID){
 		},
 		{$unwind: '$SubjectInfo'},
 		{$unwind: '$ScanSessions'},
-		{$match: {SubjectIDinProject: {$regex:".*" + subjectID + ".*", $options:'i'}}}
+		{$match: {
+			$and: [
+				{SubjectIDinProject: {$regex:".*" + subjectID + ".*", $options:'i'}},
+				{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}} 
+			]}
+		}
 		];
 		return ScanSession.aggregateAsync(query);
 	});
@@ -404,7 +429,7 @@ module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID){
 
 
 //get all session for one subject
-module.exports.searchScanSessionBySubjectID = function(id){
+module.exports.searchScanSessionBySubjectID = function(id, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
@@ -421,22 +446,25 @@ module.exports.searchScanSessionBySubjectID = function(id){
 			},
 			{$unwind: '$SubjectInfo'},
 			{$unwind: '$ScanSessions'},
-			{$match: {SubjectID: {$regex:".*" + id + ".*", $options:'i'}}}
+			{$match: {
+				$and: [
+					{SubjectID: {$regex:".*" + id + ".*", $options:'i'}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}} 
+				]}
+		}
 		];
 		return ScanSession.aggregateAsync(query);
 	});
 }
 
 //get scan sessions by sessionID
-module.exports.searchScanSessionBySessionID = function(sessionID){
+module.exports.searchScanSessionBySessionID = function(sessionID, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
 	})
 	.then(function () {
-		console.log("sessionID" + sessionID);
-
-		var query = queryScanSessionID(sessionID);
+		var query = queryScanSessionID(sessionID, _uid);
 
 		return ScanSession.aggregateAsync(query);
 	});
@@ -444,7 +472,7 @@ module.exports.searchScanSessionBySessionID = function(sessionID){
 
 
 //get all sessions for matching informations
-module.exports.searchScanSessionsByInfo = function(scanInfo){
+module.exports.searchScanSessionsByInfo = function(scanInfo, _uid){
 	return Promise.resolve().then(function (){
 		//check
 		return Promise.resolve();
@@ -452,7 +480,7 @@ module.exports.searchScanSessionsByInfo = function(scanInfo){
 	.then(function () {
 		console.log(scanInfo);
 
-		var query = queryScanInfo(scanInfo);
+		var query = queryScanInfo(scanInfo, _uid);
 		console.log(query);
 
 		return ScanSession.aggregateAsync(query);
@@ -469,7 +497,7 @@ function checkIfUniqueArray (array){
 }
 
 
-function queryScanSessionID (sessionID){
+function queryScanSessionID (sessionID, _uid){
 
 	
 	if (sessionID == 'All')
@@ -487,11 +515,12 @@ function queryScanSessionID (sessionID){
 	},
 	{$unwind: '$SubjectInfo'},
 	{$unwind: '$ScanSessions'},
-	{$match:
-		{'ScanSessions.SessionID':
-			{$regex:".*" + sessionID + ".*", $options:'i'}
+	{$match: {
+			$and: [
+				{'ScanSessions.SessionID': {$regex:".*" + sessionID + ".*", $options:'i'}},
+				{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}} 
+			]}
 		}
-	}
 	];
 
 	return query;
@@ -499,7 +528,7 @@ function queryScanSessionID (sessionID){
 
 
 
-function queryScanInfo (scanInfo){
+function queryScanInfo (scanInfo, _uid){
 
 	var ageRange = scanInfo.AgeRange;
 	var maxAge = +ageRange[1];
@@ -524,7 +553,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -610,7 +640,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -696,7 +727,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -810,7 +842,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -895,7 +928,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -980,7 +1014,8 @@ function queryScanInfo (scanInfo){
 			{$unwind:'$ScanSessions'},
 			{$match:
 				{$and: [
-					{'relatedProject':{$in: Projects}}
+					{'relatedProject':{$in: Projects}},
+					{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
 					]
 				}
 			},
@@ -1090,8 +1125,9 @@ function queryScanInfo (scanInfo){
 
 
 
-function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
+function calculate_age_at_scan_and_test(scanSession, subjectbirthday){
 	console.log("birthday" + subjectBirthday);
+	var subjectBirthday = moment(subjectbirthday);
 	var test = scanSession.TestResults;
 	var megScans = scanSession.MEGScans;
 	var mriScans = scanSession.MRIScans;
@@ -1104,10 +1140,18 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 		{
 			for (var num in test)
 			{
-				var testDate = moment(test[num].TestDate);
-				var age = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
+				//if test date is not provided, age set to -
+				if (test[num].TestDate == '' || test[num].TestDate == undefined)
+				{
+					var testage = null;
+				}
+				else
+				{
+					var testDate = moment(test[num].TestDate);
+					var testage = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
+				}
 
-				test[num].Age = age;
+				test[num].Age = testage;
 			}
 		}
 
@@ -1119,9 +1163,18 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 			{
 				if (megScans[num].ScanDate != null)
 				{
-					var testDate = moment(megScans[num].ScanDate);
-					var age = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
-					megScans[num].AgeAtScan = age;
+					
+					if (megScans[num].ScanDate == '' || megScans[num].ScanDate == undefined)
+					{
+						var megage = null;
+					}
+					else
+					{
+						var testDate = moment(megScans[num].ScanDate);
+						var megage = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
+					}
+					
+					megScans[num].AgeAtScan = megage;
 				}	
 			}
 		}
@@ -1131,10 +1184,17 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 		{
 			for (var num in mriScans)
 			{
-				var testDate = moment(mriScans[num].ScanDate);
-				var age = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
-
-				mriScans[num].AgeAtScan = age;
+				if (mriScans[num].ScanDate == '' || mriScans[num].ScanDate == undefined)
+				{
+					var mriage = null;
+				}
+				else
+				{
+					var testDate = moment(mriScans[num].ScanDate);
+					var mriage = testDate.diff(subjectBirthday, 'years', true).toFixed(2);
+				}
+				
+				mriScans[num].AgeAtScan = mriage;
 			}
 		}
 	}

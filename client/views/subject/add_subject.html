@@ -1,33 +1,6 @@
 <!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
 REDESIGN THE PAGE IF TIME PREMITS-->
-
-<style>
-h4
-{
-  text-decoration: underline;
-}
-
-div.heading
-{
-  background: #005  no-repeat scroll center;
-  margin-left: 0em;
-  margin-right: 15em;
-  width:60em;
-  height:.1em;
-}
-
-textarea
-{
-  height:7em;
-  word-wrap: break-word;
-}
-
-input[type = 'checkbox']
-{
-  width:15px;
-    height:15px;
-}
-</style>
+<link rel = "stylesheet" href = "./css/errorMessages.css">
 
 <nav>
   <a class="nav-link" ui-sref="subjects">Go Back</a>
@@ -40,7 +13,7 @@ input[type = 'checkbox']
     <div class = "heading"></heading></div>
     <br>
 
-    <form ng-submit="addSubject()" method = "post" class="form-horizontal">
+    <form ng-submit="addSubjectForm.$valid && addSubject()" method = "post" class="form-horizontal" name = "addSubjectForm" novalidate>
       <h5>* Required fields</h5>
 
       <br>
@@ -49,13 +22,19 @@ input[type = 'checkbox']
       <h4>Subject Information</h4><br>
         <div class="form-group row">
           <label class="form-control-label col-md-2">Subject ID* :</label>
-          <div class = "col-md-3">
-            <input required = "please enter subject ID" type="text" class="form-control" ng-model="subject.ID" placeholder=" ">
+          <div class = "col-md-3" ng-class = "{'has-error': addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$invalid, 'has-success':addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$valid}">
+            <input required type="text" class="form-control" data-ng-model="subject.ID" name = "subjectID">
+            <div class = "error msg_error" data-ng-messages = "addSubjectForm.subjectID.$error" data-ng-show = "addSubjectForm.subjectID.$touched">
+               <span ng-show = "addSubjectForm.subjectID.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please give this subject an unique ID!
+               </span>
+            </div> 
           </div>
 
           <label class="col-md-2 col-md-offset-1 form-control-label">Sex:</label>
            <div class = "col-md-3">
-          <select ng-model="subject.Sex" class="form-control">
+          <select ng-model="subject.Sex" class="form-control" ng-init = "subject.Sex = 'Unknown'">
             <option value=" "> </option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -67,25 +46,37 @@ input[type = 'checkbox']
         </div>
 
         <div class="form-group row">
+          <label class="form-control-label col-md-2">First Name :</label>
+            <div class = "col-md-3">
+              <input type="text" class="form-control" data-ng-model="subject.FirstName" name = "firstname">
+            </div>
+
+          <label class="col-md-2 col-md-offset-1 form-control-label">Last Name:</label>
+            <div class = "col-md-3">
+              <input type="text" class="form-control" data-ng-model="subject.LastName" name = "lastname">
+            </div>
+
+        </div>
+
+        <div class="form-group row">
           <label class="col-md-2 form-control-label">Handedness: </label>
            <div class = "col-md-3">
-          <select name= "Handedness" id = "Handedness" class="form-control" ng-model="subject.Handedness" placeholder=" ">
-
-            <option value = ""> </option>
+          <select name= "Handedness" id = "Handedness" class="form-control" ng-model="subject.Handedness" ng-init = "subject.Handedness = 'Unknown'">
             <option value = "Left">Left</option>
             <option value = "Right">Right</option>
-            <!--option value = "Ambidextrous">Ambidextrous</option-->
             <option value = "Unknown">Unknown</option>
           </select>
          </div>
 
          <label class="col-md-2 col-md-offset-1 form-control-label">Diagnosis: </label>
           <div class = "col-md-3">
-          <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="subject.Diagnosis" placeholder=" ">
+          <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="subject.Diagnosis" ng-init = "subject.Diagnosis = 'Unknown'">
               <option value = ""> </option>
               <option value = "ASD">ASD</option>
               <option value = "Pre-term">Pre-term</option>
               <option value = "Control">Control</option>
+              <option value = "TD">TD</option>
+              <option value = "BPD">BPD</option>
               <option value = "Other">Other</option>
               <option value = "Unknown">Unknown</option>
           </select>
@@ -96,8 +87,14 @@ input[type = 'checkbox']
 
         <div class="form-group row">
           <label class="col-md-2 form-control-label">MRN: </label>
-           <div class = "col-md-3">
-            <input type="number" class="form-control" ng-model="subject.MRN" placeholder=" ">
+           <div class = "col-md-3" ng-class = "{'has-error': addSubjectForm.subjectMRN.$touched && addSubjectForm.subjectMRN.$invalid, 'has-success':addSubjectForm.subjectMRN.$touched && addSubjectForm.subjectMRN.$valid}">
+            <input type="number" class="form-control" ng-model="subject.MRN" name = "subjectMRN">
+            <div class = "error msg_error" data-ng-messages = "addSubjectForm.subjectMRN.$error" data-ng-show = "addSubjectForm.subjectMRN.$touched">
+               <span ng-show = "addSubjectForm.subjectMRN.$invalid">
+                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Subject's MRN is required and must be a number!
+               </span>
+            </div>
          </div>
 
          <label class="col-md-3 col-md-offset-1 form-control-label">Permission to Contact: </label>
@@ -114,20 +111,33 @@ input[type = 'checkbox']
 
         <div class="form-group row">
           <label class="form-control-label col-md-2">Date of Birth :</label>
-          <div class = "col-md-3">
-            <input type="date" class="form-control" ng-model="subject.DateOfBirth" placeholder=" ">
+          <div class = "col-md-3" ng-class = "{'has-error': addSubjectForm.subjectbday.$touched && addSubjectForm.subjectbday.$invalid, 'has-success':addSubjectForm.subjectbday.$touched && addSubjectForm.subjectbday.$valid}">
+          <datepicker date-format="yyyy-MM-dd">
+            <input type="text" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" class="form-control" ng-model="subject.DateOfBirth" name = "subjectbday"></datepicker>
+            <div class = "error msg_error" data-ng-messages = "addSubjectForm.subjectbday.$error" >
+               <span ng-show = "addSubjectForm.subjectbday.$invalid">
+                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+               </span>
+            </div> 
           </div>
 
-          <label class="form-control-label col-md-offset-1 col-md-2">Other :</label>
+          <label class="form-control-label col-md-offset-1 col-md-2">Contact Info:</label>
           <div class = "col-md-4">
-            <textarea class="form-control" ng-model="subject.Other" placeholder=" "></textarea>
+            <input class="form-control" ng-model="subject.ContactInfo" placeholder=" ">
           </div>
 
         </div>
 
 
-
-
+        <div class="form-group row">
+          <label class="form-control-label col-md-2">Other:</label>
+          <div class = "col-md-10">
+            <textarea class="form-control" ng-model="subject.Other" placeholder=" "></textarea>
+          </div>
+        </div>
+        
+        <br>
 
 
       </container>
@@ -147,11 +157,26 @@ input[type = 'checkbox']
         </div>
 
           <div class="form-group row" ng-repeat = 'project in subject.Projects'>
-          <div class="col-md-3">
-              <input type="text" class="form-control" name="project.ProjectID" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/>
+          <div class="col-md-3" ng-class = "{'has-error': addSubjectForm.projectID{{$index}}.$touched && addSubjectForm.projectID{{$index}}.$invalid, 'has-success':addSubjectForm.projectID{{$index}}.$touched&& addSubjectForm.projectID{{$index}}.$valid}">
+              <input required type="text" class="form-control" name="projectID{{$index}}" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/>
+              <div class = "error msg_error" data-ng-show = "addSubjectForm.projectID{{$index}}.$touched">
+               <span ng-show = "addSubjectForm.projectID{{$index}}.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Project ID is required!
+               </span>
+            </div> 
           </div>
-          <div class="col-md-4">
-              <input type="text" class="form-control" name="project[0].subjectID" ng-model = "project.SubjectIDinProject" placeholder="Subject ID in Project" />
+
+
+
+          <div class="col-md-4" ng-class = "{'has-error': addSubjectForm.subjectIDinProject{{$index}}.$touched && addSubjectForm.subjectIDinProject{{$index}}.$invalid, 'has-success':addSubjectForm.subjectIDinProject{{$index}}.$touched && addSubjectForm.subjectIDinProject{{$index}}.$valid}">
+              <input required type="text" class="form-control" name="subjectIDinProject{{$index}}" ng-model = "project.SubjectIDinProject" placeholder="Subject ID in Project" />
+              <div class = "error msg_error" data-ng-show = "addSubjectForm.subjectIDinProject{{$index}}.$touched">
+               <span ng-show = "addSubjectForm.subjectIDinProject{{$index}}.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Subject's ID in this project is required!
+               </span>
+            </div>
           </div>
 
             <div class = "col-md-1 btn-group btn-group-sm">
@@ -180,8 +205,75 @@ input[type = 'checkbox']
       </container>
 
 
+
+<!--=============================for projects enrolled =====================-->
+       
+    
+        
+    <br>
+      <container>
+        <h4>Accessibility</h4>
+        <br>
+        <div class="form-group row">
+
+          <label class="col-md-2 form-control-label">User(s): </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addUser()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+           <div class="form-group row" ng-repeat = 'user in subject.AccessAuthen.slice(1,entries.length)'>
+              <div class = "col-md-4" ng-class = "{'has-error': addSubjectForm.User{{$index}}.$touched && addSubjectForm.User{{$index}}.$invalid, 'has-success':addSubjectForm.User{{$index}}.$touched&& addSubjectForm.User{{$index}}.$valid}">
+                <input required type = "text" class="form-control" name="User{{$index}}" ng-model = "user.uid" placeholder="User uid">
+                <div class = "error msg_error" data-ng-show = "addSubjectForm.User{{$index}}.$touched">
+                 <span ng-show = "addSubjectForm.User{{$index}}.$invalid">
+                   <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                    User's uid is required!
+                 </span>
+                 </div>
+              </div>
+
+              <div class = "col-md-offset-1" ng-class = "{'has-error': addSubjectForm.userViewOnly{{$index}}.$touched && addSubjectForm.userViewOnly{{$index}}.$invalid, 'has-success':addSubjectForm.userViewOnly{{$index}}.$touched&& addSubjectForm.userViewOnly{{$index}}.$valid}">
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-2 col-offset-1">View Only 
+                       <input type="checkbox" name="userViewOnly{{$index}}" ng-model = "user.ViewOnly" ng-true-value = "true">
+                    </div>
+                  <div class = "error msg_error" data-ng-show = "addSubjectForm.userViewOnly{{$index}}.$touched">
+                    <span ng-show = "addSubjectForm.userViewOnly{{$index}}.length == 0">
+                      <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please indicate this user's accesibility level!
+                    </span>
+                 </div>
+              </div>
+              <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click= "removeUser($index+1)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+            </div>
+      </container>
+
         <p class = "container"><div class="form-group pull-right"><div class="col-xs-2">
-            <button type="submit" class="btn btn-primary">Add Subject</button>
+            <button type="button" ng-disabled = "addSubjectForm.$invalid" class="btn btn-primary" data-toggle="modal" data-target="#addsubject">Add Subject</button>
+
+
+        <div class="modal fade" id="addsubject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">ARE YOU SURE?</h4>
+                </div>
+                <div class="modal-body">
+                      <p>New subject <strong>{{subject.ID}}</strong> will be added to subjects list !</p>
+
+                      <p>Invalid/incorrect entries may cause unwanted errors, please double check before submitting!</p>
+                </div>
+                <div class="modal-footer">
+                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "addSubject()">I am sure (!)</a>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
         </div></div></p>
 
       </form>

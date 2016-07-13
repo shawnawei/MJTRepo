@@ -6,7 +6,7 @@ Promise.promisifyAll(mongoose);
 var Schema = mongoose.Schema;
 var enumSex = ['Female','Male', 'Unknown', 'Other'];
 var enumHandedness = ['Left', 'Right','Other','Unknown'];
-var enumDiagnosis = ['Control','Pre-term','Autism','ASD', 'BPD', 'Other', 'Unknown'];
+var enumDiagnosis = ['Control','Pre-term','Autism','ASD', 'BPD', 'Other','TD','Unknown'];
 var uniqueValidator = require('mongoose-unique-validator');
 
 var scanSessions = require('./scanSessions');
@@ -48,13 +48,20 @@ var projectPerSubjectSchema = new Schema({
 var subjectSchema = new Schema({
 
 	ID: {type: String, required: true, unique: true},
+	FirstName: String,
+	LastName: String,
 	Sex: {type: String, enum: enumSex},
 	Handedness: {type: String, enum: enumHandedness},
 	Diagnosis: {type:String, enum:enumDiagnosis},
-	DateOfBirth: {type:Date},
+	DateOfBirth: {type:String},
 	Other: String,
 	ContactPermit: String,
-	MRN: Number,
+	ContactInfo: String,
+	MRN: {type: Number, unique: true},
+	AccessAuthen:[{
+		uid: {type: String, required: true, ref: "AuthenList"}
+		ViewOnly: {type:Boolean}
+	}],
 	Projects:[projectPerSubjectSchema]
 });
 
@@ -217,12 +224,6 @@ module.exports.updateSubject = function(id, subject, value){
 				console.log("Invalid 'Diagnosis' type, please choose subject's diagnosis from the drop-down list.");
 			}
 
-			if ((error.errors['DateOfBirth'] != undefined) && 
-				((error.errors['Diagnosis'].kind) =="Date"))
-			{
-				console.log("Invalid 'DateOfBirth' type, it must be a date!");
-			}
-
 			return Promise.reject();
 		}
 
@@ -265,10 +266,13 @@ module.exports.updateSubject = function(id, subject, value){
 		var update = {
 			ID: subject.ID,
 			Sex: subject.Sex,
+			FirstName: subject.FirstName,
+			LastName: subject.LastName,
 			Handedness: subject.Handedness,
 			Diagnosis: subject.Diagnosis,
 			DateOfBirth: subject.DateOfBirth,
 			ContactPermit: subject.ContactPermit,
+			ContactInfo: subject.ContactInfo,
 			MRN: subject.MRN,
 			Other: subject.Other,
 			Projects: subject.Projects
@@ -344,12 +348,15 @@ module.exports.deleteProject = function (projectID, subjectsID){
 //use when a project is created, check if any of the added subjects exists
 //if subject exist, add the project to the projectes enrolled list under that subject
 //if subject does not exist, create a new subject and include the project in that subject
-module.exports.updateOrAddSubject = function(projectID, subjectsID){
+module.exports.updateOrAddSubject = function(project, subjectsID){
 	
+	var projectID = project.ProjectID;
+
 	return Promise.resolve()
 	.then(function(){
 		//check if subject does not exist
 		//console.log(subjectsID);
+
 		var globalIDs = subjectsID.GlobalID;
 		var inProjectIDs = subjectsID.inProjectIDs;
 		console.log("i came here");
@@ -388,6 +395,7 @@ module.exports.updateOrAddSubject = function(projectID, subjectsID){
 								"SubjectID": curGID,
 								"SubjectIDinProject": curPID,
 								"relatedProject": projectID,
+								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions":[{SessionID:curPID + '_A', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
 							return scanSessions.addScanSession(newsession);
@@ -407,6 +415,7 @@ module.exports.updateOrAddSubject = function(projectID, subjectsID){
 								"SubjectID": curGID,
 								"SubjectIDinProject": curPID,
 								"relatedProject": projectID,
+								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions":[{SessionID:curPID+'_A', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
 							return scanSessions.addScanSession(newsession);
@@ -442,7 +451,9 @@ module.exports.updateOrAddSubject = function(projectID, subjectsID){
 }
 
 //use when updating a project, check the subjects list and update accordingly
-module.exports.updateSubjectFromProject = function(projectID, oldSubjects, newSubjects){
+module.exports.updateSubjectFromProject = function(project, projectID, oldSubjects, newSubjects){
+	
+
 	return Promise.resolve().then(function(){
 		var subjectIDs = formUpdatedSubjectArray(oldSubjects, newSubjects);
 		console.log(subjectIDs);
@@ -471,6 +482,7 @@ module.exports.updateSubjectFromProject = function(projectID, oldSubjects, newSu
 								var newSessionInfo = {
 									SubjectID:subjectGID,
 									relatedProject: projectID,
+									AccessAuthen:project.AccessAuthen,
 									SubjectIDinProject: cur_subject.newsubjectID
 								};
 
@@ -500,6 +512,7 @@ module.exports.updateSubjectFromProject = function(projectID, oldSubjects, newSu
 									"SubjectID": subjectGID,
 									"relatedProject":projectID,
 									"SubjectIDinProject": cur_subject.newsubjectID,
+									"AccessAuthen": project.AccessAuthen,
 									"ScanSessions": [{
 										'SessionID':cur_subject.newsubjectID + "_A", 
 										'MEGScans':[],
@@ -554,6 +567,7 @@ module.exports.updateSubjectFromProject = function(projectID, oldSubjects, newSu
 								"SubjectID": cur_subject.globalID,
 								"relatedProject":projectID,
 								"SubjectIDinProject": cur_subject.newsubjectID,
+								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions": [{
 									'SessionID':cur_subject.newsubjectID + "_A", 
 									'MEGScans':[],
@@ -630,21 +644,17 @@ module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, proj
 	})
 	.then(function(oldProjectInfo){
 		console.log(oldProjectInfo);
-		var newScanSession = scanSession.SessionID;
 
-			var bday = moment(oldProjectInfo.DateOfBirth);
-			var birthday = bday.format();
-			var neededInfo = {bday: birthday};
-			return Promise.resolve(neededInfo);
-		
+		var bday = moment(oldProjectInfo.DateOfBirth);
+		return Promise.resolve(bday);
 
 	})	
-	.then (function(neededInfo){
-		console.log(neededInfo.bday);
+	.then (function(bday){
+		console.log(bday);
 
 		
 		//assign age at each scan and test
-		calculate_age_at_scan_and_test(scanSession, neededInfo.bday);
+		calculate_age_at_scan_and_test(scanSession, bday);
 		return Promise.resolve();
 
 		// //update the subject : only the scanIDs
@@ -654,6 +664,8 @@ module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, proj
 		// return Subject.updateAsync(query, update, option);
 	})
 	.then(function(){
+
+		console.log(scanSession);
 		var theScanSession = require('./scanSessions');
 		var query = {SubjectIDinProject:inProjectID, 'ScanSessions.SessionID':sessionID};
 		var update = {$set: {'ScanSessions.$': scanSession}};
@@ -701,7 +713,7 @@ module.exports.getSubjectsByInfo = function(sex, handedness, diagnosis, contact,
 	});
 }
 
-module.exports.getSubjectsOfMatchingID = function(userInput){
+module.exports.getSubjectsOfMatchingID = function(userInput, uid){
 	return Promise.resolve()
 	.then (function (){
 		//check data
@@ -840,11 +852,12 @@ function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn, projec
 	return query;
 }
 
-function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
-	console.log("birthday" + subjectBirthday);
+function calculate_age_at_scan_and_test(scanSession, subjectbirthday){
+	console.log("birthday" + subjectbirthday);
 	var test = scanSession.TestResults;
 	var megScans = scanSession.MEGScans;
 	var mriScans = scanSession.MRIScans;
+	var subjectBirthday = moment(subjectbirthday);
 
 	if (subjectBirthday != undefined)
 	{
@@ -857,7 +870,7 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 				//if test date is not provided, age set to -
 				if (test[num].TestDate == '' || test[num].TestDate == undefined)
 				{
-					var testage = '-';
+					var testage = null;
 				}
 				else
 				{
@@ -880,7 +893,7 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 					
 					if (megScans[num].ScanDate == '' || megScans[num].ScanDate == undefined)
 					{
-						var megage = '-';
+						var megage = null;
 					}
 					else
 					{
@@ -900,7 +913,7 @@ function calculate_age_at_scan_and_test(scanSession, subjectBirthday){
 			{
 				if (mriScans[num].ScanDate == '' || mriScans[num].ScanDate == undefined)
 				{
-					var mriage = '-';
+					var mriage = null;
 				}
 				else
 				{

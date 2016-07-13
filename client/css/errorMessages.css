@@ -1,0 +1,42 @@
+h4
+{
+  text-decoration: underline;
+}
+
+div.heading
+{
+  background: #005  no-repeat scroll center;
+  margin-left: 0em;
+  margin-right: 15em;
+  width:60em;
+  height:.1em;
+}
+
+textarea
+{
+  height:7em;
+  word-wrap: break-word;
+}
+
+input[type = 'checkbox']
+{
+  width:15px;
+    height:15px;
+}
+
+.msg_error span{
+    color: #D8000C;
+    margin:3px 0px;
+    font-size:1em;
+    vertical-align:middle;
+    border-radius:.2em;
+    padding:5px;
+}
+
+input.ng-touched.ng-invalid {
+	border: 1px solid red;
+}
+
+select.ng-touched.ng-invalid {
+  border: 1px solid red;
+}

@@ -16,6 +16,7 @@ var Projects = subject.Projects;
 var testTypes = require('../models/testTypes');
 var MEGTypes = require('../models/MEGTypes');
 var MRITypes = require('../models/MRITypes');
+var AuthenList = require('../models/authenList');
 
 
 //this is to ensure users cannot directly enter following urls
@@ -23,6 +24,7 @@ function ensureAuthenticated(req, res, next){
 
 	if (req.isAuthenticated())
 	{
+		//console.log(req.user.uid);
 		next();
 	}
 	else
@@ -62,7 +64,9 @@ router.get('/raw/subjects', ensureAuthenticated, function(req, res) {
 //get projects list page
 router.get('/raw/projects', ensureAuthenticated, function(req, res) {
 	
-	project.getProjects().then(function(projects){
+	var uid = req.user.uid;
+	project.getProjects(uid)
+	.then(function(projects){
 		res.json(projects);
 	});
 });
@@ -87,10 +91,12 @@ router.get('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 
 });
 
+
 //get individual project detail page by projectID
 router.get('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 
-	project.getProjectById(req.params.ProjectID)
+	var uid = req.user.uid;
+	project.getProjectById(req.params.ProjectID, uid)
 	.then(function (project){
 		res.json(project);
 	});
@@ -104,7 +110,8 @@ router.get('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticate
 
 	var projectID = req.params.ProjectID;
 	var subjectID = req.params.SubjectIDinProject;
-	scanSession.getScanSessionBySubjectIDinProject(projectID, subjectID)
+	var uid = req.user.uid;
+	scanSession.getScanSessionBySubjectIDinProject(projectID, subjectID, uid)
 	.then(function(scanSession) {
 		res.json(scanSession);
 	});
@@ -117,7 +124,8 @@ router.get('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 	var projectID = req.params.ProjectID;
 	var subjectID = req.params.SubjectIDinProject;
 	var sessionID = req.params.SessionID;
-	scanSession.getScanSessionBySessionID(projectID, subjectID, sessionID)
+	var uid = req.user.uid;
+	scanSession.getScanSessionBySessionID(projectID, subjectID, sessionID, uid)
 	.then(function(scanSession) {
 		res.json(scanSession);
 	})
@@ -158,7 +166,7 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 			}
 			
 		}
-		res.redirect('raw/subjects');
+		res.sendStatus(500);
 		var err = new Error("cannot add subject");
 		return Promise.reject(err);
 	})
@@ -184,7 +192,7 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 		{
 			subject.deleteSubjectOnly(_subject.ID)
 			.then(function(){
-				res.redirect('raw/subjects');
+				res.sendStatus(500);
 				console.log("deleted subject");
 			})
 			.catch(function(err){
@@ -218,8 +226,8 @@ router.post('/raw/projects', ensureAuthenticated, function(req, res) {
 			}
 		}
 		
-		//res.sendStatus(404);
-		res.redirect('raw/projects');
+		res.sendStatus(404);
+		//res.redirect('raw/projects');
 	})
 
 	.then(function (project){
@@ -301,6 +309,8 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 
 //edit a subject
 router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
+
+	var uid = req.user.uid;
 	var id = req.params.ID;
 	var _subject = req.body;
 	var SubjectProjects = _subject.Projects;
@@ -388,11 +398,28 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 	var id = req.params.ProjectID;
 	var _project = req.body;
 	var newSubjectsInProject = _project.SubjectsID;
+	var _uid = req.user.uid;
 
-	project.findOneAsync({ProjectID:id})
+	var testUID = {uid:_uid, ViewOnly:false};
+	var allUser = {uid: 'AllUsers', ViewOnly: false};
+
+	var query = {
+		ProjectID:id,
+		'AccessAuthen': {$elemMatch: {$or:[testUID, allUser]}}
+	};
+
+	project.findOneAsync(query)
 	.then(function(theProject){
-		var oldSubjectsinProject = theProject.SubjectsID;
-		return project.updateProject(id, _project, {});
+		if (theProject == null)
+		{
+			return Promise.resolve("empty");
+		}
+		else
+		{
+			var oldSubjectsinProject = theProject.SubjectsID;
+			return project.updateProject(id, _project);
+		}
+		
 	})
 	.catch(function(err){
 		console.log(err);
@@ -414,19 +441,35 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		return Promise.reject();
 	})
 	.then(function(project){
-		var subjectIDs = [];
-		var inProjectIDs = [];
-		var oldSubjectsinProject = project.SubjectsID;
-		for (var num in newSubjectsInProject)
+		if (project == "empty")
 		{
-			subjectIDs.push(newSubjectsInProject.GlobalID);
-			inProjectIDs.push(newSubjectsInProject.inProjectID);
+			return Promise.reject("empty");
 		}
-		return subject.updateSubjectFromProject(id, oldSubjectsinProject, newSubjectsInProject);
+		else
+		{
+			var subjectIDs = [];
+			var inProjectIDs = [];
+			var oldSubjectsinProject = project.SubjectsID;
+			for (var num in newSubjectsInProject)
+			{
+				subjectIDs.push(newSubjectsInProject.GlobalID);
+				inProjectIDs.push(newSubjectsInProject.inProjectID);
+			}
+			return subject.updateSubjectFromProject(project, id, oldSubjectsinProject, newSubjectsInProject);
+		}
+		
 	})
 	.catch(function(err){
-		console.log("error updating subjects" + err);
-		res.redirect('/projects');
+		if (err == "empty")
+		{
+			res.sendStatus(403);
+		}
+		else
+		{
+			console.log("error updating subjects" + err);
+			res.redirect('/projects');
+		}
+		
 	})
 	.then(function (project) {
 		res.json(project);
@@ -439,15 +482,29 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 	var subjectID = req.params.SubjectIDinProject;
 	var sessionID = req.params.SessionID;
 	var scan_session = req.body;
+	var _uid = req.user.uid;
 
-	scanSession.findOneAsync({SubjectIDinProject: subjectID})
-	.catch(function(err){
-		console.log("error with finding the subject + " + err);
-		return Promise.reject(err);
-	})
+	var testUID = {uid:_uid, ViewOnly:false};
+	var allUser = {uid: 'AllUsers', ViewOnly: false};
+
+	var query = {
+		SubjectIDinProject:subjectID,
+		'AccessAuthen': {$elemMatch: {$or:[testUID, allUser]}}
+	};
+
+	scanSession.findOneAsync(query)
 	.then(function(OldScanSession){
-		console.log(scan_session);
-		return scanSession.updateSingleScanSession(OldScanSession, subjectID, sessionID, scan_session);
+		console.log(OldScanSession);
+		if (OldScanSession == null)
+		{
+			return Promise.resolve("empty");
+		}
+		else
+		{
+			console.log(scan_session);
+			return scanSession.updateSingleScanSession(OldScanSession, subjectID, sessionID, scan_session);
+		}
+		
 	})
 	
 	.catch(function(err){
@@ -466,7 +523,14 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 	})
 	.then(function(scanSession){
 		//check scan data
-		res.json(scanSession);
+		if (scanSession == "empty")
+		{
+			res.sendStatus(403);
+		}
+		else{
+			res.json(scanSession);
+		}
+		
 	});
 });
 	
@@ -489,12 +553,41 @@ router.delete('/raw/subjects/:ID', function(req, res) {
 router.delete('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 	var id = req.params.ProjectID;
 	var _project = req.body;
-	project.deleteProject(id)
+
+	var _uid = req.user.uid;
+	var testUID = {uid:_uid, ViewOnly:false};
+	var allUser = {uid: 'AllUsers', ViewOnly: false};
+
+	var query = {
+		ProjectID:id,
+		'AccessAuthen': {$elemMatch: {$or:[testUID, allUser]}}
+	};
+
+	project.findOneAsync(query)
+	.then(function(project){
+		if (project == undefined || project == []){
+			return Promise.reject("not authorized");
+		}
+		else{
+			return Promise.resolve();
+		}
+	})
+	.then(function(){
+		return project.deleteProject(id);
+	})	
 	.then(function (project){
 		res.json(project);	
 	}).catch(function(err){
-		res.sendStatus(500);
-		console.log(err);
+		if (err == "not authorized")
+		{
+			res.sendStatus(403);
+		}
+		else
+		{
+			res.sendStatus(500);
+			console.log(err);
+		}
+		
 	});
 });
 
@@ -541,8 +634,9 @@ router.delete('/raw/scansession/:ProjectID/:SubjectIDinProject', ensureAuthentic
 
 
 //get individual subject detail page by matching subjectID
+//search subject by global ID feature
 router.get('/raw/searchsubjects/:ID', ensureAuthenticated, function(req, res) {
-	subject.getSubjectsOfMatchingID(req.params.ID)
+	subject.getSubjectsOfMatchingID(req.params.ID, req.user.uid)
 	.then(function(subjects){
 		res.json(subjects);
 	});
@@ -550,9 +644,11 @@ router.get('/raw/searchsubjects/:ID', ensureAuthenticated, function(req, res) {
 });
 
 //get individual subject detail page by inProjectID
+//search subject by in project ID feature
 router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(req, res) {
 	var inProjectID = req.params.inProjectID;
-	scanSession.getScanSessionByMatchingSubjectIDinProject(inProjectID)
+	var uid = req.user.uid;
+	scanSession.getScanSessionByMatchingSubjectIDinProject(inProjectID, uid)
 	.catch(function(err){
 		return Promise.reject(err);
 	})
@@ -623,7 +719,8 @@ router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Pro
 router.get('/raw/FindScanSessionsPID/:SubjectIDinProject', ensureAuthenticated, function(req, res) {
 
 	var subjectID = req.params.SubjectIDinProject;
-	scanSession.getScanSessionBySubjectIDinProjectOnly(subjectID)
+	var uid = req.user.uid;
+	scanSession.getScanSessionBySubjectIDinProjectOnly(subjectID, uid)
 	.then(function(scanSession) {
 		res.json(scanSession);
 	});
@@ -633,7 +730,8 @@ router.get('/raw/FindScanSessionsPID/:SubjectIDinProject', ensureAuthenticated, 
 router.get('/raw/FindScanSessionsGID/:SubjectID', ensureAuthenticated, function(req, res) {
 
 	var subjectID = req.params.SubjectID;
-	scanSession.searchScanSessionBySubjectID(subjectID)
+	var uid = req.user.uid;
+	scanSession.searchScanSessionBySubjectID(subjectID, uid)
 	.then(function(scanSessions) {
 		res.json(scanSessions);
 	});
@@ -643,9 +741,10 @@ router.get('/raw/FindScanSessionsGID/:SubjectID', ensureAuthenticated, function(
 router.get('/raw/FindScanSessionsSessionID/:SessionID', ensureAuthenticated, function(req, res) {
 
 	var SessionID = req.params.SessionID;
+	var uid = req.user.uid;
 
 	console.log(Projects);
-	scanSession.searchScanSessionBySessionID(SessionID)
+	scanSession.searchScanSessionBySessionID(SessionID, uid)
 	.then(function(scanSessions) {
 		if(scanSessions == '')
 		{
@@ -677,6 +776,7 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/
 	var Projects = req.params.Projects.split(',');
 	var SubjectGID = req.params.SubjectGID.split(',');
 	var SubjectPID = req.params.SubjectPID.split(',');
+	var uid = req.user.uid;
 
 	var scanInfoObj = {
 		AgeRange: AgeRange,
@@ -689,9 +789,8 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/
 		SubjectPID:SubjectPID
 	};
 
-	//console.log(scanInfoObj);
 
-	scanSession.searchScanSessionsByInfo(scanInfoObj)
+	scanSession.searchScanSessionsByInfo(scanInfoObj, uid)
 	.then(function(scanSessions) {
 		if(scanSessions == '')
 		{
@@ -964,6 +1063,76 @@ router.delete('/raw/MEGTypes/:Type', ensureAuthenticated, function(req, res) {
 		console.log(err);
 	})
 });
+
+
+//=============================== USER CONTROL ===============================
+
+
+//get all recorded users
+router.get('/raw/Users', ensureAuthenticated, function(req, res) {
+
+	AuthenList.getAllUsers()
+	.then(function(Users) {
+		res.json(Users);
+	});
+});
+
+
+//get single user 
+router.get('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
+	var type = req.params.Type;
+	AuthenList.getUser()
+	.then(function(User) {
+		res.json(User);
+	});
+});
+
+
+//edit a user's accessibility
+router.put('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
+	var newUser = req.body;
+	var uid = req.params.uid;
+
+	AuthenList.editUser(uid, newUser)
+	.then(function(user) {
+		res.json(user);
+	})
+	.catch(function(err){
+		console.log(err);
+	});
+});
+
+
+//add a meg type
+router.post('/raw/Users', ensureAuthenticated, function(req, res) {
+	var newUser = req.body;
+	AuthenList.addUser(newUser)
+	.then(function(user) {
+		res.json(user);
+	})
+	.catch(function(err){
+		console.log(err);
+	});
+});
+
+//remove a meg type
+router.delete('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
+	var uid = req.params.uid;
+	AuthenList.deleteUser(uid)
+	.then(function(){
+		res.redirect('raw/Users');
+	})
+	.catch(function(err){
+		console.log(err);
+	})
+});
+
+
+
+// router.post('/raw/exportToJson', ensureAuthenticated, function(req, res) {
+// 	console.log("hi");
+// 	console.log(req.body);
+// });
 
 
 module.exports = router;

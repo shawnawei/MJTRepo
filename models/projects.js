@@ -18,6 +18,10 @@ var projectSchema = new Schema({
 
 	"ProjectID": {type: String, required:true, unique: true},
 	"ProjectName": {type: String, required:true, unique: true},
+	"AccessAuthen": [{
+		"uid": {type: String, required: true, ref: 'AuthenList'},
+		"ViewOnly": {type: Boolean}
+	}],
 	//"SubjectsID":String
 	"SubjectsID":[SubjectsIDSchema]
 });
@@ -27,17 +31,24 @@ projectSchema.plugin(uniqueValidator);
 var Project = module.exports = mongoose.model('Project', projectSchema, 'projectsList');
 
 //get all projects
-module.exports.getProjects = function(){
+module.exports.getProjects = function(_uid){
 	return Promise.resolve().then (function() {
-		return Project.findAsync();
+		var query = {
+			//'AccessAuthen.uid':_uid
+		}
+		return Project.findAsync(query);
 	});
 	//Project.find(callback).limit(limit);
 }
 
 //get one project
-module.exports.getProjectById = function(id){
+module.exports.getProjectById = function(id, _uid){
 	return Promise.resolve().then (function() {
-		return Project.findOneAsync({ProjectID:id});
+		var query = {
+			ProjectID:id,
+			'AccessAuthen.uid':{$in: [_uid, 'AllUsers', 'AllUser']}
+		}
+		return Project.findOneAsync(query);
 	});
 	//Project.find(callback).select({"Project Name": name});
 }
@@ -114,7 +125,7 @@ module.exports.addProject = function(project){
 	.then(function(testSubjects){
 		console.log("add a new subject or add a project to existing subjects");
 		var theSubject = require('./subjects');
-		return theSubject.updateOrAddSubject(project.ProjectID, testSubjects);
+		return theSubject.updateOrAddSubject(project, testSubjects);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -127,7 +138,7 @@ module.exports.addProject = function(project){
 }
 
 //update a project
-module.exports.updateProject = function(id, project, options){
+module.exports.updateProject = function(id, project){
 	return Promise.resolve().then(function () {
 		// check your data
 		var testProject = new Project(project);
@@ -186,6 +197,7 @@ module.exports.updateProject = function(id, project, options){
 		var update = {
 			"ProjectID": project.ProjectID,
 			"ProjectName": project.ProjectName,
+			"AccessAuthen": project.AccessAuthen,
 			"SubjectsID": project.SubjectsID
 		};
 		var option = {runValidators: true, context: 'query'};
@@ -370,6 +382,7 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 								var newSession = {
 									SubjectID: replace.GlobalID,
 									relatedProject: ID,
+									AccessAuthen:project.AccessAuthen,
 									SubjectIDinProject: replace.inProjectID
 								};
 								
@@ -404,6 +417,7 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 									SubjectID:globalID, 
 									SubjectIDinProject:replace.inProjectID, 
 									relatedProject: ID,
+									AccessAuthen:project.AccessAuthen,
 									ScanSessions:[{SessionID:replace.inProjectID +'_A', MEGScans:[], MRIScans:[], TestResults:[]}]
 								};
 								console.log("new ob" + newScanObject.ScanSessions + " " + newScanObject.SubjectIDinProject);

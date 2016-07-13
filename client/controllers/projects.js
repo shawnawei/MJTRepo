@@ -5,10 +5,19 @@ myApp.controller('projectsController', ['$state', '$scope', '$http', '$location'
 	console.log('projectController loaded');
 
 	console.log("logged in: "+ authenFact.getAccessToken());
+	$scope.oldProjectID = $stateParams.ProjectID;
 
 	if (!authenFact.getAccessToken())
 	{
 		$state.go('login');
+	}
+
+	$scope.checkAuthen = function(){
+		if (authenFact.getAccessToken().uid != 'shawnawei')
+		{
+			$state.go('projects');
+			alert("You are not authorized to edit this project!");
+		}
 	}
 
 
@@ -18,6 +27,14 @@ myApp.controller('projectsController', ['$state', '$scope', '$http', '$location'
 
 	$scope.removeSubject = function(index){
 		$scope.project.SubjectsID.splice(index,1);
+	}
+
+	$scope.addUser = function(){
+		$scope.project.AccessAuthen.push({uid:'', ViewOnly:false});
+	}
+
+	$scope.removeUser = function(index){
+		$scope.project.AccessAuthen.splice(index,1);
 	}	
 
 
@@ -29,36 +46,268 @@ myApp.controller('projectsController', ['$state', '$scope', '$http', '$location'
 
 	$scope.getProject = function(){
 		var id = $stateParams.ProjectID;
-		$http.get('/raw/projects/'+id).success(function(response){
-			$scope.project = response;
+		$http.get('/raw/projects/'+id)
+		.then(function(response){
+			if (response.data == null)
+			{
+				$state.go('projects');
+				alert("You are not authorized to view or edit this project!");
+			}
+			else
+			{
+				$scope.project = response.data;
+			}
+			
 		});
 	}
 
 
-	$scope.addProject = function(){
-		console.log($scope.project);
-		console.log('add project');	
-		$scope.project = {
-			ProjectID:'',
-			ProjectName: '',
-			SubjectsID: [{inProjectID:'', GlobalID: ''}]
-		};
-		$http.post('/raw/projects', $scope.project).success(function(response){
-			window.location.href= '/projects';
+	$scope.getAuthenList = function(projectID){
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.editList == [])
+			{
+				$scope.editable = false;
+			}
+
+			else if (!$scope.editList.includes(accessToken) && !$scope.editList.includes('AllUsers'))
+			{
+				$scope.editable = false;
+			}
+
+			else {
+				$scope.editable = true;
+			}
+
 		});
+
+	}
+
+
+	$scope.getAuthenViewList = function(projectID){
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				$state.go('projects');
+				alert("You are not authorized to view this project!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				$state.go('projects');
+				alert("You are not authorized to view this project!");
+			}
+
+			else {
+				$state.go('projectDetail', {ProjectID: projectID});
+			}
+
+		});
+
+	}
+
+	$scope.getAuthenEditList = function(projectID){
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.editList == [])
+			{
+				$state.go('projectDetail', {ProjectID:projectID});
+				alert("You are not authorized to edit this project!");
+			}
+
+			else if (!$scope.editList.includes(accessToken) && !$scope.editList.includes('AllUsers'))
+			{
+				$state.go('projectDetail', {ProjectID:projectID});
+				alert("You are not authorized to edit this project!");
+			}
+
+			else {
+				$state.go('editProject', {ProjectID: projectID});
+			}
+
+		});
+
 	}
 
 	$scope.updateProject = function(){
-		var id = $stateParams.ProjectID;
-		//$scope.project.SubjectsID = [];
-		$http.put('/raw/projects/'+id, $scope.project).success(function(response){
-			window.location.href= ('/projects/' + id);
+		var projectID = $stateParams.ProjectID;
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+
+			var accessToken = authenFact.getAccessToken().uid;
+			if (!$scope.editList.includes(accessToken) && !$scope.editList.includes('AllUsers'))
+			{
+				$state.go('projectDetail', {ProjectID: projectID});
+				alert("You are not authorized to edit this project!");
+			}
+
+			else
+			{
+				var id = $stateParams.ProjectID;
+				$http.put('/raw/projects/'+id, $scope.project)
+				.then(function(response){
+					console.log("hi" + response);
+					window.location.href= ('/projects/' + id);
+				})
+				.catch(function(err){
+					if (err.status == 403)
+					{
+						alert("You are not authorized to edit this project!");
+						$state.go('projectDetail', {ProjectID: id});
+					}
+				});
+			}
 		});
 	}
 
-	$scope.removeProject = function(ProjectID){
-		$http.delete('/raw/projects/'+ProjectID).success(function(response){
-			window.location.href= '/projects';
+	$scope.removeProject = function(projectID){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+
+			if ($scope.editList == [])
+			{
+				$state.go('projectDetail', {ProjectID:projectID});
+				alert("You are not authorized to delete this project!");
+			}
+
+			else if (!$scope.editList.includes(accessToken) && !$scope.editList.includes('AllUsers'))
+			{
+				$state.go('projectDetail', {ProjectID:projectID});
+				alert("You are not authorized to delete this project!");
+			}
+
+			else
+			{
+				$http.delete('/raw/projects/'+projectID)
+				.then(function(response){
+					window.location.href= '/projects';
+				})
+				.catch(function(err){
+					console.log(err);
+					alert("You are not authorized to delete this project!");
+				});
+			}
+		
 		});
 	}
 	
@@ -71,17 +320,29 @@ myApp.controller('addProjectController', ['$state', '$scope', '$http', '$locatio
 	function ($state, $scope, $http, $location, $stateParams, authenFact){
 	console.log('addProjectController loaded');
 
-	console.log("logged in: "+ authenFact.getAccessToken());
+	
 
 	if (!authenFact.getAccessToken())
 	{
 		$state.go('login');
 	}
 
+	else if (authenFact.getAccessToken().uid != 'shawnawei')
+	{
+		$state.go('projects');
+		alert("You are not authorized to add new projects!");
+	}
+
+	else 
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+	}
+
 	$scope.project = {
 			ProjectID:'',
 			ProjectName: '',
-			SubjectsID: []
+			SubjectsID: [],
+			AccessAuthen: [{uid:'shawnawei', ViewOnly: false}]
 		};
 
 	$scope.addSubject = function(){
@@ -92,12 +353,24 @@ myApp.controller('addProjectController', ['$state', '$scope', '$http', '$locatio
 		$scope.project.SubjectsID.splice(index,1);
 	}	
 
+	$scope.addUser = function(){
+		$scope.project.AccessAuthen.push({uid:'', ViewOnly:false});
+	}
+
+	$scope.removeUser = function(index){
+		$scope.project.AccessAuthen.splice(index,1);
+	}	
+
 	$scope.addProject = function(){
 		console.log($scope.project);
 		console.log('add project');	
 
-		$http.post('/raw/projects', $scope.project).success(function(response){
+		$http.post('/raw/projects', $scope.project)
+		.then(function(response){
 			window.location.href= '/projects';
+		})
+		.catch(function(response){
+			console.log(response);
 		});
 	}
 

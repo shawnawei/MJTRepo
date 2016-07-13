@@ -54,7 +54,7 @@ td {
 
 
 <br>
-{{subjects}}
+
 
 	<div class = "container col-md-12">
 
@@ -79,7 +79,7 @@ td {
           	<td>{{subject.Sex}}</td>
           	<td>{{subject.Diagnosis}}</td>
           	<td>{{subject.Handedness}}</td>
-          	<td><a ng-repeat = 'project in subject.Projects' href = "ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs">{{project.ProjectID}} - {{project.SubjectIDinProject}} </button></a></td>
+          	<td><a ng-repeat = 'project in subject.Projects' href = "ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs">{{project.ProjectID}}</button></a></td>
 	    </tr>
 	    </tbody>
 	</table>

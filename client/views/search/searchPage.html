@@ -93,7 +93,6 @@
                         <option value = "">Any</option>
                         <option value = "Left">Left</option>
                         <option value = "Right">Right</option>
-                        <!--option value = "Ambidextrous">Ambidextrous</option-->
                         <option value = "Unknown">Unknown</option>
                       </select>
                     </div>
@@ -107,6 +106,8 @@
                         <option value = "ASD">ASD</option>
                         <option value = "Pre-term">Pre-term</option>
                         <option value = "Control">Control</option>
+                        <option value = "TD">TD</option>
+                        <option value = "BPD">BPD</option>
                         <option value = "Other">Other</option>
                         <option value = "Unknown">Unknown</option>
                       </select>
@@ -151,6 +152,7 @@
                     <div ng-init = "getProjects()">
                     <label class = "form-control-label col-md-2 col-md-offset-1" for="inProject">In Project(s): </label>
                     <div class = "col-md-4">
+                    <!-- <div ng-dropdown-multiselect ="" options = "[{id:1, label :'WM'},{id:2, label: 'two'}]" selected-model = "[]"></div> -->
                       <select name= "inProject" id = "select-project" class="form-control" ng-model = "search.Projects" multiple = "multiple">
                         <option value = "">All</option>
                         <option value = "disabled" disabled>---------------</option>
@@ -160,7 +162,6 @@
                     </div>
 
               </div>
-                    
                 
               <br>
               <p><button type="submit" class="btn btn-primary pull-right">Find</button></p>
@@ -335,6 +336,8 @@
                         <option value = "All">All</option>
                         <option value = "ASD">ASD</option>
                         <option value = "Pre-term">Pre-term</option>
+                        <option value = "TD">TD</option>
+                        <option value = "BPD">BPD</option>
                         <option value = "Control">Control</option>
                         <option value = "Other">Other</option>
                         <option value = "Unknown">Unknown</option>

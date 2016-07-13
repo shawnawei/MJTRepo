@@ -12,16 +12,20 @@ REDESIGN THE PAGE IF TIME PREMITS-->
   <div class="panel panel-default" ng-init="getSubject()">
 
     <div class="panel-heading">
-      <h3 class="panel-title"><strong>Subject ID: </strong>{{subject.ID}}</h3>
+      <h3 class="panel-title"><strong>Subject Information: </strong>{{subject.ID}}</h3>
     </div>
 
     <div class="panel-body">
     <section>
       <div class = "well text-center verticle-align: left">
-        <div class="col-md-2"><strong>Sex: </strong>{{subject.Sex}}</div>
+        <div class="col-md-3"><strong>ID: </strong>{{subject.ID}}</div>
+        <div class="col-md-3"><strong>Sex: </strong>{{subject.Sex}}</div>
         <div class="col-md-3"><strong>Handedness: </strong>{{subject.Handedness}}</div>
         <div class="col-md-3"><strong>Diagnosis: </strong>{{subject.Diagnosis}}</div>
-        <div class="col-md-4"><strong>Date of Birth: </strong>{{subject.DateOfBirth | date:'yyyy-MM-dd'}} </div>
+        <br><br>
+        <div class="col-md-3"><strong>DOB: </strong>{{subject.DateOfBirth | date:'yyyy-MM-dd'}} </div>
+        <div class="col-md-3"><strong>MRN: </strong>{{subject.MRN}} </div>
+        <div class="col-md-4"><strong>Contact for future studies: </strong>{{subject.ContactPermit}} </div>
         <br>
       </div>
       </section>
@@ -39,8 +43,8 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 
          <div class="panel-body">
           <ul>
-            <li><strong>Subject ID in {{project['ProjectID']}}: </strong>
-            <a href = "ScanInfo/{{project['ProjectID']}}/{{project['SubjectIDinProject']}}">{{project['SubjectIDinProject']}}</a></li>
+            <li><strong>View subject's scan sessions in {{project.ProjectID}}  </strong>
+            <a class = "btn btn-xs btn-info" ng-click = "getAuthenViewList(project.ProjectID, project.SubjectIDinProject)">  View</a></li>
             <p>
             </li>
             </p>

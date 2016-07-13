@@ -1,0 +1,18 @@
+[
+{
+	"uid": "shawnawei",
+	"ViewProject":[{"ProjectID":"All"}],
+	"EditProject":[{"ProjectID": "All"}],
+	"ViewSubject":[{"SubjectID": "All"}],
+	"EditSubject":[{"SubjectID": "All"}],
+	"Comment":"developer"
+},
+{
+	"uid": "simeonwong",
+	"ViewProject":[{"ProjectID":"All"}],
+	"EditProject":[{"ProjectID": "All"}],
+	"ViewSubject":[{"SubjectID": "All"}],
+	"EditSubject":[{"SubjectID": "All"}],
+	"Comment":"developer"
+}
+]

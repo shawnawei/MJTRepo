@@ -1,43 +1,19 @@
-<style>
-h4
-{
-  text-decoration: underline;
-}
-
-div.heading
-{
-  background: #005  no-repeat scroll center;
-  margin-left: 0em;
-  margin-right: 15em;
-  width:60em;
-  height:.1em;
-}
-
-textarea
-{
-  height:7em;
-  word-wrap: break-word;
-}
-
-input[type = 'checkbox']
-{
-  width:15px;
-    height:15px;
-}
-</style>
+<link rel = "stylesheet" href = "./css/errorMessages.css">
 
 <nav ng-init = "getProject()">
   <a class="nav-link" href="/projects/{{project.ProjectID}}">Go Back</a>
 </nav>
 
-<div class = "jumbotron vertical-center" ng-init = "getProject()">
+<div class = "jumbotron vertical-center" ng-init = "getAuthenEditList(oldProjectID);getProject()">
+  <div ng-init = oldProjectID></div>
+
  
   <h2><strong>Edit a Project</strong></h2>
 
     <div class = "heading"></heading></div>
     <br>
 
-      <form ng-submit="updateProject()" class = "form-horizontal">
+      <form ng-submit="updateProjectForm.$valid && updateProject()" method = "post" class = "form-horizontal" name = "updateProjectForm" novalidate>
 
       <h5>* Required fields</h5>
 
@@ -46,8 +22,14 @@ input[type = 'checkbox']
         <container>
         <div class="form-group row">
             <label class = "form-control-label col-md-2">Project ID* : </label>
-          <div class = "col-md-5">
-          <input required type="text" class="form-control" ng-model="project.ProjectID" placeholder="">
+          <div class = "col-md-5" ng-class = "{'has-error': updateProjectForm.projectID.$touched && updateProjectForm.projectID.$invalid, 'has-success':updateProjectForm.projectID.$touched && updateProjectForm.projectID.$valid}">
+            <input required type="text" class="form-control" ng-model="project.ProjectID" name = "projectID">
+            <div class = "error msg_error" data-ng-messages = "updateProjectForm.projectID.$error" data-ng-show = "updateProjectForm.projectID.$touched">
+               <span ng-show = "updateProjectForm.projectID.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please give this project an unique ID!
+               </span>
+            </div>
           </div>
         </div>
         </container>
@@ -55,8 +37,14 @@ input[type = 'checkbox']
         <container>
         <div class="form-group row">
           <label class = "form-control-label col-md-2">Project Name* : </label>
-          <div class = "col-md-10">
-            <input required type = "text" ng-model="project.ProjectName" class="form-control">
+          <div class = "col-md-10"  ng-class = "{'has-error': updateProjectForm.projectName.$touched && updateProjectForm.projectName.$invalid, 'has-success':updateProjectForm.projectName.$touched && updateProjectForm.projectName.$valid}">
+            <input required type = "text" ng-model="project.ProjectName" class="form-control" name = "projectName">
+            <div class = "error msg_error" data-ng-messages = "updateProjectForm.projectName.$error" data-ng-show = "updateProjectForm.projectName.$touched">
+               <span ng-show = "updateProjectForm.projectName.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please give this project an unique name!
+               </span>
+            </div>
           </div>
         </div>
         </container>
@@ -71,11 +59,23 @@ input[type = 'checkbox']
 
 
             <div class="form-group row" ng-repeat = 'subject in project.SubjectsID'>
-              <div class = "col-md-4">
-              <input type = "text" class="form-control" name="subject{{$index}}.inProjectID" ng-model = "subject.inProjectID" placeholder="in Project ID">
-              </div>
-              <div class = "col-md-4">
-              <input type = "text" class="form-control" name="subject{{$index}}.GlobalID" ng-model = "subject.GlobalID" placeholder="Global ID">
+              <div class = "col-md-4"  ng-class = "{'has-error': updateProjectForm.subjectinProjectID{{$index}}.$touched && updateProjectForm.subjectinProjectID{{$index}}.$invalid, 'has-success':updateProjectForm.subjectinProjectID{{$index}}.$touched&& updateProjectForm.subjectinProjectID{{$index}}.$valid}">
+                <input required type = "text" class="form-control" name="subjectinProjectID{{$index}}" ng-model = "subject.inProjectID" placeholder="in Project ID">
+                <div class = "error msg_error" data-ng-show = "updateProjectForm.subjectinProjectID{{$index}}.$touched">
+                   <span ng-show = "updateProjectForm.subjectinProjectID{{$index}}.$invalid">
+                     <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                      Subject ID is required!
+                   </span>
+                   </div>
+                </div>
+              <div class = "col-md-4" ng-class = "{'has-error': updateProjectForm.subjectGID{{$index}}.$touched && updateProjectForm.subjectGID{{$index}}.$invalid, 'has-success':updateProjectForm.subjectGID{{$index}}.$touched&& updateProjectForm.subjectinGID{{$index}}.$valid}">
+                <input required type = "text" class="form-control" name="subjectGID{{$index}}" ng-model = "subject.GlobalID" placeholder="Global ID">
+                <div class = "error msg_error" data-ng-show = "updateProjectForm.subjectGID{{$index}}.$touched">
+                 <span ng-show = "updateProjectForm.subjectGID{{$index}}.$invalid">
+                   <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                    Subject's corresponding Global ID is required!
+                 </span>
+                 </div>
               </div>
               
               <div class = "col-md-1 btn-group btn-group-sm">
@@ -86,8 +86,69 @@ input[type = 'checkbox']
         </container>
 
         <br>
+
+
+        <container>
+        <div class = "form-group row">
+          <label class = "form-control-label col-md-2">Accessible By: </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addUser()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>  
+
+
+            <div class="form-group row" ng-repeat = 'user in project.AccessAuthen.slice(1,AccessAuthen.length)'>
+              <div class = "col-md-4" ng-class = "{'has-error': updateProjectForm.User{{$index}}.$touched && updateProjectForm.User{{$index}}.$invalid, 'has-success':updateProjectForm.User{{$index}}.$touched&& updateProjectForm.User{{$index}}.$valid}">
+                <input required type = "text" class="form-control" name="User{{$index}}" ng-model = "user.uid" placeholder="User uid">
+                <div class = "error msg_error" data-ng-show = "updateProjectForm.User{{$index}}.$touched">
+                 <span ng-show = "updateProjectForm.User{{$index}}.$invalid">
+                   <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                    User's uid is required!
+                 </span>
+                 </div>
+              </div>
+
+              <div class = "col-md-offset-1" ng-class = "{'has-error': updateProjectForm.userViewOnly{{$index}}.$touched && updateProjectForm.userViewOnly{{$index}}.$invalid, 'has-success':updateProjectForm.userViewOnly{{$index}}.$touched&& updateProjectForm.userViewOnly{{$index}}.$valid}">
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-2 col-offset-1">View Only 
+                       <input type="checkbox" name="userViewOnly{{$index}}" ng-model = "user.ViewOnly" ng-true-value = "true">
+                    </div>
+                  <div class = "error msg_error" data-ng-show = "updateProjectForm.userViewOnly{{$index}}.$touched">
+                    <span ng-show = "updateProjectForm.userViewOnly{{$index}}.length == 0">
+                      <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please indicate this user's accesibility level!
+                    </span>
+                 </div>
+              </div>
+              <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click= "removeUser($index+1)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+            </div>
+        </container>
        
-        <button type="submit" class="btn btn-primary pull-right">Update Project</button>
+        <button type = "button" ng-disabled = "updateProjectForm.$invalid"  class="btn btn-primary pull-right" data-toggle="modal" data-target="#editproject">Update Project</button>
+
+        <div class="modal fade" id="editproject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">ARE YOU SURE?</h4>
+                </div>
+                <div class="modal-body">
+                      {{project.ProjectID}} will be permenantly changed, incorrect entries may cause errors in other files in the database. Please double check your entries before submitting!
+                </div>
+                <div class="modal-footer">
+                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "updateProject()">I am sure (!)</a>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+
       </form>
 
   </div>
+
+
+  

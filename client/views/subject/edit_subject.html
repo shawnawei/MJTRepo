@@ -1,33 +1,7 @@
 <!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
 REDESIGN THE PAGE IF TIME PREMITS-->
 
-<style>
-h4
-{
-  text-decoration: underline;
-}
-
-div.heading
-{
-  background: #005  no-repeat scroll center;
-  margin-left: 0em;
-  margin-right: 15em;
-  width:60em;
-  height:.1em;
-}
-
-textarea
-{
-  height:7em;
-  word-wrap: break-word;
-}
-
-input[type = 'checkbox']
-{
-  width:15px;
-    height:15px;
-}
-</style>
+<link rel = "stylesheet" href = "./css/errorMessages.css">
 
 <nav>
   <a class="nav-link" ui-sref="subjects">Go Back</a>
@@ -40,8 +14,10 @@ input[type = 'checkbox']
     <div class = "heading"></div>
     <br>
 
-    <form ng-submit="updateSubject()" ng-init = "getSubject()" class="form-horizontal">
+    <form ng-submit="editSubjectForm.$valid && updateSubject()" ng-init = "checkAuthen();getSubject()" class="form-horizontal" name = "editSubjectForm">
       <h5>* Required fields</h5>
+      <!-- <h5>* Please note at field 'Date of Birth': <strong>yyyy-12-10T00:00:00:00</strong> is equivalent to <strong>yyyy-12-09</strong></h5> -->
+      
 
       <br>
 
@@ -49,14 +25,19 @@ input[type = 'checkbox']
       <h4>Subject Information</h4><br>
         <div class="form-group row">
           <label class="form-control-label col-md-2">Subject ID* :</label>
-          <div class = "col-md-3">
-            <input required type="text" class="form-control" ng-model="subject.ID" placeholder=" ">
+          <div class = "col-md-3"  ng-class = "{'has-error': editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$invalid, 'has-success':editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$valid}">
+            <input required type="text" class="form-control" ng-model="subject.ID" name = "subjectID">
+            <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectID.$error" data-ng-show = "editSubjectForm.subjectID.$touched">
+               <span ng-show = "editSubjectForm.subjectID.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please give this subject an unique ID!
+               </span>
+            </div>
           </div>
 
           <label class="col-md-2 col-md-offset-1 form-control-label">Sex:</label>
            <div class = "col-md-3">
           <select ng-model="subject.Sex" class="form-control">
-            <option value=" "> </option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
             <option value="Unknown">Unknown</option>
@@ -67,14 +48,24 @@ input[type = 'checkbox']
         </div>
 
         <div class="form-group row">
+          <label class="form-control-label col-md-2">First Name :</label>
+            <div class = "col-md-3">
+              <input type="text" class="form-control" data-ng-model="subject.FirstName" name = "firstname">
+            </div>
+
+          <label class="col-md-2 col-md-offset-1 form-control-label">Last Name:</label>
+            <div class = "col-md-3">
+              <input type="text" class="form-control" data-ng-model="subject.LastName" name = "lastname">
+            </div>
+
+        </div>
+
+        <div class="form-group row">
           <label class="col-md-2 form-control-label">Handedness: </label>
            <div class = "col-md-3">
           <select name= "Handedness" id = "Handedness" class="form-control" ng-model="subject.Handedness" placeholder=" ">
-
-            <option value = ""> </option>
             <option value = "Left">Left</option>
             <option value = "Right">Right</option>
-            <!--option value = "Ambidextrous">Ambidextrous</option-->
             <option value = "Unknown">Unknown</option>
           </select>
          </div>
@@ -82,9 +73,10 @@ input[type = 'checkbox']
          <label class="col-md-2 col-md-offset-1 form-control-label">Diagnosis: </label>
           <div class = "col-md-3">
           <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="subject.Diagnosis" placeholder=" ">
-              <option value = ""> </option>
               <option value = "ASD">ASD</option>
               <option value = "Pre-term">Pre-term</option>
+              <option value = "TD">TD</option>
+              <option value = "BPD">BPD</option>
               <option value = "Control">Control</option>
               <option value = "Other">Other</option>
               <option value = "Unknown">Unknown</option>
@@ -95,8 +87,14 @@ input[type = 'checkbox']
 
         <div class="form-group row">
           <label class="col-md-2 form-control-label">MRN: </label>
-           <div class = "col-md-3">
-            <input type="number" class="form-control" ng-model="subject.MRN" placeholder=" ">
+           <div class = "col-md-3" ng-class = "{'has-error': editSubjectForm.subjectMRN.$touched && editSubjectForm.subjectMRN.$invalid, 'has-success':editSubjectForm.subjectMRN.$touched && editSubjectForm.subjectMRN.$valid}">
+            <input required type="number" class="form-control" ng-model="subject.MRN" name = "subjectMRN">
+            <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectMRN.$error" data-ng-show = "editSubjectForm.$dirty" >
+               <span ng-show = "editSubjectForm.subjectMRN.$invalid">
+                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Subject's MRN is required and must be a number!
+               </span>
+            </div>
          </div>
 
          <label class="col-md-3 col-md-offset-1 form-control-label">Permission to Contact: </label>
@@ -112,16 +110,32 @@ input[type = 'checkbox']
 
         <div class="form-group row">
           <label class="form-control-label col-md-2">Date of Birth :</label>
-          <div class = "col-md-3">
-            <input type="text" class="form-control" ng-model="subject.DateOfBirth" placeholder=" ">
+          <div class = "col-md-3" ng-class = "{'has-error': editSubjectForm.subjectbday.$touched && editSubjectForm.subjectbday.$invalid, 'has-success':editSubjectForm.subjectbday.$touched && editSubjectForm.subjectbday.$valid}">
+            <datepicker date-format="yyyy-MM-dd"><input type="text" class="form-control" ng-model="subject.DateOfBirth" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "subjectbday"></datepicker>
+
+            <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectbday.$error" >
+               <span ng-show = "editSubjectForm.subjectbday.$invalid">
+                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+               </span>
+            </div>
           </div>
 
-          <label class="form-control-label col-md-offset-1 col-md-2">Other :</label>
+           <label class="form-control-label col-md-offset-1 col-md-2">Contact Info:</label>
           <div class = "col-md-4">
-            <textarea class="form-control" ng-model="subject.Other" placeholder=" "></textarea>
+            <input class="form-control" ng-model="subject.ContactInfo" placeholder=" ">
           </div>
 
         </div>
+
+        <div class="form-group row">
+          <label class="form-control-label col-md-2">Other:</label>
+          <div class = "col-md-10">
+            <textarea class="form-control" ng-model="subject.Other" placeholder=" "></textarea>
+          </div>
+        </div>
+        
+        <br>
 
 
       </container>
@@ -133,42 +147,89 @@ input[type = 'checkbox']
       <br>
       <container>
         <h4>Project Participation</h4><br>
-
-          <div class = "form-group row">
-            <label class="col-md-2 form-control-label pull-left">Project(s): </label>
-            <div class="col-md-1">
-                <button type="button" class="btn btn-default" ng-click = "addProject()"><span class="glyphicon glyphicon-plus"></span></button>
-            </div>
+        <div class="form-group row">
+          <label class="col-md-2 form-control-label">Project(s): </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addProject()" ><span class="glyphicon glyphicon-plus"></span></button>
           </div>
-     
+        </div>
+
           <div class="form-group row" ng-repeat = 'project in subject.Projects'>
-          
-           
-            <div class="col-md-3">
-                <input type="text" class="form-control" name="project{{$index}}.ID" ng-model = "project.ProjectID" placeholder="Project ID"/>
+          <div class="col-md-3" ng-class = "{'has-error': editSubjectForm.projectID{{$index}}.$touched && editSubjectForm.projectID{{$index}}.$invalid, 'has-success':editSubjectForm.projectID{{$index}}.$touched && editSubjectForm.projectID{{$index}}.$valid}">
+              <input required type="text" class="form-control" name="projectID{{$index}}" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/>
+              <div class = "error msg_error" data-ng-show = "editSubjectForm.projectID{{$index}}.$touched">
+               <span ng-show = "editSubjectForm.projectID{{$index}}.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Project ID is required!
+               </span>
+            </div> 
+          </div>
+
+
+
+          <div class="col-md-4" ng-class = "{'has-error': editSubjectForm.subjectIDinProject{{$index}}.$touched && editSubjectForm.subjectIDinProject{{$index}}.$invalid, 'has-success':editSubjectForm.subjectIDinProject{{$index}}.$touched && editSubjectForm.subjectIDinProject{{$index}}.$valid}">
+              <input required type="text" class="form-control" name="subjectIDinProject{{$index}}" ng-model = "project.SubjectIDinProject" placeholder="Subject ID in Project" />
+              <div class = "error msg_error" data-ng-show = "editSubjectForm.subjectIDinProject{{$index}}.$touched">
+               <span ng-show = "editSubjectForm.subjectIDinProject{{$index}}.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Subject's ID in this project is required!
+               </span>
             </div>
-            <div class="col-md-3">
-                <input type="text" class="form-control" name="project{{$index}}.subjectID" ng-model = "project.SubjectIDinProject" placeholder="Subject ID in Project" />
+          </div>
+
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeProject($index)"><span class="glyphicon glyphicon-minus"></span></button>
             </div>
 
-            <!-- <div ng-model = "project.ScanSessions[0]" ng-init = "project.ScanSessions[0]={{project.SubjectIDinProject}}_A"></div> -->
+          <!--div>
+            <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="add_subject.html#addScanSession" aria-expanded="false" aria-controls="addScanSession">Add Scan Session</a>
+            <br /> <br>
+            <div class = "well collapse" id = "addScanSession">
+            <form id = "scanSessionForm">
+    
+                <div class="form-group">
+                  <label class="col-md-3 control-label">Session ID</label>
+                   <div class = "col-md-3">
+                  <input type="text" class = "form-control" ng-model="session.sessionID" placeholder="ie. WM01_A" >
+                 </div>
+                </div>
 
-            <!-- <div class = "col-md-4">
-              <input type = "text" class = "form-control" ng-model = "project.ScanSessions[0]" placeholder = "ie. {{project.SubjectIDinProject}}_A">
-          </div>
- -->
-            
-            <div class="col-md-1">
-                <button type="button" class="btn btn-default removeButton" ng-click = "removeProject($index)"><span class="glyphicon glyphicon-minus"></span></button>
-            </div>
-          </div>
-        
-       </container>
+ 
+            </form>
+            <a name = 'addScanSession'></a></div>
+
+          </div-->
+        </div>
+      </container>
 
 
         <p class = "container"><div class="form-group pull-right"><div class="col-md-2">
-            <button type="submit" class="btn btn-primary">Update Subject</button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editsubject">Update Subject</button>
+
+  <div class="modal fade" id="editsubject" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">ARE YOU SURE?</h4>
+          </div>
+          <div class="modal-body">
+                {{subject.ID}} will be permenantly changed, incorrect entries may cause errors in other files in the database. Please double check your entries before submitting!
+          </div>
+          <div class="modal-footer">
+            <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "editSubjectForm.$valid && updateSubject()">I am sure (!)</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+
+
         </div></div></p>
+
+
+
 
     </form>
 </div>
