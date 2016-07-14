@@ -4,12 +4,12 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 
 
 <nav>
-  <a class="nav-link" ui-sref="subjects">Go Back</a>
+  <a class="nav-link" ui-sref="subjects">To Subjects List</a>
 </nav>
-
+<br>
 
 <div class = "jumbotron jumbotron-fluiod">
-  <div class="panel panel-default" ng-init="getSubject()">
+  <div class="panel panel-default" ng-init="checkAuthen(oldSubjectID);getSubject()">
 
     <div class="panel-heading">
       <h3 class="panel-title"><strong>Subject Information: </strong>{{subject.ID}}</h3>

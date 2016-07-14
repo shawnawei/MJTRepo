@@ -61,13 +61,14 @@ body {
               <li class = "nav-link"><a ui-sref="subjects">Subjects</a></li>
               <li class = "nav-link"><a ui-sref="projects">Projects</a></li>
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">More Options <span class="caret"></span></a>
+                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Admin Options <span class="caret"></span></a>
                 <ul class="dropdown-menu">
                   <li><a ui-sref="addSubject">Add Subject</a></li>
                   <li><a ui-sref="addProject">Add Project</a></li>
                   <li role="separator" class="divider"></li>
-                  <li class="dropdown-header">Admin Options</li>
-                  <li><a ui-sref="admin">Edit Test and Scan Types</a></li>
+                  <li class="dropdown-header">More Options</li>
+                  <li><a ui-sref="adminTestScanType">Manage Test and Scan Types</a></li>
+                  <li><a ui-sref="adminManageUser">Manage Users</a></li>
                 </ul>
               </li>
             </ul>

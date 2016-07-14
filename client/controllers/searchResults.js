@@ -10,7 +10,89 @@ var myApp = angular.module('myApp');
 myApp.controller('searchSubjectIDController', ['$state', '$scope', '$http', '$location', '$stateParams','authenFact',
 	function($state, $scope, $http, $location, $stateParams, authenFact){
 
-	
+	$scope.checkAuthen = function(subjectID){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				
+				var searchParams = $location.search().GlobalID;
+				$state.go('searchResult-GlobalID', {GlobalID: searchParams});
+
+				alert("You are not authorized to view subject details" + " !");
+			}
+
+			else
+			{
+				$state.go('subjectDetail', {ID: subjectID});
+			}
+		})
+		
+	}
+
+	$scope.getAuthenViewList = function(projectID, subjectIDinProject){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/ScanSession/'+projectID + '/'+ subjectIDinProject)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				var searchParams = $location.search().GlobalID;
+				$state.go('searchResult-GlobalID', {GlobalID: searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				var searchParams = $location.search().GlobalID;
+				$state.go('searchResult-GlobalID', {GlobalID: searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else {
+				$state.go('scanDetails', {ProjectID: projectID, SubjectIDinProject: subjectIDinProject});
+			}
+
+		});
+
+	}
 	
 	$scope.getSubjectsResult = function(){
 		var requestSubjectID = $location.search();
@@ -90,19 +172,98 @@ myApp.controller('searchSubjectIDController', ['$state', '$scope', '$http', '$lo
 			'Diagnosis',
 			'Projects(-ID)',
 			'Handedness',
-			'MRN',
 			'Contact for future studies',
 			'Comment'];
 	}
 
-
-
 }]);
 
 
-myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function($state, $scope, $http, $location, $stateParams, authenFact){
 
 	
+	$scope.checkAuthen = function(subjectID){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				var searchParams = $location.search().inProjectID;
+				$state.go('searchResult-inProjectID', {inProjectID: searchParams});
+				alert("You are not authorized to view subject details" + " !");
+			}
+
+			else
+			{
+				$state.go('subjectDetail', {ID: subjectID});
+			}
+		})
+		
+	}
+
+	$scope.getAuthenViewList = function(projectID, subjectIDinProject){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/ScanSession/'+projectID + '/'+ subjectIDinProject)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				var searchParams = $location.search().inProjectID;
+				$state.go('searchResult-inProjectID', {inProjectID: searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				var searchParams = $location.search().inProjectID;
+				$state.go('searchResult-inProjectID', {inProjectID: searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else {
+				$state.go('scanDetails', {ProjectID: projectID, SubjectIDinProject: subjectIDinProject});
+			}
+
+		});
+
+	}
 	
 	$scope.getSubjectsResult = function(){
 		var requestSubjectID = $location.search();
@@ -139,7 +300,7 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 				selectedSubject.splice(index, 1);
 			}
 		}
-		var tobeExported = formatToExcel_Subjects(selectedSubject);
+		var tobeExported = formatToExcel_SubjectsPID(selectedSubject);
 		$scope.getArray = tobeExported;
 	}
 
@@ -151,7 +312,7 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 			subjects[num].selected = true;
 			selectedSubject.push(subjects[num]);
 		}
-		var tobeExported = formatToExcel_Subjects(selectedSubject);
+		var tobeExported = formatToExcel_SubjectsPID(selectedSubject);
 		$scope.getArray = tobeExported;
 	}
 
@@ -166,7 +327,9 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 	}
 
 	$scope.getHeader = function(){
-		return ['Subject ID',
+		return [
+			'In Project ID',
+			'Global ID',
 			'Sex',
 			'Date of Birth',
 			'Diagnosis',
@@ -179,7 +342,92 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 }]);
 
 
-myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function($state, $scope, $http, $location, $stateParams, authenFact){
+
+	$scope.checkAuthen = function(subjectID){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				
+				var searchParams = $location.search();
+				$state.go('searchResult-SubjectInfo', {searchParams});
+				alert("You are not authorized to view subject details" + " !");
+			}
+
+			else
+			{
+				$state.go('subjectDetail', {ID: subjectID});
+			}
+		})
+		
+	}
+
+	$scope.getAuthenViewList = function(projectID, subjectIDinProject){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/ScanSession/'+projectID + '/'+ subjectIDinProject)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				var searchParams = $location.search();
+				$state.go('searchResult-SubjectInfo', {searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				var searchParams = $location.search();
+				$state.go('searchResult-SubjectInfo', {searchParams});
+				alert("You are not authorized to view this scan session!");
+			}
+
+			else {
+				$state.go('scanDetails', {ProjectID: projectID, SubjectIDinProject: subjectIDinProject});
+			}
+
+		});
+
+	}
+
 
 	$scope.getSubjectsResult = function(){
 		var requestSubject = $location.search();
@@ -297,12 +545,143 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 
 //=============================== Projects ==============================
 
-myApp.controller('searchProjectController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchProjectController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact', 
+	function($state, $scope, $http, $location, $stateParams, authenFact){
 
 	$scope.getProjects = function(){
 		$http.get('/raw/projects').success(function(response){
 			$scope.projects = response;
 		});
+	}
+
+	$scope.onIDpage = true;
+	$scope.getAuthenScanViewList = function(projectID, subjectIDinProject, onIDpage){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/ScanSession/'+projectID + '/'+ subjectIDinProject)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				var searchParams = $location.search();
+				if (onIDpage)
+				{
+					$state.go('searchResult-ProjectID', {searchParams});
+				}
+				else
+				{
+					$state.go('searchResult-ProjectName', {searchParams});
+				}
+				
+				alert("You are not authorized to view this scan sessions in this project!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				var searchParams = $location.search();
+				if (onIDpage)
+				{
+					$state.go('searchResult-ProjectID', {searchParams});
+				}
+				else
+				{
+					$state.go('searchResult-ProjectName', {searchParams});
+				}
+				alert("You are not authorized to view scan sessions in this project!");
+			}
+
+			else {
+				$state.go('scanDetails', {ProjectID: projectID, SubjectIDinProject: subjectIDinProject});
+			}
+
+		});
+
+	}
+
+	$scope.getAuthenProjectViewList = function(projectID, onIDpage){
+
+		var viewList = [];
+		var editList = [];
+
+		$http.get('/raw/projects/'+projectID)
+		.then(function(response){
+			if (response.data != null)
+			{
+				var accessList = response.data.AccessAuthen;
+				for (var num in accessList)
+				{
+					if(accessList[num].ViewOnly == false)
+					{
+						editList.push(accessList[num].uid);
+						viewList.push(accessList[num].uid);
+					}
+					else
+					{
+						viewList.push(accessList[num].uid);
+					}
+				}
+			}
+			console.log(viewList, editList);
+			$scope.viewList = viewList;
+			$scope.editList = editList;
+			var accessToken = authenFact.getAccessToken().uid;
+
+			if ($scope.viewList == [])
+			{
+				var searchParams = $location.search();
+				if (onIDpage)
+				{
+					$state.go('searchResult-ProjectID', {searchParams});
+				}
+				else
+				{
+					$state.go('searchResult-ProjectName', {searchParams});
+				}
+				alert("You are not authorized to view this project!");
+			}
+
+			else if (!$scope.viewList.includes(accessToken) && !$scope.viewList.includes('AllUsers'))
+			{
+				var searchParams = $location.search();
+				if (onIDpage)
+				{
+					$state.go('searchResult-ProjectID', {searchParams});
+				}
+				else
+				{
+					$state.go('searchResult-ProjectName', {searchParams});
+				}
+				alert("You are not authorized to view this project!");
+			}
+
+			else {
+				$state.go('projectDetail', {ProjectID: projectID});
+			}
+
+		});
+
 	}
 
 	$scope.searchProjectsByID = function(){
@@ -395,7 +774,6 @@ myApp.controller('searchProjectController', ['$state', '$scope', '$http', '$loca
 	}
 
 }]);
-
 
 
 
@@ -822,7 +1200,6 @@ function formatToExcel_Subjects (selectedSubject) {
 	var tobeExported = [];
 	for (var num in selectedSubject)
 	{
-		console.log(selectedSubject[num]);
 		var projects = selectedSubject[num].Projects;
 		var cleanerproject = [];
 
@@ -832,12 +1209,12 @@ function formatToExcel_Subjects (selectedSubject) {
 			cleanerproject.push(newString);
 		}
 		var projectString = cleanerproject.toString();
-		var cleanerDOB = selectedSubject[num].DateOfBirth.split("T");
+		var cleanerDOB = selectedSubject[num].DateOfBirth;
 
 		var subject = {
 			'Subject ID': selectedSubject[num].ID,
 			'Sex':selectedSubject[num].Sex,
-			'Date of Birth':cleanerDOB[0],
+			'Date of Birth':cleanerDOB,
 			'Diagnosis':selectedSubject[num].Diagnosis,
 			'Projects(-ID)':projectString,
 			'Handedness':selectedSubject[num].Handedness,
@@ -850,17 +1227,47 @@ function formatToExcel_Subjects (selectedSubject) {
 	return tobeExported;
 }
 
+function formatToExcel_SubjectsPID (selectedSubject) {
+	var tobeExported = [];
+	for (var num in selectedSubject)
+	{
+		var projects = selectedSubject[num].SubjectInfo.Projects;
+		var cleanerproject = [];
+
+		for (var i in projects)
+		{
+			var newString = projects[i].ProjectID + ' - ' + projects[i].SubjectIDinProject;
+			cleanerproject.push(newString);
+		}
+		var projectString = cleanerproject.toString();
+		var cleanerDOB = selectedSubject[num].SubjectInfo.DateOfBirth;
+
+		var subject = {
+			'In Project ID': selectedSubject[num].SubjectIDinProject,
+			'Global ID': selectedSubject[num].SubjectID,
+			'Sex':selectedSubject[num].SubjectInfo.Sex,
+			'Date of Birth':selectedSubject[num].SubjectInfo.DateOfBirth,
+			'Diagnosis':selectedSubject[num].SubjectInfo.Diagnosis,
+			'Projects(-ID)':projectString,
+			'Handedness':selectedSubject[num].SubjectInfo.Handedness,
+			'Contact for future studies': selectedSubject[num].SubjectInfo.ContactPermit,
+			'Comment':selectedSubject[num].SubjectInfo.Other
+		}
+		tobeExported.push(subject);
+	}
+	return tobeExported;
+}
+
 function formatToExcel_Projects (selectedProject) {
 	var tobeExported = [];
 	for (var num in selectedProject)
 	{
-		console.log(selectedProject[num]);
 		var subjects = selectedProject[num].SubjectsID;
 		var cleanersubject = [];
 
 		for (var i in subjects)
 		{
-			var newString = subjects[i].GlobalID + ' - ' + subjects[i].inProjectID;
+			var newString = subjects[i].inProjectID;
 			cleanersubject.push(newString);
 		}
 		var subjectString = cleanersubject.toString();
@@ -880,7 +1287,6 @@ function formatToExcel_Scans (selectedScanSession) {
 	var tobeExported = [];
 	for (var num in selectedScanSession)
 	{
-		console.log(selectedScanSession[num]);
 		var MEGs = selectedScanSession[num].ScanSessions.MEGScans;
 		var MRIs = selectedScanSession[num].ScanSessions.MRIScans;
 		var Tests = selectedScanSession[num].ScanSessions.TestResults;
@@ -927,7 +1333,6 @@ function formatToExcel_Scans (selectedScanSession) {
 
 function formatToExcel_ScanSessions (selectedScanSession) {
 
-	console.log(selectedScanSession);
 	var tobeExported = [];
 	for (var num in selectedScanSession)
 	{
@@ -1032,7 +1437,6 @@ function formatToExcel_ScanSessions (selectedScanSession) {
 
 function formatToExcel_ScanSessionsInfo (selectedScanSession) {
 
-	console.log(selectedScanSession);
 	var tobeExported = [];
 	for (var num in selectedScanSession)
 	{

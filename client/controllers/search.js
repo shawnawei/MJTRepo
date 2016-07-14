@@ -9,7 +9,7 @@ myApp.controller('searchController', [ '$state', '$scope', '$http', '$location',
 
 //=============================== Subjects ==============================
 
-	console.log("logged in: "+ authenFact.getAccessToken());
+	console.log("logged in: "+ authenFact.getAccessToken().uid);
 
 	if (!authenFact.getAccessToken())
 	{

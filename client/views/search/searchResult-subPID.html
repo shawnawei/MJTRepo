@@ -34,12 +34,12 @@ td {
     	$('[data-toggle="popover"]').popover(); 
 });
 </script>
-{{subjects}}
+
 
 <div>
 
 <div style = "width:90%; float:left;">
-<h3><strong>Search Subject by Global ID: {{requestID.inProjectID}} </strong></h3>
+<h3><strong>Search Subject by in-Project ID: {{requestID.inProjectID}} </strong></h3>
 </div>
 <br><br>
 
@@ -59,7 +59,8 @@ td {
 	    <thead class = "table table-stripe table-bordered">
 	    <tr>
 	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(subjects)">All</a><a class="btn btn-xs" ng-click = "deselectAll(subjects)">Clear</a></th>
-	    	<th>Subject ID</th>
+	    	<th>In Project ID</th>
+	    	<th>Global ID</th>
 	    	<th>Sex</th>
 	    	<th>Diagnosis</th>
 	    	<th>Handedness</th>
@@ -70,11 +71,12 @@ td {
 	    <tbody>
 	    <tr ng-repeat = "subject in subjects">
 	    	<th scope = "row"><input type="checkbox" ng-model = "subject.selected" ng-click = "getSelectedSubjects(subject)"></th>
-          	<td><a href = "#/subjects/{{subject.ID}}">{{subject.ID}}</a></td>
-          	<td>{{subject.Sex}}</td>
-          	<td>{{subject.Diagnosis}}</td>
-          	<td>{{subject.Handedness}}</td>
-          	<td><a ng-repeat = 'project in subject.Projects' href = "#/ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs" data-toggle="popover" title="Details in {{project.ProjectID}}" data-content = "in-Project ID: {{project.ScanSessions.length}}">{{project.ProjectID}} - {{project.SubjectIDinProject}} </button></a></td>
+	    	<td><a ng-click = "getAuthenViewList(subject.relatedProject, subject.SubjectIDinProject)">{{subject.SubjectIDinProject}}</a></td>
+          	<td><a ng-click = "checkAuthen(subject.SubjectID)">{{subject.SubjectID}}</a></td>
+          	<td>{{subject.SubjectInfo.Sex}}</td>
+          	<td>{{subject.SubjectInfo.Diagnosis}}</td>
+          	<td>{{subject.SubjectInfo.Handedness}}</td>
+          	<td><a ng-repeat = 'project in subject.SubjectInfo.Projects' href = "/ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}">{{project.ProjectID}}{{!$last?', ':''}}</a></td>
 	    </tr>
 	    </tbody>
 	</table>

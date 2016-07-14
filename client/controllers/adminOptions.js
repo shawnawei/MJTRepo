@@ -13,11 +13,28 @@ myApp.controller('adminController', ['$state', '$scope', '$http', '$location', '
 
 	
 	$scope.checkAuthen = function(){
-		if (authenFact.getAccessToken().uid != 'shawnawei')
-		{
-			$state.go('home');
-			alert("You are not authorized to edit this page" + " !");
-		}
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			console.log(adminTypes);
+			if (!adminTypes.includes(uid))
+			{
+				$state.go('home');
+				alert("You are not authorized to view this page" + " !");
+			}
+		})
+		
 	}
 	
 
@@ -51,9 +68,6 @@ myApp.controller('adminController', ['$state', '$scope', '$http', '$location', '
 			window.location.href= '/admin/edit_test_types';
 		});
 	}
-
-
-
 
 
 
@@ -121,6 +135,75 @@ myApp.controller('adminController', ['$state', '$scope', '$http', '$location', '
 			window.location.href= '/admin/edit_test_types';
 		});
 	}
+
+
+
+	//============================== manage users ==============================
+
+	$scope.getUsers = function(){
+		$http.get('/raw/Users')
+		.then(function(response){
+			$scope.Users = response.data;
+		})
+	}
+
+	$scope.userProjectAuthen = [];
+
+	$scope.getAuthenProjects = function(_uid){
+		$http.get('/raw/projects')
+		.then(function(response){
+			var allprojects = response.data;
+			var authenProjects = []; //project list this user has access to
+			for (var num in allprojects)
+			{
+				var authenUIDs = [];
+				var projectauthenlist = allprojects[num].AccessAuthen;
+
+				function finduid(project) { 
+				    return project.uid === _uid;
+				}
+
+				if (projectauthenlist.find(finduid)!= undefined)
+				{
+					authenProjects.push({
+						ProjectID: allprojects[num].ProjectID, 
+						ViewOnly:projectauthenlist.find(finduid).ViewOnly 
+					})
+				}
+
+			}
+			console.log(authenProjects);
+
+			$scope.userProjectAuthen.push(authenProjects);
+		})
+	}
+
+	$scope.getUser = function(uid){
+		$http.get('/raw/Users/'+uid).success(function(response){
+			$scope.OneUser = response;
+		});
+	}
+
+	$scope.editUser = function(user){
+		$http.put('/raw/MRIType/' + user.uid, user).success(function(response){
+			window.location.href= '/admin/manage_user';
+		});
+	}
+
+	$scope.addUser = function(newUser){
+		$http.post('/raw/Users', newUser).success(function(response){
+			window.location.href= '/admin/manage_user';
+		});
+	}
+
+	$scope.removeUser = function(user){
+		$http.delete('/raw/Users/'+ user.uid).success(function(response){
+			window.location.href= '/admin/manage_user';
+		});
+	}
+
+
+
 
 
 // //============================ for convert excel to json ====================

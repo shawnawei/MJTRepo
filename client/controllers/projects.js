@@ -13,11 +13,34 @@ myApp.controller('projectsController', ['$state', '$scope', '$http', '$location'
 	}
 
 	$scope.checkAuthen = function(){
-		if (authenFact.getAccessToken().uid != 'shawnawei')
-		{
-			$state.go('projects');
-			alert("You are not authorized to edit this project!");
-		}
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				$state.go('projects');
+				alert("You are not authorized to add projects" + " !");
+			}
+
+			else
+			{
+				$state.go('addProject');
+			}
+		})
+		
 	}
 
 
@@ -326,16 +349,40 @@ myApp.controller('addProjectController', ['$state', '$scope', '$http', '$locatio
 	{
 		$state.go('login');
 	}
-
-	else if (authenFact.getAccessToken().uid != 'shawnawei')
-	{
-		$state.go('projects');
-		alert("You are not authorized to add new projects!");
-	}
-
 	else 
 	{
 		console.log("logged in: "+ authenFact.getAccessToken().uid);
+	}
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				$state.go('projects');
+				alert("You are not authorized to add projects" + " !");
+			}
+
+			else
+			{
+				$state.go('addProject');
+			}
+		})
+		
 	}
 
 	$scope.project = {

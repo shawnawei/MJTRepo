@@ -14,7 +14,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
     <div class = "heading"></div>
     <br>
 
-    <form ng-submit="editSubjectForm.$valid && updateSubject()" ng-init = "checkAuthen();getSubject()" class="form-horizontal" name = "editSubjectForm">
+    <form  ng-init = "checkAuthen(oldSubjectID, !newSubject);getSubject()" ng-submit="editSubjectForm.$valid && updateSubject()" class="form-horizontal" name = "editSubjectForm">
       <h5>* Required fields</h5>
       <!-- <h5>* Please note at field 'Date of Birth': <strong>yyyy-12-10T00:00:00:00</strong> is equivalent to <strong>yyyy-12-09</strong></h5> -->
       
@@ -181,26 +181,48 @@ REDESIGN THE PAGE IF TIME PREMITS-->
                <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeProject($index)"><span class="glyphicon glyphicon-minus"></span></button>
             </div>
 
-          <!--div>
-            <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="add_subject.html#addScanSession" aria-expanded="false" aria-controls="addScanSession">Add Scan Session</a>
-            <br /> <br>
-            <div class = "well collapse" id = "addScanSession">
-            <form id = "scanSessionForm">
-    
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Session ID</label>
-                   <div class = "col-md-3">
-                  <input type="text" class = "form-control" ng-model="session.sessionID" placeholder="ie. WM01_A" >
-                 </div>
-                </div>
-
- 
-            </form>
-            <a name = 'addScanSession'></a></div>
-
-          </div-->
         </div>
       </container>
+
+
+    <!--   <container>
+        <h4>Accessibility</h4>
+        <br>
+        <div class="form-group row">
+
+          <label class="col-md-2 form-control-label">User(s): </label>
+          <div class = "col-md-1"> 
+          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addUser()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+           <div class="form-group row" ng-repeat = 'user in subject.AccessAuthen.slice(1,entries.length)'>
+              <div class = "col-md-4" ng-class = "{'has-error': addSubjectForm.User{{$index}}.$touched && addSubjectForm.User{{$index}}.$invalid, 'has-success':addSubjectForm.User{{$index}}.$touched&& addSubjectForm.User{{$index}}.$valid}">
+                <input required type = "text" class="form-control" name="User{{$index}}" ng-model = "user.uid" placeholder="User uid">
+                <div class = "error msg_error" data-ng-show = "addSubjectForm.User{{$index}}.$touched">
+                 <span ng-show = "addSubjectForm.User{{$index}}.$invalid">
+                   <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                    User's uid is required!
+                 </span>
+                 </div>
+              </div>
+
+              <div class = "col-md-offset-1" ng-class = "{'has-error': addSubjectForm.userViewOnly{{$index}}.$touched && addSubjectForm.userViewOnly{{$index}}.$invalid, 'has-success':addSubjectForm.userViewOnly{{$index}}.$touched&& addSubjectForm.userViewOnly{{$index}}.$valid}">
+                    <div style="margin:0;padding:0" class = "form-group-row col-md-2 col-offset-1">View Only 
+                       <input type="checkbox" name="userViewOnly{{$index}}" ng-model = "user.ViewOnly" ng-true-value = "true">
+                    </div>
+                  <div class = "error msg_error" data-ng-show = "addSubjectForm.userViewOnly{{$index}}.$touched">
+                    <span ng-show = "addSubjectForm.userViewOnly{{$index}}.length == 0">
+                      <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please indicate this user's accesibility level!
+                    </span>
+                 </div>
+              </div>
+              <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click= "removeUser($index+1)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+            </div>
+      </container> -->
 
 
         <p class = "container"><div class="form-group pull-right"><div class="col-md-2">

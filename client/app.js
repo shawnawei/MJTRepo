@@ -159,10 +159,16 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 
 //============================ Admin Options ==============================
 	
-	.state("admin", {
+	.state("adminTestScanType", {
 		url:'/admin/edit_test_types',
 		controller:'adminController',
 		templateUrl:'views/adminOptions/edit_test_types.html'
+	})
+
+	.state("adminManageUser", {
+		url:'/admin/manage_user',
+		controller:'adminController',
+		templateUrl:'views/adminOptions/manage_users.html'
 	})
 
 	$urlRouterProvider.otherwise("/home");

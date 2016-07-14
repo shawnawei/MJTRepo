@@ -4,19 +4,57 @@ myApp.controller('subjectsController', ['$filter','$state', '$scope', '$http', '
 	function ($filter, $state, $scope, $http, $location, $stateParams, authenFact){
 	console.log('SubjectsController loaded');
 
-	console.log("logged in: "+ authenFact.getAccessToken());
+	console.log("logged in: "+ authenFact.getAccessToken().uid);
 
 	if (!authenFact.getAccessToken())
 	{
 		$state.go('login');
 	}
 
-	$scope.checkAuthen = function(){
-		if (authenFact.getAccessToken().uid != 'shawnawei')
-		{
-			$state.go('subjects');
-			alert("You are not authorized to edit this subject!");
-		}
+	$scope.subjectID = 'empty';
+	$scope.newSubject = true;
+	$scope.oldSubjectID = $stateParams.ID;
+	$scope.checkAuthen = function(subjectID, addSubject){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				$state.go('subjects');
+				alert("You are not authorized" + " !");
+			}
+
+			else
+			{
+				if (addSubject == undefined)
+				{
+					$state.go('subjectDetail', {ID:subjectID});
+				}
+				else if (subjectID == 'empty' && addSubject == true)
+				{
+					$state.go('addSubject');
+				}
+				else if (addSubject == false)
+				{
+					$state.go('editSubject',{ID:subjectID});
+				}
+				
+			}
+		})
+		
 	}
 
 
@@ -122,6 +160,14 @@ myApp.controller('subjectsController', ['$filter','$state', '$scope', '$http', '
 		$scope.subject.Projects.splice(index,1);
 	}
 
+	$scope.addUser = function(){
+		$scope.subject.AccessAuthen.push({uid:'', ViewOnly:false});
+	}
+
+	$scope.removeUser = function(index){
+		$scope.subject.AccessAuthen.splice(index,1);
+	}		
+
 
 }]);
 
@@ -134,17 +180,42 @@ myApp.controller('addSubjectController', ['$state', '$scope', '$http', '$locatio
 	if (!authenFact.getAccessToken())
 	{
 		$state.go('login');
-	}
-
-	else if (authenFact.getAccessToken().uid != 'shawnawei')
-	{
-		$state.go('subjects');
-		alert("You are not authorized to add new subjects!");
-	}
-
+	}	
 	else
 	{
 		console.log("logged in: "+ authenFact.getAccessToken().uid);
+	}
+
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				$state.go('subjects');
+				alert("You are not authorized to add new subjects" + " !");
+			}
+
+			else
+			{
+				$state.go('addSubject');
+			}
+		})
+		
 	}
 
 	$scope.subject = {
@@ -159,7 +230,6 @@ myApp.controller('addSubjectController', ['$state', '$scope', '$http', '$locatio
 			ContactPermit:false,
 			ContactInfo:'',
 			Other:'',
-			AccessAuthen:[{uid:'shawnawei', ViewOnly: false}],
 			Projects: []
 		};
 

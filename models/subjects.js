@@ -2,40 +2,17 @@
 var Promise = require("bluebird");
 var mongoose = require('mongoose');
 var moment = require('moment');
+var enumList = require('./enums.json');
 Promise.promisifyAll(mongoose);
 var Schema = mongoose.Schema;
 var enumSex = ['Female','Male', 'Unknown', 'Other'];
-var enumHandedness = ['Left', 'Right','Other','Unknown'];
-var enumDiagnosis = ['Control','Pre-term','Autism','ASD', 'BPD', 'Other','TD','Unknown'];
+var enumHandedness = enumList.handedness;
+var enumDiagnosis = enumList.diagnoses;
 var uniqueValidator = require('mongoose-unique-validator');
 
 var scanSessions = require('./scanSessions');
 //var beautifyUnique = require('mongoose-beautiful-unique-validation');
 
-/*scan session schema
-var scanSessionSchema = new Schema({
-	"SessionID": String,
-	"ParticipantAge": {
-		type: Number, 
-		min: 0,
-		max: 100
-	},
-
-	"MEGScans": {
-		"ScanName": String,
-		"ScanDate": Date
-	},
-
-	"MRIScans": {
-		"ScanName": String,
-		"ScanDate": Date
-	},
-
-	"TestResults":{
-		"IQScore": Number,
-		"ADHDScale": Number
-	}
-});*/
 
 //list of projects that a subject is involved in Schema
 var projectPerSubjectSchema = new Schema({
@@ -58,10 +35,6 @@ var subjectSchema = new Schema({
 	ContactPermit: String,
 	ContactInfo: String,
 	MRN: {type: Number, unique: true},
-	AccessAuthen:[{
-		uid: {type: String, required: true, ref: "AuthenList"}
-		ViewOnly: {type:Boolean}
-	}],
 	Projects:[projectPerSubjectSchema]
 });
 

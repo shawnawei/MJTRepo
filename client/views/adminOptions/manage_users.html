@@ -1,0 +1,256 @@
+<style>
+ul#scanList li
+{
+	display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center;
+    width:100%;
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:30px;
+}
+
+td {
+  height:30px;
+}
+
+</style>
+
+<div ng-init = "checkAuthen()">
+<div  class="container" ng-init="getUsers()">
+
+<div class = "row">
+<h3><strong>Users List</strong></h3>
+
+<button  class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add User</button>
+</div>
+<br><br>
+
+	<div class = "container col-md-12">
+		<table class = "table-stripe table-bordered">
+			<thead>
+				<tr>
+					<th>uid</th>
+					<th>Type</th>
+					<th col-span= "2">Project</th>
+					<th>Comment</th>
+					<th></th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr ng-repeat = "User in Users">
+				  <td class = "col-md-2">{{User.uid}}</td>
+		          <td class = "col-md-2">{{User.Type}}</td>
+		          <td class = "col-md-3" ng-init = "getAuthenProjects(User.uid)">
+		          	<span class = "btn btn-xs field-tip " ng-repeat = "project in userProjectAuthen[$index]">{{project.ProjectID}}
+    				<span class="tip-content">
+						View Only: {{project.ViewOnly}}
+	    			</span>
+					</span>
+
+		          </td>
+		          <td class = "col-md-3">{{User.Comment}}</td>
+		          <td class = "col-md-2">
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editUser-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteUser-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
+
+		          	<!-- edit user-->
+					<div class="modal fade" id="editUser-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">Edit User: {{User.uid}}</h4>
+			              </div>
+
+			             <form role= "form" ng-submit = "editMEGTypes(MEGType)">
+			              <div class="modal-body">
+
+			              	<div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">uid:</label>
+            					<div class="col-md-5">
+            						<input disabled type = "text" class="form-control" ng-model="User.uid" >
+            					</div>
+				            </div>
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Type:</label>
+            					<div class="col-md-5">
+            						<select type = "text" class="form-control" ng-model="User.Type" >
+            							<option value = "admin">Admin</option>
+            							<option value = "labmem">Lab Member</option>
+            							<option value = "visitor">Visitor</option>
+            							<option value = "other">Other</option>
+            						</select>
+            					</div>
+				            </div>
+
+
+				            <div class = "form-group row">
+				            	<label class= "form-control-label col-md-3">Comment:</label>
+            					<div class="col-md-5">
+            						<input type = "text" class="form-control" ng-model="User.Comment">
+            					</div>
+				            </div>			              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "submit" class="btn btn-success"  data-dismiss="modal" ng-click = "editUser(User)" onclick="javascript:window.location.reload()">Update</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+			        </div>
+
+		          	<!-- delete user-->
+					<div class="modal fade" id="deleteUser-{{$index}}" tabindex="-1" role="dialog">
+			          <div class="modal-dialog" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h3 class="modal-title" id="myModalLabel"><strong>WARNING!</strong></h3>
+			              </div>
+			              <div class="modal-body">
+			                    User: <strong>{{User.uid}}</strong>, will be permenantly deleted, are you sure?
+			              </div>
+			              <div class="modal-footer">
+			                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeUser(User)">Delete (danger!)</a>
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+			            </div>
+			          </div>
+			        </div>
+
+
+		          </td>
+		        </tr>
+			</tbody>
+
+		</table>
+	</div>
+
+	<!-- add new meg type-->
+	<div class="modal fade" id="addMEGType" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add New MEG Type</h4>
+          </div>
+
+         <form role= "form" ng-submit = "addMEGType(newMEGType)">
+          <div class="modal-body">
+
+          	<div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type ID:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeID" >
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Type Name:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeName">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Category:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.TypeCateg" placeholder="RS or Task">
+				</div>
+            </div>
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Description:</label>
+				<div class="col-md-9">
+					<input type = "text" class="form-control" ng-model="newMEGType.Desc" >
+				</div>
+            </div>	
+
+            <div class = "form-group row">
+            	<label class= "form-control-label col-md-3">Comment:</label>
+				<div class="col-md-5">
+					<input type = "text" class="form-control" ng-model="newMEGType.Comment">
+				</div>
+            </div>			              	
+            
+                
+          </div>
+          <div class="modal-footer">
+            <a type = "submit" class="btn btn-success" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "addMEGType(newMEGType)">Add</a>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+		</form>
+
+        </div>
+      </div>
+    </div>
+
+
+</div>
+
+
+
+<br><br><br><br>
+
+
+
+
+
+</div>
+
+<!-- <br><br>
+
+<h4>Convert to JSON</h4>
+	<input type = "file" id = "rawFile" >
+	<br><br>
+	<button onclick = "exportToJson()">Export to JSON</button>
+ -->
+
+<br><br><br><br>
+</div>
+
+
+
+<style>
+
+/* Hover tooltips */
+.field-tip {
+    position:relative;
+    cursor:help;
+}
+.field-tip .tip-content {
+    position:absolute;
+    visibility:hidden;
+    text-align: left;
+    bottom:-50px; /* - top padding */
+    width:100px;
+    padding:10px;
+    color:#fff;
+    background:#333;
+    opacity:0;
+    -webkit-transition:opacity 250ms ease-out;
+       -moz-transition:opacity 250ms ease-out;
+        -ms-transition:opacity 250ms ease-out;
+         -o-transition:opacity 250ms ease-out;
+            transition:opacity 250ms ease-out;
+}
+.field-tip:hover .tip-content {
+	visibility: visible;
+    right:-50px;
+    opacity:1;
+}
+</style>

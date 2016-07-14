@@ -399,6 +399,43 @@ module.exports.getScanSessionByMatchingSubjectIDinProject = function(subjectID, 
 }
 
 //get one session by subject's in project ID
+module.exports.findSubjectByinProjectID = function(subjectID, _uid){
+	return Promise.resolve().then(function (){
+		//check
+		return Promise.resolve();
+	})
+	.then(function () {
+		var query = [
+		{$lookup:
+			{
+				from:'subjectsList',
+				localField: 'SubjectID',
+				foreignField: 'ID',
+				as:"SubjectInfo"
+			}
+		},
+		{$match: {
+			$and: [
+			{SubjectIDinProject:{$regex:".*" + subjectID + ".*", $options:'i'}},
+			{"AccessAuthen.uid":{$in: [_uid, 'AllUser', 'AllUsers']}}
+			]}
+		},
+		{$project:{
+			'_id':0,
+			'relatedProject': 1,
+			'SubjectIDinProject': 1,
+			'SubjectID': 1,
+			'SubjectInfo': 1 
+			}
+		},
+		{$unwind: '$SubjectInfo'}
+		];
+
+		return ScanSession.aggregateAsync(query);
+	});
+}
+
+//get one session by subject's in project ID
 module.exports.getScanSessionBySubjectIDinProjectOnly = function(subjectID, _uid){
 	return Promise.resolve().then(function (){
 		//check

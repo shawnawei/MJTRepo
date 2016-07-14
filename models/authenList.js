@@ -9,14 +9,6 @@ var uniqueValidator = require('mongoose-unique-validator');
 var UserSchema = new Schema({
 
 	"uid": {type: String, required:true, unique:true},
-	"Project":[{
-		ProjectID: {type: String, required: true, ref: 'Project'},
-		ViewOnly:{type: Boolean}
-	}],
-	"Subject":[{
-		SubjectID: {type: String, required: true, ref: 'Subject'},
-		ViewOnly: {type: Boolean}
-	}],
 	"Type": String,
 	"Comment":String
 });
@@ -71,12 +63,12 @@ return Promise.resolve().then(function () {
 
 
 //edit one user
-module.exports.editUser = function(uid, newUserInfo){
+module.exports.editUser = function(useruid, newUserInfo){
 return Promise.resolve().then(function () {
 		// check your data
 		var test = new AuthenList(newUserInfo);
 		var error = test.validateSync();
-
+		console.log("enter function " + useruid, newUserInfo, error);
 		//check schema error
 		if (error != undefined)
 		{
@@ -92,14 +84,13 @@ return Promise.resolve().then(function () {
 		return Promise.resolve();
 	})
 	.then(function () {
+
+		console.log(useruid, newUserInfo);
 		// construct query and update database
-		var query = {uid:user};
+		var query = {uid:useruid};
 		var update = {
 			"uid": newUserInfo.uid,
-			"ViewProject":newUserInfo.ViewProject,
-			"EditProject":newUserInfo.EditProject,
-			"ViewSubject":newUserInfo.ViewSubject,
-			"EditSubject":newUserInfo.EditSubject,
+			"Type": newUserInfo.Type,
 			"Comment": newUserInfo.Comment
 		};
 		var option = {runValidators: true, context: 'query'};

@@ -13,7 +13,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
     <div class = "heading"></heading></div>
     <br>
 
-      <form ng-submit="addProjectForm.$valid && addProject()" method = "post" class = "form-horizontal" name = "addProjectForm" novalidate>
+      <form  ng-init = "checkAuthen()" ng-submit="addProjectForm.$valid && addProject()" method = "post" class = "form-horizontal" name = "addProjectForm" novalidate>
 
       <h5>* Required fields</h5>
 

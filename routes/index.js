@@ -645,22 +645,41 @@ router.get('/raw/searchsubjects/:ID', ensureAuthenticated, function(req, res) {
 
 //get individual subject detail page by inProjectID
 //search subject by in project ID feature
+// router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(req, res) {
+// 	var inProjectID = req.params.inProjectID;
+// 	var uid = req.user.uid;
+// 	scanSession.getScanSessionByMatchingSubjectIDinProject(inProjectID, uid)
+// 	.catch(function(err){
+// 		return Promise.reject(err);
+// 	})
+// 	.then(function(scanSessions){
+// 		var globalID = [];
+// 		for (var num in scanSessions)
+// 		{
+// 			globalID.push(scanSessions[num].SubjectID)
+// 		}
+// 		console.log(globalID);
+// 		return subject.searchSubjectsByID(globalID);
+// 	})
+// 	.then(function(subject){
+// 		res.json(subject);
+// 	})
+// 	.catch(function(err){
+// 		console.log(err);
+// 		if (err == "TypeError: Cannot read property 'SubjectID' of null")
+// 		{
+// 			console.log(inProjectID + " does not exists");
+// 		}
+// 		res.send("no match!");
+// 	});
+// });
+
+//get individual subject detail page by inProjectID
+//search subject by in project ID feature
 router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(req, res) {
 	var inProjectID = req.params.inProjectID;
 	var uid = req.user.uid;
-	scanSession.getScanSessionByMatchingSubjectIDinProject(inProjectID, uid)
-	.catch(function(err){
-		return Promise.reject(err);
-	})
-	.then(function(scanSessions){
-		var globalID = [];
-		for (var num in scanSessions)
-		{
-			globalID.push(scanSessions[num].SubjectID)
-		}
-		console.log(globalID);
-		return subject.searchSubjectsByID(globalID);
-	})
+	scanSession.findSubjectByinProjectID(inProjectID, uid)
 	.then(function(subject){
 		res.json(subject);
 	})
@@ -1080,8 +1099,8 @@ router.get('/raw/Users', ensureAuthenticated, function(req, res) {
 
 //get single user 
 router.get('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
-	var type = req.params.Type;
-	AuthenList.getUser()
+	var uid = req.params.uid;
+	AuthenList.getUser(uid)
 	.then(function(User) {
 		res.json(User);
 	});
@@ -1092,7 +1111,6 @@ router.get('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 router.put('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 	var newUser = req.body;
 	var uid = req.params.uid;
-
 	AuthenList.editUser(uid, newUser)
 	.then(function(user) {
 		res.json(user);
@@ -1103,7 +1121,7 @@ router.put('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 });
 
 
-//add a meg type
+//add a new user
 router.post('/raw/Users', ensureAuthenticated, function(req, res) {
 	var newUser = req.body;
 	AuthenList.addUser(newUser)
@@ -1115,7 +1133,7 @@ router.post('/raw/Users', ensureAuthenticated, function(req, res) {
 	});
 });
 
-//remove a meg type
+//remove a recorded user
 router.delete('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 	var uid = req.params.uid;
 	AuthenList.deleteUser(uid)

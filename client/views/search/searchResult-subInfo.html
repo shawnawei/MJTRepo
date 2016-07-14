@@ -91,11 +91,11 @@ td {
 	    <tbody>
 	    <tr ng-repeat = "subject in subjects">
 	    	<th scope = "row"><input type="checkbox" ng-model = "subject.selected" ng-click = "getSelectedSubjects(subject)"></th>
-          	<td><a href = "subjects/{{subject.ID}}">{{subject.ID}}</a></td>
+          	<td><a ng-click = "checkAuthen(subject.ID)">{{subject.ID}}</a></td>
           	<td>{{subject.Sex}}</td>
           	<td>{{subject.Diagnosis}}</td>
           	<td>{{subject.Handedness}}</td>
-          	<td><a ng-repeat = 'project in subject.Projects' href = "ScanInfo/{{project.ProjectID}}/{{project.SubjectIDinProject}}"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs">{{project.ProjectID}} - {{project.SubjectIDinProject}} </button></a></td>
+          	<td><a ng-repeat = 'project in subject.Projects' ng-click = "getAuthenViewList(project.ProjectID, project.SubjectIDinProject)"><button id = 'projectDetail-{{$index}}' class = "btn btn-default btn-xs">{{project.ProjectID}}</button></a></td>
 	    </tr>
 	    </tbody>
 	</table>

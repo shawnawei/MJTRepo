@@ -54,7 +54,7 @@ td {
 	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(projects)">All</a><a class="btn btn-xs" ng-click = "deselectAll(projects)">Clear</a></th>
 	    	<th>Project ID</th>
 	    	<th>Project Name</th>
-	    	<th>Subjects Enrolled <p>(Global ID - inProject ID)</p></th>
+	    	<th>Subjects Enrolled</th>
 	    	<th>Other Information</th>
 	    </tr>
 	    </thead>
@@ -62,9 +62,9 @@ td {
 	    <tbody>
 	    <tr ng-repeat = "project in projects">
 	    	<th scope = "row"><input type="checkbox" ng-model = "project.selected" ng-click = "getSelectedProjects(project)"></th>
-          	<td><a href = "projects/{{project.ProjectID}}">{{project.ProjectID}}</a></td>
+          	<td><a ng-click = "getAuthenProjectViewList(project.ProjectID, !onIDpage)">{{project.ProjectID}}</a></td>
           	<td>{{project.ProjectName}}</td>
-          	<td class = "col-md-4"><a ng-repeat = "subject in project.SubjectsID" href = "ScanInfo/{{project.ProjectID}}/{{subject.inProjectID}}"><button class = "btn btn-default btn-xs">{{subject.GlobalID}} - {{subject.inProjectID}}</button></a></td>
+          	<td class = "col-md-4"><a ng-repeat = "subject in project.SubjectsID" ng-click = "getAuthenScanViewList(project.ProjectID, subject.inProjectID, !onIDpage)"><button class = "btn btn-default btn-xs">{{subject.inProjectID}}</button></a></td>
           	<td>Other</td>
 	    </tr>
 	    </tbody>
