@@ -50,6 +50,16 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         </container>
 
         <container>
+        <div class="form-group row">
+          <label class = "form-control-label col-md-2">Project Description : </label>
+          <div class = "col-md-10">
+            <textarea type = "text" ng-model="project.ProjectDesc" class="form-control" name = "projectDesc"></textarea>
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <br>
         <div class = "form-group row">
           <label class = "form-control-label col-md-2">Subjects: </label>
           <div class = "col-md-1"> 
@@ -123,8 +133,13 @@ REDESIGN THE PAGE IF TIME PREMITS-->
             </div>
         </container>
 
-
-
+        <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
 
        
         <button type="button" ng-disabled = "addProjectForm.$invalid" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addproject">Add Project</button>

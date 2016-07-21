@@ -2,6 +2,21 @@ var myApp = angular.module('myApp',
 	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv', 'ngMessages',
 	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime']);
 
+myApp.controller('mainCtrl',  [ '$scope', '$http', '$location','localStorageService', 'authenFact',
+ function ($scope, $http, $location, localStorageService, authenFact){
+ 	console.log('main controller loaded');
+
+	if (!authenFact.getAccessToken())
+	{
+		$scope.loggedin = false;
+	}
+	else{
+		$scope.loggedin = true;
+	}
+
+ }]);
+
+
 myApp.config(function($stateProvider, $urlRouterProvider, 
 	$urlMatcherFactoryProvider, $locationProvider){
 
@@ -115,7 +130,7 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 		templateUrl:'views/search/searchResult-subPID.html'
 	})
 	.state("searchResult-SubjectInfo", {
-		url:'/searchResult-SubjectInfo?Sex&Handedness&Diagnosis&Contact&Age&MRN&Projects',
+		url:'/searchResult-SubjectInfo?Sex&Handedness&Diagnosis&Contact&Age&MRN$FirstName&LastName&Projects',
 		controller:'searchSubjectInfoController',
 		templateUrl:'views/search/searchResult-subInfo.html'
 	})
@@ -194,3 +209,5 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 // 		});
 
 // }]);
+
+

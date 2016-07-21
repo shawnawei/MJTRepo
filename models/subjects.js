@@ -17,8 +17,7 @@ var scanSessions = require('./scanSessions');
 //list of projects that a subject is involved in Schema
 var projectPerSubjectSchema = new Schema({
 	"ProjectID": {type: String, ref: 'Project'},
-	"SubjectIDinProject": {type: String, ref: 'scanSessions'},
-	"ScanSessions": [{type: String, ref: 'scanSessions'}]
+	"SubjectIDinProject": {type: String, ref: 'scanSessions'}
 });
 
 //subject schema
@@ -34,7 +33,10 @@ var subjectSchema = new Schema({
 	Other: String,
 	ContactPermit: String,
 	ContactInfo: String,
-	MRN: {type: Number, unique: true},
+	//this can't be set as unique because when adding a new subject to project
+	//the MRN is given as null, thus may cause duplicate error when creating
+	//by mongo
+	MRN: Number,
 	Projects:[projectPerSubjectSchema]
 });
 
@@ -77,12 +79,14 @@ module.exports.addSubject = function(subject){
 				((error.errors['ID'].message) == "Path `ID` is required."))
 			{
 				console.log('Subject ID is required!');
+				var err = 'Error: Subject ID is required!';
 			}
 			
 			if ((error.errors['Sex'] != undefined )&&
 				((error.errors['Sex'].kind) == "enum"))
 			{
 				console.log("Invalid 'Sex' type, please choose subject's sex from the drop-down list.");
+				var err = "Error: Invalid 'Sex' type, please choose subject's sex from the drop-down list.";
 			}
 
 
@@ -90,40 +94,36 @@ module.exports.addSubject = function(subject){
 				((error.errors['Handedness'].kind) =="enum"))
 			{
 				console.log("Invalid 'Handedness' type, please choose subject's handedness from the drop-down list.");
+				var err = "Error: Invalid 'Handedness' type, please choose subject's handedness from the drop-down list.";
 			}
 
 			if ((error.errors['Diagnosis'] != undefined) && 
 				((error.errors['Diagnosis'].kind) =="enum"))
 			{
 				console.log("Invalid 'Diagnosis' type, please choose subject's diagnosis from the drop-down list.");
+				var err = "Error: Invalid 'Diagnosis' type, please choose subject's diagnosis from the drop-down list.";
 			}
 
-			if ((error.errors['DateOfBirth'] != undefined) && 
-				((error.errors['Diagnosis'].kind) =="Date"))
-			{
-				console.log("Invalid 'DateOfBirth' type, it must be a date!");
-			}
-			return Promise.reject();
+			return Promise.reject(err);
 		}
 
 		else {
 
-			console.log("HI" + subject + testSubjectProject);
 			for (var num in testSubjectProject)
 			{
-				console.log(testSubjectProject);
 				if(testSubjectProject[num].ProjectID == '')
 				{
 					console.log("Project ID cannot be empty");
-					return Promise.reject();
+					var err = "Error: Project ID cannot be empty";
+					return Promise.reject(err);
 				}
 				if(testSubjectProject[num].SubjectIDinProject == '')
 				{
 					console.log("Subject ID in Project cannot be empty");
-					return Promise.reject();
+					var err = "Error: Subject ID in Project cannot be empty";
+					return Promise.reject(err);
 				}
 			}
-			console.log("what");
 
 			//check project duplicate
 			var projectEntered = [];
@@ -135,25 +135,24 @@ module.exports.addSubject = function(subject){
 			}
 			if(checkIfUniqueArray(projectEntered) == false){
 				console.log ("Duplicate 'Project(s) Enrolled' fields!")
-				return Promise.reject();
+				var err = "Error: Subject can only enrolled in each project once!";
+				return Promise.reject(err);
 			}
-			//if (checkIfUniqueArray(SubjectIDEntered) == false){
-			//	console.log ("Subject ID in each project must be unique!");
-			//	return Promise.reject();
-			//}
+			// if (checkIfUniqueArray(SubjectIDEntered) == false){
+			// 	console.log ("Subject ID in each project must be unique!");
+			// 	return Promise.reject();
+			// }
 		}
 		return Promise.resolve();
 	})
-	
 	.then(function (){
 		console.log("add subject");
-		console.log(subject);
 		return Subject.createAsync(subject);
-	})
-	.catch(function(err){
-		console.log("subject cannot be added+ "+err);
-		return Promise.reject();
 	});
+	// .catch(function(err){
+	// 	console.log("subject cannot be added+ "+err);
+	// 	return Promise.reject(err);
+	// });
 }
 
 //update a subject
@@ -176,12 +175,14 @@ module.exports.updateSubject = function(id, subject, value){
 				((error.errors['ID'].message) == "Path `ID` is required."))
 			{
 				console.log('Subject ID is required!');
+				var err = 'Error: Subject ID is required!';
 			}
 			
 			if ((error.errors['Sex'] != undefined )&&
 				((error.errors['Sex'].kind) == "enum"))
 			{
 				console.log("Invalid 'Sex' type, please choose subject's sex from the drop-down list.");
+				var err = "Error: Invalid 'Sex' type, please choose subject's sex from the drop-down list.";
 			}
 
 
@@ -189,15 +190,17 @@ module.exports.updateSubject = function(id, subject, value){
 				((error.errors['Handedness'].kind) =="enum"))
 			{
 				console.log("Invalid 'Handedness' type, please choose subject's handedness from the drop-down list.");
+				var err = "Error: Invalid 'Handedness' type, please choose subject's handedness from the drop-down list."
 			}
 
 			if ((error.errors['Diagnosis'] != undefined) && 
 				((error.errors['Diagnosis'].kind) =="enum"))
 			{
 				console.log("Invalid 'Diagnosis' type, please choose subject's diagnosis from the drop-down list.");
+				var err = "Error: Invalid 'Diagnosis' type, please choose subject's diagnosis from the drop-down list.";
 			}
 
-			return Promise.reject();
+			return Promise.reject(err);
 		}
 
 		else {
@@ -213,15 +216,11 @@ module.exports.updateSubject = function(id, subject, value){
 			//console.log(SubjectIDEntered);
 			if(checkIfUniqueArray(projectEntered) == false){
 				console.log ("Duplicate 'Project(s) Enrolled' fields!")
-				return Promise.reject();
+				var err = "Error: Subject can only enrolled in each project once!";
+				return Promise.reject(err);
 			}
 		}
-
 		return Promise.resolve();
-	})
-	.catch(function(err){
-		console.log("error with validation " + err);
-		return Promise.reject();
 	})
 	.then(function(){
 		var project = require('./projects');
@@ -369,7 +368,7 @@ module.exports.updateOrAddSubject = function(project, subjectsID){
 								"SubjectIDinProject": curPID,
 								"relatedProject": projectID,
 								"AccessAuthen": project.AccessAuthen,
-								"ScanSessions":[{SessionID:curPID + '_A', MEGScans: [], MRIScans: [], TestResults: []}] 
+								"ScanSessions":[{SessionID:curPID + '_01', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
 							return scanSessions.addScanSession(newsession);
 						})
@@ -389,7 +388,7 @@ module.exports.updateOrAddSubject = function(project, subjectsID){
 								"SubjectIDinProject": curPID,
 								"relatedProject": projectID,
 								"AccessAuthen": project.AccessAuthen,
-								"ScanSessions":[{SessionID:curPID+'_A', MEGScans: [], MRIScans: [], TestResults: []}] 
+								"ScanSessions":[{SessionID:curPID+'_01', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
 							return scanSessions.addScanSession(newsession);
 						})
@@ -434,6 +433,8 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 			subjectIDs.map(function(cur_subject, ind){
 				Subject.findOneAsync({ID:cur_subject.globalID})
 				.then(function(subject){
+
+					console.log("this subject "+ subject);
 
 					//if the subject exists
 					if (subject != null)
@@ -487,7 +488,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 									"SubjectIDinProject": cur_subject.newsubjectID,
 									"AccessAuthen": project.AccessAuthen,
 									"ScanSessions": [{
-										'SessionID':cur_subject.newsubjectID + "_A", 
+										'SessionID':cur_subject.newsubjectID + "_01", 
 										'MEGScans':[],
 										'MRIScans':[],
 										'TestResults':[]
@@ -531,8 +532,15 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 					else 
 					{
 						var newProject = {ProjectID: projectID, SubjectIDinProject:cur_subject.newsubjectID};
-						var newSubject = {ID: cur_subject.globalID, 
-										  Projects:[newProject]};
+						var newSubject = {
+							ID: cur_subject.globalID,
+							Sex: "Unknown",
+							Handedness: "Unknown",
+							Diagnosis: "Unknown",
+							MRN: 0,
+							Projects:[newProject]
+						};
+
 						Subject.addSubject(newSubject)
 						.then(function(){
 							var theScanSession = require('./scanSessions');
@@ -542,7 +550,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 								"SubjectIDinProject": cur_subject.newsubjectID,
 								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions": [{
-									'SessionID':cur_subject.newsubjectID + "_A", 
+									'SessionID':cur_subject.newsubjectID + "_01", 
 									'MEGScans':[],
 									'MRIScans':[],
 									'TestResults':[]
@@ -553,7 +561,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 								return Promise.resolve();
 							})
 							.catch(function(err){
-								return Promise.reject();
+								return Promise.reject(err);
 							})
 						})
 						.then(function(){
@@ -676,12 +684,12 @@ module.exports.searchSubjectsByID = function(IDs){
 	});
 }
 
-module.exports.getSubjectsByInfo = function(sex, handedness, diagnosis, contact,age, mrn, projects){
+module.exports.getSubjectsByInfo = function(sex, handedness, diagnosis, contact,age, mrn, fname, lname,projects){
 	return Promise.resolve()
 	.then(function(){
-		console.log(sex, handedness, diagnosis, contact, age, mrn, projects);
+		console.log(sex, handedness, diagnosis, contact, age, mrn, fname, lname, projects);
 
-		var query = querySubjectInfo(sex, handedness, diagnosis, contact, age, mrn, projects);
+		var query = querySubjectInfo(sex, handedness, diagnosis, contact, age, mrn, fname, lname,projects);
 		return Subject.findAsync(query);
 	});
 }
@@ -783,9 +791,16 @@ function formUpdatedSubjectArray (oldsubject, newsubject){
 	return updatedArray;
 }
 
-function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn, projects) {
-	var query = {Sex:sex, Handedness:handedness, Diagnosis:diagnosis, 
-		ContactPermit:contact, MRN:mrn, 'Projects.ProjectID':{$in:projects}};
+function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn,fname, lname, projects) {
+	var query = {
+		Sex:sex, 
+		Handedness:handedness, 
+		Diagnosis:diagnosis, 
+		ContactPermit:contact, 
+		MRN:mrn, 
+		FirstName:{$regex:".*" + fname + ".*", $options:'i'},
+		LastName: {$regex:".*" + lname + ".*", $options:'i'},
+		'Projects.ProjectID':{$in:projects}};
 	
 	if (sex == 'All')
 	{
@@ -810,6 +825,15 @@ function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn, projec
 	if (mrn == 'All')
 	{
 		delete query.MRN;
+	}
+
+	if (fname == 'All')
+	{
+		delete query.FirstName;
+	}
+	if (lname == 'All')
+	{
+		delete query.LastName;
 	}
 
 	// if (age == 'All')

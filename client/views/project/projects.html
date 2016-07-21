@@ -9,10 +9,10 @@
 }
 </style>
 
-<div class="panel panel-default" ng-init="getProjects()">
+<div class="panel panel-default" ng-init="getProjects(); checkAuthen(!addProject);">
   <div class="panel-heading">
     <h3 class="panel-title pull-left"><strong>Projects</strong></h3>
-    <a><button type = "button" class = "btn btn-default pull-right"><a ng-click = "checkAuthen()">New Project</a></button>
+    <a><button type = "button" class = "btn btn-default pull-right"><a ng-click = "checkAuthen(addProject)">New Project</a></button>
     <div class= "clearfix"></div>
 
   </div>
@@ -22,7 +22,7 @@
         <div class="col-md-3">
           <div class="col-md-3">
             <h4>{{project['ProjectID']}}</h4>
-            <a class="btn btn-primary"  ng-click = "getAuthenViewList(project.ProjectID)">View Details</a>
+            <a class="btn btn-primary" ng-disabled = "!checkViewable(project.ProjectID)" ng-click = "getAuthenViewList(project.ProjectID)">View Details</a>
           </div>            
           </div>
         </div>

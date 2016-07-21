@@ -37,6 +37,7 @@ td {
 });
 </script>
 
+<div ng-init = "checkAuthen(subjectID)">
 
 <div style = "width:80%; float:left;">
 <h3><strong>Search Subjects by Criteria Result: </strong></h3>
@@ -61,10 +62,15 @@ td {
       		<h4>Search Keywords</h4>
       	</div>
       	<div class = "modal-body" style="text-align: left; word-wrap: break-word">
+        {{requestID}}
       	<p><strong>Sex: </strong>{{requestID.Sex}} </p>
       	<p><strong>Diagnosis:</strong> {{requestID.Diagnosis}}</p>
       	<p><strong>Handedness:</strong> {{requestID.Handedness}}</p>
-      	<p><strong>Projects:</strong> {{requestID.Projects}}</p>
+      	<p><strong>MRN:</strong> {{requestID.MRN}}</p>
+        <p><strong>First Name:</strong> {{requestID.FirstName}}</p>
+        <p><strong>Last Name:</strong> {{requestID.LastName}}</p>
+        <p><strong>Permission to Contact:</strong> {{requestID.Contact}}</p>
+        <p><strong>Projects:</strong> {{requestID.Projects}}</p>
       	</div>
     </div>
   </div>
@@ -107,5 +113,6 @@ td {
 
 
 </div>
+
 
 

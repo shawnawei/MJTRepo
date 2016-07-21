@@ -28,7 +28,7 @@ td {
 </script>
 
 
-<div>
+<div ng-init = "checkAuthen(subjectID)">
 
 <div style = "width:90%; float:left;">
 <h3><strong>Search Project by Project Name: {{requestID}} </strong></h3>
@@ -74,7 +74,6 @@ td {
 	</div>
 
 
-</div>
 
 
 <div id = "exportable" style = "display:none">
@@ -98,4 +97,6 @@ td {
 	    </tr>
 	    </tbody>
 	</table>
+</div>
+
 </div>

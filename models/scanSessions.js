@@ -60,11 +60,24 @@ ScanSessionsSchema.plugin(uniqueValidator);
 SessionIDSchema.plugin(uniqueValidator);
 var ScanSession = module.exports = mongoose.model('scanSession', ScanSessionsSchema, 'scanSessions');
 
-//get all sessions
-module.exports.getScanSessions = function(){
+//get all authorized sessions
+module.exports.getScanSessions = function(uid){
 	return Promise.resolve()
 	.then(function (){
-		return ScanSession.findAsync();
+		var query = {
+			'AccessAuthen.uid': {$in:[uid, 'AllUsers', 'AllUser']}
+		};
+		return ScanSession.findAsync(query);
+	});
+}
+
+//get all sessions
+module.exports.getAllScanSessions = function(){
+	return Promise.resolve()
+	.then(function (){
+		var query = {
+		};
+		return ScanSession.findAsync(query);
 	});
 }
 
@@ -75,12 +88,32 @@ module.exports.getScanSessionBySubjectIDinProject = function(projectID, subjectI
 		return Promise.resolve();
 	})
 	.then(function () {
-		var query = {
-			relatedProject: projectID, 
-			SubjectIDinProject: subjectID,
-			'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}
-		};
-		return ScanSession.findOneAsync(query);
+		var query = [
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+			},
+			{$unwind: '$SubjectInfo'},
+			{$match: {
+				$and: [
+				{relatedProject: projectID},
+				{SubjectIDinProject: subjectID},
+				{"AccessAuthen.uid":{$in: [_uid, 'AllUser', 'AllUsers']}}
+				]}
+			}
+		];
+
+
+		// var query = {
+		// 	relatedProject: projectID, 
+		// 	SubjectIDinProject: subjectID,
+		// 	'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}
+		// };
+		return ScanSession.aggregateAsync(query);
 	});
 }
 
@@ -112,6 +145,40 @@ module.exports.getScanSessionBySessionID = function(projectID, subjectID, scanID
 	});
 }
 
+
+//get all scan sessions for one project
+module.exports.getScanSessionByProjectID = function(projectID, uid){
+	return Promise.resolve().then(function (){
+		//check
+		return Promise.resolve();
+	})
+	.then(function () {
+		// var query = {
+		// 	relatedProject: projectID,
+		// 	'AccessAuthen.uid': {$in:[uid, 'AllUsers', 'AllUser']}
+		// };
+
+		var query = [
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+			},
+			{$unwind: '$SubjectInfo'},
+			{$match: {
+				$and: [
+				{relatedProject: projectID},
+				{"AccessAuthen.uid":{$in: [uid, 'AllUser', 'AllUsers']}}
+				]}
+			}
+		];
+		return ScanSession.aggregateAsync(query);
+	});
+}
+
 //add scan sessions
 module.exports.addScanSession = function(scanSession){
 	return Promise.resolve().then(function(){
@@ -126,18 +193,21 @@ module.exports.addScanSession = function(scanSession){
 				(error.errors['SubjectID'].message) == "Path `SubjectID` is required.")
 			{
 				console.log('Please enter the Subject ID!');
+				var err = 'Please enter the Subject ID!';
 			}
 
 			if ((error.errors['SubjectIDinProject'] != undefined) &&
 				(error.errors['SubjectIDinProject'].message) == "Path `SubjectIDinProject` is required.")
 			{
 				console.log('Please enter the in Subject ID in project!');
+				var err = 'Please enter the in Subject ID in project!';
 			}
 
 			if ((error.errors['SessionID'] != undefined) &&
 				(error.errors['SessionID'].message) == "Path `SessionID` is required.")
 			{
 				console.log('Please enter the ID of this scan session!');
+				var err = 'Please enter the ID of this scan session!';
 			}
 
 
@@ -277,17 +347,17 @@ module.exports.updateSingleScanSession = function(OldScanSession, subjectID, ses
 
 		return Promise.resolve();
 	})
-	.catch(function(err){
-		console.log("some error with user updated scan + " + err);
-		return Promise.reject(err);
-	})
+	
 	.then(function(){
 		var subject = require('./subjects');
 		var globalID = OldScanSession.SubjectID;
 		var projectID = OldScanSession.relatedProject;
 		return subject.updateSingleScanInSubject(globalID, subjectID, projectID, sessionID, scanSession); 
 	})
-	
+	.catch(function(err){
+		console.log("some error with user updated scan + " + err);
+		return Promise.reject(err);
+	});
 }
 
 //add a single scan session
@@ -1047,6 +1117,32 @@ function queryScanInfo (scanInfo, _uid){
 		else if (MEGType[0] != 'None' && MRIType[0] != 'None')
 		{
 
+			// var query = [
+			// 	{$unwind:'$ScanSessions'},
+			// 	{$match:
+			// 		{$and: [
+			// 			{'relatedProject':{$in: Projects}},
+			// 			{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
+			// 			]
+			// 		}
+			// 	},
+			// 	{$match:
+			// 		{$or: [
+			// 			{'SubjectID': {$in: SubjectGID}},
+			// 			{'SubjectIDinProject':{$in: SubjectPID}}
+			// 		]} 
+			// 	},
+			// 	{$project: {'ScanSessions.TestResults': 1}},
+			// 	{$unwind:'$ScanSessions.TestResults'},
+			// 	{$match:
+			// 		{$and: [
+			// 			{'ScanSessions.TestResults.Type': {$in:testType}}
+			// 			]
+			// 		}
+			// 	},
+
+			// ];
+
 			var query = [
 			{$unwind:'$ScanSessions'},
 			{$match:
@@ -1087,7 +1183,8 @@ function queryScanInfo (scanInfo, _uid){
 							}
 						}
 					},
-				
+
+
 				'_id':0,
 				'ScanSessions.SessionID': 1,
 				'ScanSessions.TestResults': 1,

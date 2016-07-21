@@ -1,8 +1,10 @@
 var myApp = angular.module('myApp');
 
-myApp.controller('authenController', [ '$scope', '$http', '$location','localStorageService', 'authenFact',
- function ($scope, $http, $location, localStorageService, authenFact){
+myApp.controller('authenController', ['$rootScope','$scope', '$http', '$location','localStorageService', 'authenFact',
+ function ($rootScope, $scope, $http, $location, localStorageService, authenFact){
 	console.log('authenController loaded');
+	$rootScope.adminloggedin = false;
+	$rootScope.loggedin = false;
 
 	$scope.HomeLogin = function(User){
 
@@ -31,12 +33,9 @@ myApp.controller('authenController', [ '$scope', '$http', '$location','localStor
 }]);
 
 
-myApp.controller('homeController', [ '$state','$scope', '$http', '$location', 'localStorageService', 'authenFact',
-	function($state, $scope, $http, $location, localStorageService, authenFact){
+myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$location', 'localStorageService', 'authenFact',
+	function($rootScope, $state, $scope, $http, $location, localStorageService, authenFact){
 	console.log('homeController loaded');
-
-	console.log(authenFact.getAccessToken());
-	
 
 	if (!authenFact.getAccessToken())
 	{
@@ -45,77 +44,141 @@ myApp.controller('homeController', [ '$state','$scope', '$http', '$location', 'l
 
 	else
 	{
+		console.log("logged in as: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+
+		$scope.checkAuthen = function(){
+
+			$http.get('raw/Users')
+			.then(function(response){
+				var Users = response.data;
+				console.log(authenFact.getAccessToken());
+				var _uid = authenFact.getAccessToken().uid;
+				var userdisplayname = authenFact.getAccessToken().displayName;
+				var usertitle = authenFact.getAccessToken().title;
+
+				var user = {
+					uid:_uid, 
+					displayName:userdisplayname, 
+					type: '', 
+					projects:[], 
+					title:usertitle
+				};
+
+				for(var num in Users)
+				{
+					if (Users[num].uid == _uid)
+					{
+						user.type = Users[num].Type;
+					}
+				}
+
+				if (user.type != 'admin')
+				{
+					$rootScope.adminloggedin = false;
+				}
+
+				else
+				{
+					$rootScope.adminloggedin = true;
+				}
+
+				$scope.user = user;
+			})
+		}
+
+		$scope.gotoproject = function(project){
+
+			$state.go('projectDetail', {ProjectID: project});
+		}
+
 
 		$scope.getSubjects = function(){
-		$http.get('/raw/subjects').success(function(response){
-			$scope.subjects = response;
+		$http.get('/raw/subjectnum').success(function(response){
+			$scope.subjectlength = response;
 		});
-	}
-
-	$scope.getProjects = function(){
-		$http.get('/raw/projects').success(function(response){
-			$scope.projects = response;
-		});
-	}
-
-	$scope.getScanSessions = function(){
-		$http.get('/raw/scanSessions').success(function(response){
-			var oldarray = [];
-			response.map(function(a){
-				var session = a.ScanSessions;
-				for (var num in session)
-				{
-					oldarray.push(session[num].SessionID);
-				}
-			});
-			$scope.scan = oldarray;
-		});
-	}
-
-	$scope.getNumbers = function(){
-		$scope.subjects=getSubjects();
-		$scope.projects=getProjects();
-		$scope.scanSessions= getScanSessions();
-	}
-
-
-
-	$scope.HomeLogin = function(User){
-		$http.post('/raw/login', User)
-		.success(function(response){
-			window.location.href= '/subjects';
-		})
-		.error(function(response){
-			if (response == 'Bad Request')
-			{
-				$scope.error = "Please enter your username and password!";
-			}
-
-			if (response == 'Unauthorized')
-			{
-				$scope.error = "Incorrect username or password!";
-			}
-			
-		});
-	}
-
-	$scope.logOut = function(){
-		console.log("bye " + authenFact.getAccessToken().displayName);
-
-		if(authenFact.getAccessToken())
-		{
-			authenFact.removeAccessToken();
-			console.log(authenFact);
-			$http.get('/raw/logOut').success(function(){});
-			$state.go('login');
-			
 		}
-		
+
+		$scope.getProjects = function(){
+			$http.get('/raw/projectnum').success(function(response){
+				$scope.projectlength = response;
+			});
+		}
+
+		$scope.getAuthenProjects = function(){
+			$http.get('/raw/projects-authen').success(function(response){
+				
+				var authenProjects = [];
+				for (var num in response)
+				{
+					var id = response[num].ProjectID;
+					var name = response[num].ProjectName;
+					var authenList = response[num].AccessAuthen;
+					var _uid = authenFact.getAccessToken().uid;
+
+					for (var i in authenList)
+					{
+						if (authenList[i].uid == _uid && authenList[i].ViewOnly == true)
+						{
+							var accesslevel = 'View Only';
+						}
+						else if (authenList[i].uid == _uid && authenList[i].ViewOnly == false)
+						{
+							var accesslevel = 'Editable';
+						}
+						else if (authenList[i].uid == 'AllUsers' && authenList[i].ViewOnly == false)
+						{
+							var accesslevel = 'Editable';
+						}
+					}
+					
+
+					authenProjects.push({ProjectID: id, ProjectName: name, AccessAuthen: accesslevel});
+				}
+
+				$scope.AuthenProjects = authenProjects;
+			});
+		}
+
+		$scope.getScanSessions = function(){
+			$http.get('/raw/scannum').success(function(response){
+				$scope.scanlength = response;
+			});
+		}
+
+
+
+		// $scope.HomeLogin = function(User){
+		// 	$http.post('/raw/login', User)
+		// 	.success(function(response){
+		// 		window.location.href= '/subjects';
+		// 	})
+		// 	.error(function(response){
+		// 		if (response == 'Bad Request')
+		// 		{
+		// 			$scope.error = "Please enter your username and password!";
+		// 		}
+
+		// 		if (response == 'Unauthorized')
+		// 		{
+		// 			$scope.error = "Incorrect username or password!";
+		// 		}
+				
+		// 	});
+		// }
+
+		$scope.logOut = function(){
+			console.log("bye " + authenFact.getAccessToken().displayName);
+
+			if(authenFact.getAccessToken())
+			{
+				authenFact.removeAccessToken();
+				console.log(authenFact);
+				$http.get('/raw/logOut').success(function(){});
+				$state.go('login');
+			}
+			
+		}	
 	}
-		
-	}
-
-
-
 
 }]);

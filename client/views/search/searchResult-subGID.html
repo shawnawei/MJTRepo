@@ -37,7 +37,7 @@ td {
 </script>
 
 
-<div>
+<div ng-init = "checkAuthen(subjectID)">
 
 <div style = "width:90%; float:left;">
 <h3><strong>Search Subject by Global ID: {{requestID.GlobalID}} </strong></h3>
@@ -100,9 +100,7 @@ td {
 <!-- this is the table that goes to the excel sheet-->
 <div id = "exportable" style = "display:none">
 
-
 	<table>
-
 	    <thead class = "table table-stripe table-bordered">
 	    <tr>
 	    	<th>Subject ID</th>
@@ -116,7 +114,7 @@ td {
 	    <tbody>
 	    <tr ng-repeat = "subject in subjects| filter: {selected: true}">
 
-          	<td>{{subject.ID}}</a></td>
+          	<td>{{subject.ID}}</td>
           	<td>{{subject.Sex}}</td>
           	<td>{{subject.Diagnosis}}</td>
           	<td>{{subject.Handedness}}</td>
@@ -125,4 +123,6 @@ td {
 	    </tbody>
 	</table>
 	</div>
+
+
 </div>

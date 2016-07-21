@@ -34,21 +34,11 @@ td {
     padding: 0;
     margin: 0;
 }
-
-.arrow-up {
-	width:0;
-	height:0;
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-bottom: 5px solid black;
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
 }
-
-.arrow-down {
-	width:0;
-	height:0;
-	border-left: 5px solid transparent;
-	border-right: 5px solid transparent;
-	border-top: 5px solid black;
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
 }
 
 
@@ -61,8 +51,7 @@ td {
 });
 </script>
 
-
-<div>
+<div ng-init ="checkAuthen()">
 
 
 <div style = "width:76%; float:left;">
@@ -93,10 +82,10 @@ td {
       	<p><strong>MRI Type:</strong> {{requestID.MRIType}}</p>
       	<p><strong>Test Type:</strong> {{requestID.testType}}</p>
       	<p><strong>Search in Projects:</strong> {{requestID.Projects}}</p>
-      	<p><strong>Search for Subjects (Global ID):</strong> {{requestID.SubjectGID}}</p>
+      	<!-- <p><strong>Search for Subjects (Global ID):</strong> {{requestID.SubjectGID}}</p>
       	<p><strong>Search for Subjects (in Project ID):</strong> {{requestID.SubjectPID}}</p>
       	<p><strong>Search for Subjects (Sex):</strong> {{requestID.SubjectSex}}</p>
-      	<p><strong>Search for Subjects (Diagnosis):</strong> {{requestID.SubjectDiagnosis}}</p>
+      	<p><strong>Search for Subjects (Diagnosis):</strong> {{requestID.SubjectDiagnosis}}</p> -->
       	</div>
     </div>
   </div>
@@ -115,11 +104,13 @@ td {
 	    <thead class = "table table-stripe table-bordered">
 	    <tr>
 	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(scanSessions)">All</a><a class="btn btn-xs" ng-click = "deselectAll(scanSessions)">Clear</a></th>
-	    	<th ng-click= "sortData('_id.SessionID')">Session ID<i ng-class = "getSortClass('_id.SessionID')"></i></th>
+	    	<th ng-click= "sortBy('_id.SessionID')">Session ID
+	    	<span class="sortorder" ng-show="propertyName === '_id.SessionID'" ng-class="{reverse: reverse}"></span></th>
 	    	<th>MEGs</th>
 	    	<th>MRIs</th>
 	    	<th>Clinial Tests</th>
-	    	<th ng-click= "sortData('_id.SubjectID')">Subject ID <i ng-class = "getSortClass('_id.SubjectID')"></i></th>
+	    	<th ng-click= "sortBy('_id.SubjectID')">Subject ID
+	    	<span class="sortorder" ng-show="propertyName === '_id.SubjectID'" ng-class="{reverse: reverse}"></span></th>
 	    </tr>
 	    </thead>
 	    
@@ -218,7 +209,7 @@ td {
 				      		<h4>{{scanSession._id.SessionID}} Subject Information</h4>
 				      	</div>
 				      	<div class = "modal-body" style="text-align: left">
-				      	<p><strong>Project:</strong> {{scanSession._id.relatedProject}} as {{scanSession._id.SubjectIDinProject}}</p>
+				      	<p><strong>For Project:</strong> {{scanSession._id.relatedProject}}</p>
 				      	<p><strong>Global ID:</strong> {{scanSession._id.SubjectInfo.ID}}</p>
 				      	<p><strong>Sex:</strong> {{scanSession._id.SubjectInfo.Sex}}</p>
 				      	<p><strong>Diagnosis:</strong> {{scanSession._id.SubjectInfo.Diagnosis}}</p>

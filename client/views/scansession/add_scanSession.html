@@ -3,13 +3,13 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 <link rel = "stylesheet" href = "./css/errorMessages.css">
 
 
-<div class = "jumbotron vertical-center" ng-init = "checkAuthen()">
+<div class = "jumbotron vertical-center" ng-init = "checkAuthen(); getNextSessionID()">
 
     <h2><strong>Add a Session</strong></h2>
 
 
 
-    <div class = "heading"></heading></div>
+    <div class = "heading"></div>
     <br>
       <form ng-submit="addScanForm.$valid && addScanSession()" method = "post" class = "form-horizontal" name = "addScanForm">
       	<h5>* Required fields</h5>
@@ -248,6 +248,14 @@ REDESIGN THE PAGE IF TIME PREMITS-->
    
         </div>
         </container>
+
+         <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
        
       <br>
         <button type="button" ng-disabled = "addScanForm.$invalid" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addscansession">Add Session</button>
@@ -266,7 +274,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
                       <p>Invalid/incorrect entries may cause unwanted errors, please double check before submitting!</p>
                 </div>
                 <div class="modal-footer">
-                  <a type = "submit" class="btn btn-danger" data-dismiss="modal">I am sure (!)</a>
+                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "addScanSession()">I am sure (!)</a>
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
                 </div>
               </div>

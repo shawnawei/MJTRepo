@@ -7,16 +7,112 @@
     width: 75%;
     padding-top: 8px;
 }
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:10px
+}
+
+.arrow-up {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+
+.arrow-down {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
+
+
 </style>
 
 
-<div class="panel panel-default" ng-init="getSubjects()">
-  <div class="panel-heading">
-    <h2 class="panel-title pull-left"><strong>Subjects</strong></h2>
-    <a><button type = "button" class = "btn btn-default pull-right"><a ng-click = "checkAuthen(subjectID, newSubject)">New Subject</a></button>
-    <div class= "clearfix"></div>
-  </div>
-  <div class="panel-body">
+<div ng-init="checkAuthen(subjectID, !newSubject);getSubjects()">
+
+
+  <form class = "row">
+
+    <div class = "col-md-3">
+      <h2><strong> Subjects List</strong></h2>
+    </div>
+    <br>
+    <div class = "form-group-row">
+      <div class = "col-md-6">
+        <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
+      </div>
+      <div class= "col-md-offset-10">
+        <button class = "btn btn-primary btn-sm" ng-click = "checkAuthen(subjectID, newSubject)"><span class = "glyphicon glyphicon-plus"></span> New Subject</button>
+      </div>
+    </div>
+    
+    <br>
+  </form>
+  <hr>
+
+
+  <div>
+
+    <table class = "table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th ng-click = "sortBy('ID')">Subject ID
+          <span class="sortorder" ng-show="propertyName === 'ID'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('FirstName')">First Name
+          <span class="sortorder" ng-show="propertyName === 'FirstName'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('LastName')">Last Name
+          <span class="sortorder" ng-show="propertyName === 'LastName'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('MRN')">MRN
+          <span class="sortorder" ng-show="propertyName === 'MRN'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('Sex')">Sex
+          <span class="sortorder" ng-show="propertyName === 'Sex'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('Diagnosis')">Diagnosis
+          <span class="sortorder" ng-show="propertyName === 'Diagnosis'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('DateOfBirth')">DOB
+          <span class="sortorder" ng-show="propertyName === 'DateOfBirth'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('ContactPermit')">Contact Permission</th>
+          <th>In Projects</th>
+
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr ng-repeat = "subject in subjects | filter: searchText">
+          <td><a class = "btn btn-xs" ng-click = "checkAuthen(subject.ID)">{{subject.ID}}</a></td>
+          <td>{{subject.FirstName}}</td>
+          <td>{{subject.LastName}}</td>
+          <td>{{subject.MRN}}</td>
+          <td>{{subject.Sex}}</td>
+          <td>{{subject.Diagnosis}}</td>
+          <td>{{subject.DateOfBirth}}</td>
+          <td class = "col-md-1">{{subject.ContactPermit}}</td>
+          <td> 
+            <div><li class = "btn btn-xs" style= "list-style-type:none" ng-repeat = "project in subject.Projects" ng-click = "getAuthenViewList(project.ProjectID, project.SubjectIDinProject, onsubjects)"><a>{{project.ProjectID}}</a></li></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+<!-- 
     <div class="row">
       <div ng-repeat="subject in subjects">
         <div class="col-md-3">
@@ -25,7 +121,11 @@
             <a class="btn btn-primary" ng-click = "checkAuthen(subject.ID)">View Details</a>
           </div>
           </div>
+
         </div>
-      </div>
-    </div>
+      </div> -->
+  
   </div>
+
+
+</div>

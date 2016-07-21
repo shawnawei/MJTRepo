@@ -45,6 +45,12 @@ td {
 	border-top: 5px solid black;
 }
 
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
 
 
 </style>
@@ -56,7 +62,7 @@ td {
 </script>
 
 
-<div>
+<div ng-init = "checkAuthen()">
 
 <div style = "width:90%; float:left;">
 <h3><strong>Search Scan by Session ID: {{requestID.SessionID}} </strong></h3>
@@ -72,7 +78,6 @@ td {
 </div>
 
 
-
 <br>
 
 	<div class = "container col-md-12">
@@ -81,11 +86,13 @@ td {
 	    <thead class = "table table-stripe table-bordered">
 	    <tr>
 	    	<th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(scanSessions)">All</a><a class="btn btn-xs" ng-click = "deselectAll(scanSessions)">Clear</a></th>
-	    	<th ng-click= "sortData('SessionID')">Session ID<i ng-class = "getSortClass('SessionID')"></i></th>
+	    	<th ng-click= "sortBy('SessionID')">Session ID
+	    	<span class="sortorder" ng-show="propertyName === 'SessionID'" ng-class="{reverse: reverse}"></span></th>
 	    	<th>MEGs</th>
 	    	<th>MRIs</th>
 	    	<th>Test Results</th>
-	    	<th ng-click= "sortData('SubjectID')">Subject ID <i ng-class = "getSortClass('SubjectID')"></i></th>
+	    	<th ng-click= "sortBy('SubjectID')">Subject ID
+	    	<span class="sortorder" ng-show="propertyName === 'SubjectID'" ng-class="{reverse: reverse}"></span></th>
 	    </tr>
 	    </thead>
 	    

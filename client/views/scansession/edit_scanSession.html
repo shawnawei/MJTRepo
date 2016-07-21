@@ -3,10 +3,10 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 <link rel = "stylesheet" href = "./css/errorMessages.css">
 
 
-<div ng-init = ProjectID></div>
+<!-- <div ng-init = ProjectID></div>
 <div ng-init = SubjectIDinProject></div>
-<div ng-init = forbidden></div>
-<div class = "jumbotron vertical-center" ng-init = "getAuthenList(forbidden)">
+<div ng-init = forbidden></div> -->
+<div class = "jumbotron vertical-center" ng-init = "checkAuthen();getAuthenList(forbidden)">
 
     <h2><strong>Edit Session - {{oldsessionID}}</strong></h2>
 
@@ -269,6 +269,14 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 
 
         </container>
+
+         <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
        
       <br>
 

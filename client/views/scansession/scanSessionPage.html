@@ -24,9 +24,9 @@ th {
 </nav>
 
 <br>
-<div class="panel panel-default">
+<div ng-init = "checkAuthen()" class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title"><strong>Subject ID: </strong>{{scanSession.SubjectIDinProject}}
+    <h3 class="panel-title"><strong>Subject Information: </strong>{{scanSession.SubjectIDinProject}}
       <div class = "pull-right">
 
         <a class = "btn btn-sm" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject)">New Session</a>
@@ -37,6 +37,32 @@ th {
 
 
   <div class="panel-body">
+
+      <form class = "well well-lg" style = "text-align: left">
+        <fieldset class = "form-group">
+          <div class = "form-group-row">
+            <div class="col-md-4"><strong>Subject ID: </strong>{{scanSession.SubjectIDinProject}}</div>
+
+            <div class="col-md-4"><strong>For Project: </strong>{{scanSession.relatedProject}}</div>
+            <div class="col-md-4"><strong>Sex: </strong>{{scanSession.SubjectInfo.Sex}}</div>
+          </div>
+          <br><br>
+
+          <div class = "form-group-row">
+            <div class="col-md-4"><strong>Diagnosis: </strong>{{scanSession.SubjectInfo.Diagnosis}}</div>
+
+            <div class="col-md-4"><strong>Handedness: </strong>{{scanSession.SubjectInfo.Handedness}}</div>
+
+            <div class="col-md-4"><strong>Also in Projects: </strong>
+            <ul style="margin: 0;padding:0; list-style-type: none; display: inline"><li style = "display: inline" ng-repeat = "project in scanSession.SubjectInfo.Projects">{{project.ProjectID}}{{!$last?', ':''}}</li></ul>
+
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+
+
     <div class="row">
       <div ng-repeat="sessionID in scanSession.ScanSessions">
         
@@ -48,7 +74,7 @@ th {
         <div class = "pull-right">
 
 
-         <a class = "btn" ng-click="exportData()"><span class = "glyphicon glyphicon-save"></span></a>
+         <a class = "btn" ng-click="exportData(sessionID, scanSession)"><span class = "glyphicon glyphicon-save"></span></a>
 
           <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
 
@@ -91,7 +117,7 @@ th {
               <table class = "table table-stripe table-bordered">
               <thead>
                 <tr>
-                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(sessionID.MEGScans)">All</a><a class="btn btn-xs" ng-click = "deselectAll(sessionID.MEGScans)">Clear</a></th>
+                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectMEGAll(sessionID.MEGScans)">All</a><a class="btn btn-xs" ng-click = "deselectMEGAll(sessionID.MEGScans)">Clear</a></th>
                   <th>Scan Name</th>
                   <th>Scan Type</th>
                   <th>Scan Date</th>
@@ -128,7 +154,7 @@ th {
             	<table class = "table table-stripe table-bordered">
               <thead>
                 <tr>
-                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectAll(sessionID.MRIScans)">All</a><a class="btn btn-xs" ng-click = "deselectAll(sessionID.MRIScans)">Clear</a></th>
+                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectMRIAll(sessionID.MRIScans)">All</a><a class="btn btn-xs" ng-click = "deselectMRIAll(sessionID.MRIScans)">Clear</a></th>
                   <th>Scan Name</th>
                   <th>Scan Type</th>
                   <th>Scan Date</th>
@@ -162,7 +188,7 @@ th {
             <table class = "table table-stripe table-bordered">
               <thead>
                 <tr>
-                  <th class = "col-md-1"><button class="btn btn-link">All</button></th>
+                  <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectTestAll(sessionID.TestResults)">All</a><a class="btn btn-xs" ng-click = "deselectTestAll(sessionID.TestResults)">Clear</a></th>
                   <th>Test Type</th>
                   <th>Test Result</th>
                   <th>Test Date</th>
@@ -173,7 +199,7 @@ th {
 
               <tbody>
                 <tr ng-repeat = "test in sessionID.TestResults">
-                  <th  class = "col-md-1" scope = "row"><input type="checkbox"></th>
+                  <th  class = "col-md-1" scope = "row"><input type="checkbox" ng-model = "test.selected"></th>
                   <td><a>{{test.Type}}</a></td>
                   <td>{{test.Result}}</td>
                   <td>{{test.TestDate| date: 'yyyy-MM-dd'}}</td>

@@ -29,7 +29,7 @@ td {
 <div class = "row">
 <h3><strong>Users List</strong></h3>
 
-<button  class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add User</button>
+<button  class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addUser"><span class = "glyphicon glyphicon-plus"></span> Add User</button>
 </div>
 <br><br>
 
@@ -140,57 +140,48 @@ td {
 		</table>
 	</div>
 
-	<!-- add new meg type-->
-	<div class="modal fade" id="addMEGType" tabindex="-1" role="dialog">
+	<!-- add new user-->
+	<div class="modal fade" id="addUser" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Add New MEG Type</h4>
+            <h4 class="modal-title" id="myModalLabel">Add User</h4>
           </div>
 
-         <form role= "form" ng-submit = "addMEGType(newMEGType)">
+         <form role= "form" ng-submit = "addUser(newUser)">
           <div class="modal-body">
 
           	<div class = "form-group row">
-            	<label class= "form-control-label col-md-3">Type ID:</label>
+            	<label class= "form-control-label col-md-3">uid:</label>
 				<div class="col-md-5">
-					<input type = "text" class="form-control" ng-model="newMEGType.TypeID" >
+					<input type = "text" class="form-control" ng-model="newUser.uid" >
 				</div>
             </div>
 
             <div class = "form-group row">
-            	<label class= "form-control-label col-md-3">Type Name:</label>
+            	<label class= "form-control-label col-md-3">Type:</label>
 				<div class="col-md-5">
-					<input type = "text" class="form-control" ng-model="newMEGType.TypeName">
+					<select type = "text" class="form-control" ng-model="newUser.Type" >
+						<option value = "admin">Admin</option>
+						<option value = "labmem">Lab Member</option>
+						<option value = "visitor">Visitor</option>
+						<option value = "other">Other</option>
+					</select>
 				</div>
             </div>
-
-            <div class = "form-group row">
-            	<label class= "form-control-label col-md-3">Category:</label>
-				<div class="col-md-5">
-					<input type = "text" class="form-control" ng-model="newMEGType.TypeCateg" placeholder="RS or Task">
-				</div>
-            </div>
-
-            <div class = "form-group row">
-            	<label class= "form-control-label col-md-3">Description:</label>
-				<div class="col-md-9">
-					<input type = "text" class="form-control" ng-model="newMEGType.Desc" >
-				</div>
-            </div>	
 
             <div class = "form-group row">
             	<label class= "form-control-label col-md-3">Comment:</label>
 				<div class="col-md-5">
-					<input type = "text" class="form-control" ng-model="newMEGType.Comment">
+					<input type = "text" class="form-control" ng-model="newUser.Comment">
 				</div>
             </div>			              	
             
                 
           </div>
           <div class="modal-footer">
-            <a type = "submit" class="btn btn-success" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "addMEGType(newMEGType)">Add</a>
+            <a type = "submit" class="btn btn-success" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "addUser(newUser)">Add</a>
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
 		</form>

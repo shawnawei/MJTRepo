@@ -36,7 +36,7 @@ td {
 </script>
 
 
-<div>
+<div ng-init = "checkAuthen(subjectID)">
 
 <div style = "width:90%; float:left;">
 <h3><strong>Search Subject by in-Project ID: {{requestID.inProjectID}} </strong></h3>
@@ -83,7 +83,7 @@ td {
 	</div>
 
 
-</div>
+
 
 
 <!-- this is the table that goes to the excel sheet-->
@@ -114,3 +114,4 @@ td {
 	    </tbody>
 	</table>
 	</div>
+</div>

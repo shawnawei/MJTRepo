@@ -88,11 +88,11 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         <div class="form-group row">
           <label class="col-md-2 form-control-label">MRN: </label>
            <div class = "col-md-3" ng-class = "{'has-error': editSubjectForm.subjectMRN.$touched && editSubjectForm.subjectMRN.$invalid, 'has-success':editSubjectForm.subjectMRN.$touched && editSubjectForm.subjectMRN.$valid}">
-            <input required type="number" class="form-control" ng-model="subject.MRN" name = "subjectMRN">
+            <input type="number" class="form-control" ng-model="subject.MRN" name = "subjectMRN">
             <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectMRN.$error" data-ng-show = "editSubjectForm.$dirty" >
                <span ng-show = "editSubjectForm.subjectMRN.$invalid">
                   <span class = "glyphicon glyphicon-exclamation-sign"></span>
-                  Subject's MRN is required and must be a number!
+                  Subject's MRN must be a number!
                </span>
             </div>
          </div>
@@ -145,7 +145,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
       
         
       <br>
-      <container>
+      <container ng-init = "getAuthenProjectList()">
         <h4>Project Participation</h4><br>
         <div class="form-group row">
           <label class="col-md-2 form-control-label">Project(s): </label>
@@ -156,7 +156,16 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 
           <div class="form-group row" ng-repeat = 'project in subject.Projects'>
           <div class="col-md-3" ng-class = "{'has-error': editSubjectForm.projectID{{$index}}.$touched && editSubjectForm.projectID{{$index}}.$invalid, 'has-success':editSubjectForm.projectID{{$index}}.$touched && editSubjectForm.projectID{{$index}}.$valid}">
-              <input required type="text" class="form-control" name="projectID{{$index}}" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/>
+              <!-- <input required type="text" class="form-control" name="projectID{{$index}}" ng-model = "project.ProjectID" placeholder="Project ID (ie. WM)"/> -->
+              <select required type = "text" class="form-control" name="projectID{{$index}}" ng-model = "project.ProjectID">
+                <optgroup>
+                  <option>{{project.ProjectID}}</option>
+                </optgroup>
+                <optgroup>
+                   <option ng-repeat = "authenproject in AuthenProjects">{{authenproject.ProjectID}}</option>
+                </optgroup>
+               
+              </select>
               <div class = "error msg_error" data-ng-show = "editSubjectForm.projectID{{$index}}.$touched">
                <span ng-show = "editSubjectForm.projectID{{$index}}.$invalid">
                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
@@ -223,6 +232,14 @@ REDESIGN THE PAGE IF TIME PREMITS-->
               </div>
             </div>
       </container> -->
+
+        <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
 
 
         <p class = "container"><div class="form-group pull-right"><div class="col-md-2">

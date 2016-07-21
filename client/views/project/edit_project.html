@@ -4,7 +4,7 @@
   <a class="nav-link" href="/projects/{{project.ProjectID}}">Go Back</a>
 </nav>
 
-<div class = "jumbotron vertical-center" ng-init = "getAuthenEditList(oldProjectID);getProject()">
+<div class = "jumbotron vertical-center" ng-init = "checkAuthen(!addProject);getAuthenEditList(oldProjectID);getProject()">
   <div ng-init = oldProjectID></div>
 
  
@@ -50,6 +50,16 @@
         </container>
 
         <container>
+        <div class="form-group row">
+          <label class = "form-control-label col-md-2">Project Description : </label>
+          <div class = "col-md-10">
+            <textarea type = "text" ng-model="project.ProjectDesc" class="form-control" name = "projectDesc"></textarea>
+          </div>
+        </div>
+        </container>
+
+        <container>
+        <br>
         <div class = "form-group row">
           <label class = "form-control-label col-md-2">Subjects: </label>
           <div class = "col-md-1"> 
@@ -124,6 +134,14 @@
               </div>
             </div>
         </container>
+
+         <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
        
         <button type = "button" ng-disabled = "updateProjectForm.$invalid"  class="btn btn-primary pull-right" data-toggle="modal" data-target="#editproject">Update Project</button>
 
@@ -138,7 +156,7 @@
                       {{project.ProjectID}} will be permenantly changed, incorrect entries may cause errors in other files in the database. Please double check your entries before submitting!
                 </div>
                 <div class="modal-footer">
-                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "updateProject()">I am sure (!)</a>
+                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "updateProject(!gotosession)">I am sure (!)</a>
                   <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
                 </div>
               </div>

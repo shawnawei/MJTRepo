@@ -7,9 +7,20 @@ var myApp = angular.module('myApp');
 
 //=============================== Subjects ==============================
 
-myApp.controller('searchSubjectIDController', ['$state', '$scope', '$http', '$location', '$stateParams','authenFact',
-	function($state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('searchSubjectIDController', ['$rootScope','$state', '$scope', '$http', '$location', '$stateParams','authenFact',
+	function($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
 
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.subjectID = "empty";
 	$scope.checkAuthen = function(subjectID){
 
 		$http.get('raw/Users')
@@ -25,20 +36,33 @@ myApp.controller('searchSubjectIDController', ['$state', '$scope', '$http', '$lo
 				}
 			}
 
-			//console.log(adminTypes, subjectID, addSubject);
-
 			if (!adminTypes.includes(uid))
 			{
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = false;
+				}
+				else 
+				{
+					var searchParams = $location.search().GlobalID;
+					$state.go('searchResult-GlobalID', {GlobalID: searchParams});
+					alert("You are not authorized to view subject details" + " !");
+				}
 				
-				var searchParams = $location.search().GlobalID;
-				$state.go('searchResult-GlobalID', {GlobalID: searchParams});
-
-				alert("You are not authorized to view subject details" + " !");
 			}
 
 			else
 			{
-				$state.go('subjectDetail', {ID: subjectID});
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = true;
+				}
+				else
+				{
+					$rootScope.adminloggedin = true;
+					$state.go('subjectDetail', {ID: subjectID});
+				}
+				
 			}
 		})
 		
@@ -179,10 +203,20 @@ myApp.controller('searchSubjectIDController', ['$state', '$scope', '$http', '$lo
 }]);
 
 
-myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
-	function($state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('searchInProjectIDController', ['$rootScope','$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
 
-	
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.subjectID = "empty";
 	$scope.checkAuthen = function(subjectID){
 
 		$http.get('raw/Users')
@@ -202,14 +236,31 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 
 			if (!adminTypes.includes(uid))
 			{
-				var searchParams = $location.search().inProjectID;
-				$state.go('searchResult-inProjectID', {inProjectID: searchParams});
-				alert("You are not authorized to view subject details" + " !");
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = false;
+				}
+				else
+				{
+					var searchParams = $location.search().inProjectID;
+					$state.go('searchResult-inProjectID', {inProjectID: searchParams});
+					alert("You are not authorized to view subject details" + " !");
+				}
+				
 			}
 
 			else
 			{
-				$state.go('subjectDetail', {ID: subjectID});
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = true;
+				}
+				else
+				{
+					$rootScope.adminloggedin = true;
+					$state.go('subjectDetail', {ID: subjectID});
+				}
+				
 			}
 		})
 		
@@ -342,8 +393,20 @@ myApp.controller('searchInProjectIDController', ['$state', '$scope', '$http', '$
 }]);
 
 
-myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
-	function($state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('searchSubjectInfoController', ['$rootScope','$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.subjectID = "empty";
 
 	$scope.checkAuthen = function(subjectID){
 
@@ -365,14 +428,31 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 			if (!adminTypes.includes(uid))
 			{
 				
-				var searchParams = $location.search();
-				$state.go('searchResult-SubjectInfo', {searchParams});
-				alert("You are not authorized to view subject details" + " !");
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = false;
+				}
+				else
+				{
+					var searchParams = $location.search();
+					$state.go('searchResult-SubjectInfo', {searchParams});
+					alert("You are not authorized to view subject details" + " !");
+				}
+				
 			}
 
 			else
 			{
-				$state.go('subjectDetail', {ID: subjectID});
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = true;
+				}
+				else
+				{
+					$rootScope.adminloggedin = true;
+					$state.go('subjectDetail', {ID: subjectID});
+				}
+				
 			}
 		})
 		
@@ -463,6 +543,16 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 			requestSubject.Age = 'All';
 		}
 
+		if(requestSubject.FirstName == undefined || requestSubject.FirstName == '')
+		{
+			requestSubject.FirstName = 'All';
+		}
+
+		if(requestSubject.LastName == undefined || requestSubject.LastName == '')
+		{
+			requestSubject.LastName = 'All';
+		}
+
 		if(requestSubject.Projects == undefined)
 		{
 			requestSubject.Projects = 'All';
@@ -472,11 +562,11 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 
 		$state.go('searchResult-SubjectInfo', {Sex: requestSubject.Sex}, {Handedness:requestSubject.Handedness},
 			{Diagnosis:requestSubject.Diagnosis},{Contact:requestSubject.Contact},{Age:requestSubject.Age},
-			{MRN:requestSubject.MRN},{Projects:requestSubject.Projects});
+			{MRN:requestSubject.MRN},{FirstName:requestSubject.FirstName},{LastName:requestSubject.LastName},{Projects:requestSubject.Projects});
 
 		$http.get('/raw/subjectInfo/' + requestSubject.Sex +'/' + requestSubject.Handedness +'/' 
 			+ requestSubject.Diagnosis +'/' + requestSubject.Contact+ '/' + requestSubject.Age
-			+'/' + requestSubject.MRN + '/' + requestSubject.Projects)
+			+'/' + requestSubject.MRN+'/' + requestSubject.FirstName +'/' + requestSubject.LastName+ '/' + requestSubject.Projects)
 		.then(function(response){
 			if(response.data == "no match!" ){
 				$scope.subjects = [];
@@ -545,8 +635,70 @@ myApp.controller('searchSubjectInfoController', ['$state', '$scope', '$http', '$
 
 //=============================== Projects ==============================
 
-myApp.controller('searchProjectController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact', 
-	function($state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('searchProjectController', ['$rootScope','$state', '$scope', '$http', '$location', '$stateParams', 'authenFact', 
+	function($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.subjectID = "empty";
+
+	$scope.checkAuthen = function(subjectID){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			//console.log(adminTypes, subjectID, addSubject);
+
+			if (!adminTypes.includes(uid))
+			{
+				
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = false;
+				}
+				else
+				{
+					var searchParams = $location.search();
+					$state.go('searchResult-SubjectInfo', {searchParams});
+					alert("You are not authorized to view subject details" + " !");
+				}
+				
+			}
+
+			else
+			{
+				if (subjectID == 'empty')
+				{
+					$rootScope.adminloggedin = true;
+				}
+				else
+				{
+					$rootScope.adminloggedin = true;
+					$state.go('subjectDetail', {ID: subjectID});
+				}
+				
+			}
+		})
+		
+	}
 
 	$scope.getProjects = function(){
 		$http.get('/raw/projects').success(function(response){
@@ -779,9 +931,47 @@ myApp.controller('searchProjectController', ['$state', '$scope', '$http', '$loca
 
 //=============================== Scan Sessions ==============================
 
-myApp.controller('searchScanGIDController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchScanGIDController', ['$rootScope', '$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+ function($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
 
+ 	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
 
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
+	
 	$scope.getScanSessionByGID = function(){
 
 		var requestSubjectID = $location.search();
@@ -893,8 +1083,47 @@ myApp.controller('searchScanGIDController', ['$state', '$scope', '$http', '$loca
 	
 }]);
 
-myApp.controller('searchScanPIDController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchScanPIDController', ['$rootScope','authenFact','$state', '$scope', '$http', '$location', '$stateParams',
+ function($rootScope,authenFact, $state, $scope, $http, $location, $stateParams){
 
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
 
 	$scope.getScanSessionByPID = function(){
 
@@ -982,7 +1211,46 @@ myApp.controller('searchScanPIDController', ['$state', '$scope', '$http', '$loca
 	
 }]);
 
-myApp.controller('searchScanSessionIDController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchScanSessionIDController', ['orderByFilter', '$rootScope', 'authenFact', '$state', '$scope', '$http', '$location', '$stateParams',
+ function(orderBy, $rootScope, authenFact, $state, $scope, $http, $location, $stateParams){
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
 
 	$scope.ageRange = {min:0, max:100};
 
@@ -1064,26 +1332,62 @@ myApp.controller('searchScanSessionIDController', ['$state', '$scope', '$http', 
 
 	//=============================== Other stuff ================================
 
+	var sessions = $scope.scanSessions;
+   	$scope.propertyName = 'SessionID';
+  	$scope.reverse = false;
+  	$scope.scanSessions = orderBy(sessions, $scope.propertyName, $scope.reverse);
 
-   	$scope.sortColumn= "";
-	$scope.reverseSort = false;
-	$scope.sortData = function(column){
-		$scope.reverseSort = ($scope.sortColumn == column)? !$scope.reverseSort: false;
-		$scope.sortColumn = column;
-
+  	$scope.sortBy = function(propertyName) {
+  		//console.log(propertyName, $scope.scanSessions);
+	    $scope.reverse = (propertyName !== null && $scope.propertyName === propertyName)
+	        ? !$scope.reverse : false;
+	    $scope.propertyName = propertyName;
+	    $scope.scanSessions = orderBy($scope.scanSessions, $scope.propertyName, $scope.reverse);
 	};
-
-	$scope.getSortClass = function(column){
-		if ($scope.sortColumn == column){
-			return $scope.reverseSort ? 'arrow-down' : 'arrow-up'
-		}
-		return '';
-	}
 	
 }]);
 
 
-myApp.controller('searchScanInfoController', ['$state', '$scope', '$http', '$location', '$stateParams', function($state, $scope, $http, $location, $stateParams){
+myApp.controller('searchScanInfoController', ['orderByFilter','$rootScope','authenFact','$state', '$scope', '$http', '$location', '$stateParams', 
+	function(orderBy, $rootScope, authenFact, $state, $scope, $http, $location, $stateParams){
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
+	}
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
 
 	$scope.requestID = $location.search();
 
@@ -1177,21 +1481,18 @@ myApp.controller('searchScanInfoController', ['$state', '$scope', '$http', '$loc
 
 	//=============================== Other stuff ================================
 
+	var sessions = $scope.scanSessions;
+   	$scope.propertyName = '_id.SessionID';
+  	$scope.reverse = false;
+  	$scope.scanSessions = orderBy(sessions, $scope.propertyName, $scope.reverse);
 
-   	$scope.sortColumn= "";
-	$scope.reverseSort = false;
-	$scope.sortData = function(column){
-		$scope.reverseSort = ($scope.sortColumn == column)? !$scope.reverseSort: false;
-		$scope.sortColumn = column;
-
+  	$scope.sortBy = function(propertyName) {
+  		//console.log(propertyName, $scope.scanSessions);
+	    $scope.reverse = (propertyName !== null && $scope.propertyName === propertyName)
+	        ? !$scope.reverse : false;
+	    $scope.propertyName = propertyName;
+	    $scope.scanSessions = orderBy($scope.scanSessions, $scope.propertyName, $scope.reverse);
 	};
-
-	$scope.getSortClass = function(column){
-		if ($scope.sortColumn == column){
-			return $scope.reverseSort ? 'arrow-down' : 'arrow-up'
-		}
-		return '';
-	}
 	
 }]);
 

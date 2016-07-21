@@ -1,37 +1,143 @@
+<style>
+ul#scanList li
+{
+  display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:10px
+}
+
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
+
+</style>
+
+<link rel = "stylesheet" href = "./css/errorMessages.css">
+
+
 <nav>
   <a class="nav-link" ui-sref="projects">Go Back</a>
 </nav>
 
 <div class = "jumbotron jumbotron-fluiod">
-  <div class="panel panel-default" ng-init="getProject(); getAuthenList(oldProjectID)">
+  <div ng-init="checkAuthen(!addProject);getProject(); getAuthenList(oldProjectID); getProjectInfo()">
   <div ng-init = oldProjectID></div>
 
-    <div class="panel-heading">
-      <h3 class="panel-title"><strong>Project Name: </strong>{{project.ProjectName}}</h3>
+
+    <div class = "pull-right">
+      <a class = "btn btn-sm btn-danger" ng-click = " getAuthenEditList(project.ProjectID)" ng-hide = "!editable"><span class = "glyphicon glyphicon-pencil"></span></a> 
+      <a class = "btn btn-sm btn-danger"  data-toggle="modal" ng-hide = "!editable" data-target="#myDeleteModal"><span class = "glyphicon glyphicon-remove"></span></a>
     </div>
 
-    <div class="panel-body">
-    <section class = "container">
-      <div class = "well text-center">
-        <div class="col-md-5"><strong>Project ID: </strong>{{project.ProjectID}}</div>
-        <div class="col-md-5"><strong>Project Name: </strong>{{project.ProjectName}}</div>
-      </div>
-      </section>
 
-    <section class = "container">
-      <h5> <strong>Subjects Enrolled: </strong></h5>
-      <div ng-repeat="subject in project.SubjectsID">
-        <div class = "nav nav-pills col-md-2" type="button" class = "btn btn-info"><a href ="/ScanInfo/{{project['ProjectID']}}/{{subject.inProjectID}}"><strong>{{subject.inProjectID}}</strong></a></div>
+    <div>
+      <h3><strong>Project Information: </strong>{{project.ProjectName}}</h3>
+    </div>
+
+    
+
+    <div>
+
+      <form class = "well well-lg" style = "text-align: left">
+        <fieldset class = "form-group">
+          <div class = "form-group-row">
+            <div class="col-md-4"><strong>Project ID: </strong>{{project.ProjectID}}</div>
+
+            <div class="col-md-4"><strong>Number of Subjects: </strong>{{projectInfo.subjectNumber}}</div>
+            <div class="col-md-4"><strong>Subject Age Range: </strong>{{projectInfo.subjectMinAge}} to {{projectInfo.subjectMaxAge}}</div>
+          </div>
+          <br><br>
+
+          <div class = "form-group-row">
+            <div class="col-md-4"><strong>Types of MEG Scans: </strong>
+                <div class = "col-md-offset-1"><li ng-repeat = "(key, value) in projectInfo.MEGTypes">{{key}}: {{value}}</li></div>
+            </div>
+
+            <div class="col-md-4"><strong>Types of MRI Scans: </strong>    
+                <div class = "col-md-offset-1"><li ng-repeat = "(key, value) in projectInfo.MRITypes">{{key}}: {{value}}</li></div>
+            </div>
+
+            <div class="col-md-4"><strong>Types Clinical Tests Done: </strong>
+                <div class = "col-md-offset-1"><li ng-repeat = "(key, value) in projectInfo.TestTypes">{{key}}: {{value}}</li></div>
+            </div>
+          </div>
+
+          <br><br><br>
+          <div class = "form-group-row">
+          <br><br>
+            <div class="col-md-12"><strong>Project Description: </strong>
+                {{project.ProjectDesc}}
+            </div>
+          </div>
+
+        </fieldset>
+      </form>
+
+      <h3> <strong>Subjects List: </strong></h3>
+
+  
+
+      <div>
+        <a class = "col-md-offset-5 btn btn-sm btn-primary" ng-hide = "!editable" data-toggle = "modal" data-target = "#addSubject" data-backdrop="static" data-keyboard="false" ng-click = "addlastsubject()"><span class = "glyphicon glyphicon-plus-sign"></span> Add Subject</a> 
+
+        <div class = "col-md-5">
+          <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
+        </div>
+
       </div>
-    </section>
+
+
+      <br>
+
+      
+      
+      <div ng-init = "getProjectSubjectInfo()">
+        
+        <br>
+        
+        <table class = "table table-bordered">
+          <thead>
+            <tr>
+
+              <th ng-click = "sortBy('_id.SubjectsID')">Subject ID
+              <span class="sortorder" ng-show="propertyName === '_id.SubjectsID'" ng-class="{reverse: reverse}"></span></th>  
+              <th ng-click = "sortBy('SubjectsInfo.Sex')">Sex<span class="sortorder" ng-show="propertyName === 'SubjectsInfo.Sex'" ng-class="{reverse: reverse}"></span></th>
+              <th ng-click = "sortBy('SubjectsInfo.Diagnosis')">Diagnosis<span class="sortorder" ng-show="propertyName === 'SubjectsInfo.Diagnosis'" ng-class="{reverse: reverse}"></span></th>
+              <th ng-click = "sortBy('SubjectsInfo.Handedness')">Handedness<span class="sortorder" ng-show="propertyName === 'SubjectsInfo.Handedness'" ng-class="{reverse: reverse}"></span></th>
+              <th>Details</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="subject in subjectInfo | filter: searchText">
+              
+              <td>{{subject._id.SubjectsID}}</td>
+              <td>{{subject.SubjectsInfo.Sex}}</td>
+              <td>{{subject.SubjectsInfo.Diagnosis}}</td>
+              <td>{{subject.SubjectsInfo.Handedness}}</td>
+              <td><a class = "btn btn-xs" href ="/ScanInfo/{{project.ProjectID}}/{{subject._id.SubjectsID}}"><span class = "glyphicon glyphicon-list-alt"></span></a></td>
+
+            </tr>
+          </tbody>
+
+        </table>
+        <br>
+      </div>
 
     </div>
   </div>
-
-    <div class = "pull-right">
-      <a class = "btn btn-sm btn-danger" ng-click = " getAuthenEditList(project.ProjectID)" ng-hide = "!editable">Edit</a> 
-      <a class = "btn btn-sm btn-danger"  data-toggle="modal" ng-hide = "!editable" data-target="#myDeleteModal">Delete</a>
-    </div>
 
 
    <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -49,6 +155,67 @@
             <a type = "button" class="btn btn-danger" data-dismiss="modal" ng-click = "removeProject(project.ProjectID)">Delete(!)</a>
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
+        </div>
+      </div>
+  </div>
+
+
+  <div class="modal fade" id="addSubject" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" ng-click = "removelastsubject()">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Add a New Subject to {{project.ProjectID}}</h4>
+          </div>
+          <form name = "addnewsub" novalidate>
+            <div class="modal-body">
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-4">Subject Global ID:</label>
+                <div class="col-md-6" ng-class = "{'has-error': addnewsub.GID.$touched && addnewsub.GID.$invalid, 'has-success':addnewsub.GID.$touched && addnewsub.GID.$valid}">
+                  <input required type = "text" class="form-control" name = "GID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].GlobalID">
+                  <div class = "error msg_error" data-ng-messages = "addnewsub.GID.$error" data-ng-show = "addnewsub.GID.$touched">
+                     <span ng-show = "addnewsub.GID.$invalid">
+                       <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please enter subject's global ID!
+                     </span>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-4">Subject ID in Project:</label>
+                <div class="col-md-6" ng-class = "{'has-error': addnewsub.PID.$touched && addnewsub.PID.$invalid, 'has-success':addnewsub.PID.$touched && addnewsub.PID.$valid}">
+                  <input required type = "text" class="form-control" name = "PID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].inProjectID">
+
+                  <div class = "error msg_error" data-ng-messages = "addnewsub.PID.$error" data-ng-show = "addnewsub.PID.$touched">
+                     <span ng-show = "addnewsub.PID.$invalid">
+                       <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please enter subject's in project ID!
+                     </span>
+                  </div>
+
+                </div>
+              </div>
+
+                  
+            </div>
+            <div class="modal-footer">
+
+              <div class = "col-md-8"> 
+                  <div data-ng-show = "error" class= "text-center text-danger">
+                    <div class = "alert alert-danger" role="alert">
+                      <strong data ng-bind = "error"></strong>
+                    </div>
+                  </div>
+                </div>
+
+
+              <a ng-disabled = "addnewsub.$invalid" type = "submit" class="btn btn-danger" ng-click = "updateProject(); openSessionPage(project.ProjectID, project.SubjectsID[(project.SubjectsID.length)-1].inProjectID)">Add (!)</a>
+              <button type="button" ng-click = "removelastsubject()" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </form>
         </div>
       </div>
   </div>

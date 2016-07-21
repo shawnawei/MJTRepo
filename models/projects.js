@@ -22,6 +22,8 @@ var projectSchema = new Schema({
 		"uid": {type: String, required: true, ref: 'AuthenList'},
 		"ViewOnly": {type: Boolean}
 	}],
+	"ProjectDesc": String,
+	"Other": String,
 	//"SubjectsID":String
 	"SubjectsID":[SubjectsIDSchema]
 });
@@ -41,27 +43,100 @@ module.exports.getProjects = function(_uid){
 	//Project.find(callback).limit(limit);
 }
 
+//get all projects
+module.exports.getProjectNum = function(){
+	return Promise.resolve().then (function() {
+		return Project.findAsync();
+	});
+	//Project.find(callback).limit(limit);
+}
+
+//get authen projects
+module.exports.getAuthenProjects = function(_uid){
+	return Promise.resolve().then (function() {
+		var query = {
+			'AccessAuthen.uid':{$in: [_uid, 'AllUser', 'AllUsers']}
+		}
+		return Project.findAsync(query);
+	});
+	//Project.find(callback).limit(limit);
+}
+
 //get one project
 module.exports.getProjectById = function(id, _uid){
 	return Promise.resolve().then (function() {
 		var query = {
 			ProjectID:id,
 			'AccessAuthen.uid':{$in: [_uid, 'AllUsers', 'AllUser']}
-		}
+		};
+
 		return Project.findOneAsync(query);
+	});
+	//Project.find(callback).select({"Project Name": name});
+}
+
+//get one project
+module.exports.getProjectByIdSubjectInfo = function(id, _uid){
+	return Promise.resolve().then (function() {
+		// var query = {
+		// 	ProjectID:id,
+		// 	'AccessAuthen.uid':{$in: [_uid, 'AllUsers', 'AllUser']}
+		// };
+
+
+		var query = [
+			{$unwind: '$SubjectsID'},
+			{$lookup:
+				{
+					from:'subjectsList',
+					localField: 'SubjectsID.GlobalID',
+					foreignField: 'ID',
+					as:"SubjectInfo"
+				}
+			},
+			{$unwind: '$SubjectInfo'},
+			{$match: {
+				$and: [
+				{ProjectID: id},
+				{"AccessAuthen.uid":{$in: [_uid, 'AllUser', 'AllUsers']}}
+				]}
+			},
+			{$group:
+				{
+					_id:{
+						"ProjectID":'$$ROOT.ProjectID', 
+						"ProjectName":'$$ROOT.ProjectName',
+						"ProjectDesc":'$$ROOT.ProjectDesc', 
+						"Other":'$$ROOT.Other',
+						"AccessAuthen":'$$ROOT.AccessAuthen',
+						"SubjectsID": '$$ROOT.SubjectsID.inProjectID'
+					},
+					'SubjectsInfo':{$addToSet:"$SubjectInfo"}
+				}
+			},
+			{$unwind: '$SubjectsInfo'},
+			{$project: {
+				'SubjectsInfo.ID': 1,
+				'SubjectsInfo.Diagnosis': 1,
+				'SubjectsInfo.Sex': 1,
+				'SubjectsInfo.Handedness': 1
+			}}
+		];
+
+		return Project.aggregateAsync(query);
 	});
 	//Project.find(callback).select({"Project Name": name});
 }
 
 //add a project
 module.exports.addProject = function(project){
+	var testSubjects = project.SubjectsID;
+
 	return Promise.resolve().then(function (){
 		//check data 
 
 		var testProject = new Project(project);
 		var error = testProject.validateSync();
-		//console.log(error);
-		var testSubjects = testProject.SubjectsID;
 		var projectID = testProject.ProjectID;
 		console.log(testSubjects);
 
@@ -72,12 +147,14 @@ module.exports.addProject = function(project){
 				(error.errors['ProjectID'].message) == "Path `ProjectID` is required.")
 			{
 				console.log('Project ID must not be empty!');
+				var err = 'Error: Project ID must not be empty!';
 			}
 
 			if ((error.errors['ProjectName'] != undefined) &&
 				(error.errors['ProjectName'].message) == "Path `ProjectName` is required.")
 			{
 				console.log('Please enter the project name!');
+				var err = 'Error: Please enter the project name!';
 			}
 
 			return Promise.reject(err);
@@ -89,12 +166,14 @@ module.exports.addProject = function(project){
 			if(testProject.ProjectID == '')
 			{
 				console.log("Project ID cannot be empty");
-				return Promise.reject();
+				var err = "Error: Project ID cannot be empty";
+				return Promise.reject(err);
 			}
 			if(testProject.SubjectIDinProject == '')
 			{
 				console.log("Subject ID in Project cannot be empty");
-				return Promise.reject();
+				var err = "Error: Subject ID in Project cannot be empty";
+				return Promise.reject(err);
 			}
 
 			//check project duplicate (if each subject has assigned an unique inProject ID)
@@ -112,17 +191,22 @@ module.exports.addProject = function(project){
 			//console.log(SubjectIDEntered);
 			if (checkIfUniqueArray(SubjectIDEntered) == false){
 				console.log ("Subject ID in each project must be unique!");
+				var err = "Error: Subject ID in each project must be unique!";
 				return Promise.reject(err);
 			}
 			if (checkIfUniqueArray(GlobalIDEntered) == false){
 				console.log ("This subject has already been added!");
+				var err = "Error: Each subject can only be added once!";
 				return Promise.reject(err);
 			}
 		}
 
-		return Promise.resolve(testSubjects);
+		return Promise.resolve();
 	})
-	.then(function(testSubjects){
+	.then (function() {
+		return Project.createAsync(project);
+	})
+	.then(function(){
 		console.log("add a new subject or add a project to existing subjects");
 		var theSubject = require('./subjects');
 		return theSubject.updateOrAddSubject(project, testSubjects);
@@ -130,11 +214,9 @@ module.exports.addProject = function(project){
 	.catch(function(err){
 		console.log(err);
 		console.log("Error with adding in new subjects");
-		return Promise.reject();
+		return Promise.reject(err);
 	})
-	.then (function() {
-		return Project.createAsync(project);
-	});
+
 }
 
 //update a project
@@ -154,16 +236,18 @@ module.exports.updateProject = function(id, project){
 				(error.errors['ProjectID'].message) == "Path `ProjectID` is required.")
 			{
 				console.log('Project ID must not be empty!');
+				var err = 'Project ID must not be empty!';
 			}
 
 			if ((error.errors['ProjectName'] != undefined) &&
 				(error.errors['ProjectName'].message) == "Path `ProjectName` is required.")
 			{
 				console.log('Please enter the project name!');
+				var err = 'Please enter the project name!';
 			}
 
 
-			return Promise.reject();
+			return Promise.reject(err);
 		}
 
 		//check other errors mongoose does not check for 
@@ -181,11 +265,13 @@ module.exports.updateProject = function(id, project){
 			//console.log(SubjectIDEntered);
 			if (checkIfUniqueArray(SubjectIDEnteredP) == false){
 				console.log ("Subject ID in each project must be unique!");
-				return Promise.reject();
+				var err = "Subject ID in each project must be unique!";
+				return Promise.reject(err);
 			}
 			if (checkIfUniqueArray(SubjectIDEnteredG) == false){
 				console.log ("Subject can only enter the project once!");
-				return Promise.reject();
+				var err = "Subject can only enter the project once!";
+				return Promise.reject(err);
 			}
 		}
 
@@ -198,6 +284,8 @@ module.exports.updateProject = function(id, project){
 			"ProjectID": project.ProjectID,
 			"ProjectName": project.ProjectName,
 			"AccessAuthen": project.AccessAuthen,
+			"ProjectDesc": project.ProjectDesc,
+			"Other": project.Other,
 			"SubjectsID": project.SubjectsID
 		};
 		var option = {runValidators: true, context: 'query'};
@@ -226,7 +314,6 @@ module.exports.deleteProject = function(id){
 			var projectID = project.ProjectID;
 
 			var theSubject = require("./subjects");
-			//console.log(theSubject);
 			return theSubject.deleteProject(projectID, subjectsID);
 		}
 
@@ -246,6 +333,11 @@ module.exports.deleteProject = function(id){
 	.then(function(){
 		var query = {ProjectID:id};
 		return Project.removeAsync(query);
+	})
+	.then(function(){
+		var query = {relatedProject:id};
+		var thescans = require("./scanSessions");
+		return thescans.removeAsync(query);
 	});
 }
 
@@ -272,10 +364,14 @@ module.exports.addSubject = function(id, subject, globalID){
 				 		//and reject to prevent it from adding
 				 		if (checkIfUniqueArray(temp_inProjectIDs) == false) {
 				 			console.log(subjectID + " already exists in project " + ID +"!");
-				 			var err = new Error ("subject exist error");
+				 			var err = "WARNING: " + subjectID + " already exists in project " + ID +"!";
 				 			return Promise.reject(err);
 				 		}
-		 				return Promise.resolve();
+				 		else
+				 		{
+				 			return Promise.resolve(project);
+				 		}
+		 				
 		 			})
 
 		 			//if any error occur in finding the project document
@@ -287,21 +383,25 @@ module.exports.addSubject = function(id, subject, globalID){
 		 				{
 		 					console.log("Project " +ID+
 		 					 " does not exist. Please create the project on the 'Projects' page.");
+		 					var err = "Project " +ID+
+		 					 " does not exist. Please create the project on the 'Projects' page.";
 		 				}
 		 				return Promise.reject(err);
 		 			})
-	 				.then(function(){
+	 				.then(function(project){
 						var theScanSession = require('./scanSessions');
 						var newScanObject = {
 							SubjectID:globalID, 
 							SubjectIDinProject:subject[ind], 
 							relatedProject: ID,
-							ScanSessions:[{SessionID:subject[ind]+"_A", MEGScans:[], MRIScans:[], TestResults:[]}]
+							AccessAuthen: project.AccessAuthen,
+							ScanSessions:[{SessionID:subject[ind]+"_01", MEGScans:[], MRIScans:[], TestResults:[]}]
 						};
 						return theScanSession.addScanSession(newScanObject);
 					})
 					.catch(function(err){
-						console.log("can't add scan session + "+err);
+						console.log(err);
+						return Promise.reject(err);
 					})
 				}
 			)
@@ -321,8 +421,6 @@ module.exports.addSubject = function(id, subject, globalID){
 		return Promise.resolve();
 	})
 	.catch(function(err){
-		console.log(err);
-		console.log("error with adding subject to project list");
 		return Promise.reject(err);	
 	});
 }
@@ -336,10 +434,10 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 	.then(function (){
 
 		//form a new array contain all information about the projects that need to be changed
-		console.log(oldsubject);
-		console.log(newsubject);
+		//console.log(oldsubject);
+		//console.log(newsubject);
 		var updatedArray = formUpdatedSubjectArray(oldsubject, newsubject);
-		console.log(updatedArray);
+		//console.log(updatedArray);
 
 		//go through each project that needs to be modified
 		return Promise.all(
@@ -357,7 +455,7 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 						//create new subject object
 						var replace = {GlobalID:globalID, inProjectID:curProject.newsubjectID};
 
-						console.log(ID, tobeReplaced,replace);
+						//console.log(ID, tobeReplaced,replace);
 
 						//subjectID in project exists, update subjectID
 						//update the scan session collection too
@@ -389,7 +487,7 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 								theScanSession.updateScanSessionBasicInfo(ID, tobeReplaced.inProjectID, newSession)
 								.catch(function(err){
 									console.log(err);
-									return Promise.reject();
+									return Promise.reject(err);
 								})
 
 							}
@@ -418,13 +516,13 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 									SubjectIDinProject:replace.inProjectID, 
 									relatedProject: ID,
 									AccessAuthen:project.AccessAuthen,
-									ScanSessions:[{SessionID:replace.inProjectID +'_A', MEGScans:[], MRIScans:[], TestResults:[]}]
+									ScanSessions:[{SessionID:replace.inProjectID +'_01', MEGScans:[], MRIScans:[], TestResults:[]}]
 								};
 								console.log("new ob" + newScanObject.ScanSessions + " " + newScanObject.SubjectIDinProject);
 								theScanSession.addScanSession(newScanObject)
 								.catch(function(err){
 									console.log(err);
-									return Promise.reject();
+									return Promise.reject(err);
 								})
 							}
 							
@@ -440,8 +538,8 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 
 							theScanSession.deleteEntireScanSessionByinProjectID(tobeReplaced.inProjectID)
 							.catch(function(err){
-								console.log(err);
-								return Promise.reject();
+								//console.log(err);
+								return Promise.reject(err);
 							})
 
 						}

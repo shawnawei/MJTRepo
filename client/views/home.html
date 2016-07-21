@@ -1,68 +1,59 @@
-<div class="jumbotron">
-<div class = "text-center" ng-init = "getSubjects();getProjects();getScanSessions()">
-        <h1>MJT Data Repository</h1>
-        <p class="lead"> MJT lab currently has {{subjects.length}} subjects, {{projects.length}} projects and {{scan.length}} scan sessions </p>
-        <p>
-        	<a class = "btn btn-primary" data-toggle="modal" data-target="#myModal-profile">View Profile</a>
-        	<a class = "btn btn-primary" data-toggle="modal" data-target="#myModal-logOut">Log out</a>
+<link href = "css/tableStyle.css" rel= "stylesheet">
 
-        </p>
-      </div>
+<div class="jumbotron">
+<div class = "text-center" ng-init ="checkAuthen();getSubjects();getProjects();getScanSessions();getAuthenProjects()">
+
+    <h1><strong>Hello, {{user.displayName}} !<strong></h1>
+    <h4> MJT lab currently has {{subjectlength}} subjects, {{projectlength}} projects and {{scanlength}} scan sessions </h4>
+ 
+      <br>
+      <div class = "heading"></div>
+      <br>
+
+    	<a class = "btn btn-primary" id = "closebtn" data-toggle="modal" data-target=".profile">View Profile</a>
+    	<a class = "btn btn-primary" data-toggle="modal" data-target="#myModal-logOut">Log out</a>
+     </div>
 </div>
 
-<div class="modal fade" id="myModal-profile" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-	<div class="modal-dialog" role="document">
+
+<div class="modal fade profile" tabindex="-1" role="dialog">
+	<div class="modal-dialog">
 	  <div class="modal-content">
-	<form class="form-signin" ng-submit = "HomeLogin(User)">
 
 	    <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" data-backdrop="static" data-keyboard="false">&times;</span></button>
-	        <h4 class="modal-title" id="myModalLabel">View my profile (under construction...)</h4>
+	        <h4><strong>My Profile</strong></h4>
 	     </div>
- 		
-
  	
-	    <div class="modal-body">
-	           
-
-	      	<div class = "form-group row"> 
-	      	<div class = "col-md-12">
-	          <div data-ng-show = "error" class= "text-center text-danger">
-	            <div class = "alert alert-danger" role="alert">
-	              <strong data ng-bind = "error"></strong>
-	            </div>
-	          </div>
-	         </div>
-	        </div>
-
-
-	        <div class = "form-group row">
-	        <div class = " col-md-offset-3 col-md-6">
-	          <div class="input-group">
-	            <span class="input-group-addon" id="basic-addon1"><i class="glyphicon glyphicon-user"></i></span>
-	            <input type="text" class="form-control" placeholder="Username" aria-describedby="basic-addon1" ng-model = "User.username">
-	          </div>
-
-	          <div class="input-group">
-	            <span class="input-group-addon" id="basic-addon2"><i class="glyphicon glyphicon-lock"></i></span>
-	            <input type="text" class="form-control" placeholder="Password" aria-describedby="basic-addon2" ng-model = "User.password">
-	          </div>
-	        </div>
-	        </div>
-
-
+	    <div class="modal-body" style=" font-weight:normal;text-align: left; word-wrap: break-word">
+	        <p><strong>User UID:</strong> {{user.uid}} </p>
+	      	<p><strong>User Display Name:</strong> {{user.displayName}}</p>
+	      	<p><strong>User Type: </strong>{{user.type}} </p>
+	      	<p><strong>User Title: </strong>{{user.title}} </p>
+	      	<p><strong>Accessible Projects:</strong> 
+	      		<table class = "table table-bordered table-hover">
+		      		<thead>
+		      			<th>Project ID</th>
+		      			<th>Project Name</th>
+		      			<th>Accessibility Level</th>
+		      		</thead>
+		      		<tbody>
+		      			<tr ng-repeat = "project in AuthenProjects">
+		      				<td><a class = "closebtn" ng-click = "gotoproject(project.ProjectID)" onclick="$('.profile').modal('hide')">{{project.ProjectID}}</a></td>
+		      				<td>{{project.ProjectName}}</td>
+		      				<td>{{project.AccessAuthen}}</td>
+		      			</tr>
+		      		</tbody>
+	      		</table></p>
+	      	
   		</div>
 
   		<div class = "modal-footer">
-  			<button class="btn btn-primary" type="submit" type = "submit">View</button>
+  			<button class="btn btn-primary" data-dismiss="modal">Close</button>
   		</div>
-
-  		</form>
 	    
 	  </div>
 	</div>
 </div>
-
 
 <div class="modal fade" id="myModal-logOut" role="dialog">
 	<div class="modal-dialog" role="document">
@@ -81,7 +72,7 @@
   		</div>
 
   		<div class = "modal-footer">
-  			<button class="btn btn-danger" data-dismiss = "modal" ng-click = "logOut()">Log Out (!)</button>
+  			<button class="btn btn-danger" data-dismiss = "modal" ng-click = "logOut()" data-dismiss = "modal">Log Out (!)</button>
   			<button class="btn btn-primary" type="button" data-dismiss = "modal">Close</button>
   		</div>
 
@@ -90,3 +81,4 @@
 	  </div>
 	</div>
 </div>
+

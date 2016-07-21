@@ -17,6 +17,36 @@ var testTypes = require('../models/testTypes');
 var MEGTypes = require('../models/MEGTypes');
 var MRITypes = require('../models/MRITypes');
 var AuthenList = require('../models/authenList');
+// var subjectNum = 0;
+// var projectNum = 0;
+// var scansessionNum = 0;
+
+
+// router.get('/raw/thenumbers', function(req, res){
+
+
+// 	subject.getSubjects()
+// 	.then(function(subjects){
+// 		console.log(subjects.length);
+// 		subjectNum = subjects.length;
+// 		project.getProjects()
+// 		.then(function(projects){
+// 			console.log(projects.length);
+// 			projectNum = projects.length;
+// 			scanSession.getScanSessions()
+// 			.then(function(scanSessions){
+// 				console.log(scanSessions.length);
+// 				scansessionNum = scanSessions.length;
+// 			})
+// 		})
+// 	});
+
+// 	console.log(subjectNum, projectNum, scansessionNum);
+// 	var numbers = {subjectnum: subjectNum, projectnum: projectNum, scansessionnum:scansessionNum};
+// 	res.send(numbers);
+// });
+
+
 
 
 //this is to ensure users cannot directly enter following urls
@@ -44,7 +74,7 @@ router.get('/', function(req, res) {
 
 router.post('/raw/login', passport.authenticate('ldapauth'), function(req, res){
 
-	console.log(req.body);
+	//console.log(req.body);
 	res.json(req.user);
 });
 
@@ -54,12 +84,86 @@ router.get('/raw/logOut', ensureAuthenticated, function(req, res){
 });
 
 
-//get subjects list page
-router.get('/raw/subjects', ensureAuthenticated, function(req, res) {
-	subject.getSubjects().then(function(subjects){
-		res.json(subjects);
+
+
+//============================= GET INFORMATION ==========================
+
+router.get('/raw/subjectnum', ensureAuthenticated, function(req, res){
+	subject.getSubjects()
+	.then(function(subjects){
+		res.json(subjects.length);
 	});
 });
+
+router.get('/raw/projectnum', ensureAuthenticated, function(req, res){
+	project.getProjectNum()
+	.then(function(projects){
+		res.json(projects.length);
+	});
+});
+
+router.get('/raw/scannum', ensureAuthenticated, function(req, res){
+	scanSession.getAllScanSessions()
+	.then(function(scanSessions){
+		var oldarray = [];
+			scanSessions.map(function(a){
+				var session = a.ScanSessions;
+				for (var num in session)
+				{
+					oldarray.push(session[num].SessionID);
+				}
+			});
+				
+		res.json(oldarray.length);
+	});
+});
+
+//get subjects list page
+router.get('/raw/subjects', ensureAuthenticated, function(req, res) {
+
+	var uid = req.user.uid;
+
+	var registeredUsers = [];
+
+	AuthenList.getAllUsers()
+	.then(function(users){
+		for (var num in users)
+		{
+			registeredUsers.push({uid: users[num].uid, Type:users[num].Type});
+		}
+	})
+	.then(function(){
+		var isAdmin = false;
+		for (var num in registeredUsers)
+		{
+			if (registeredUsers[num].uid==uid && registeredUsers[num].Type == 'admin')
+			{
+				isAdmin = true;
+			}
+		}
+		if(isAdmin)
+		{
+			return subject.getSubjects();
+		}
+		else{
+			return Promise.resolve([]);
+		}
+		
+	})
+	.then(function(subjects){
+		if (subject == [] || subject == null)
+		{
+			res.sendStatus(403)
+		}
+		else
+		{
+			res.json(subjects);
+		}
+
+	});
+
+});
+
 
 //get projects list page
 router.get('/raw/projects', ensureAuthenticated, function(req, res) {
@@ -71,10 +175,23 @@ router.get('/raw/projects', ensureAuthenticated, function(req, res) {
 	});
 });
 
+
+
+//get list of project this user can access
+router.get('/raw/projects-authen', ensureAuthenticated, function(req, res) {
+	
+	var uid = req.user.uid;
+	project.getAuthenProjects(uid)
+	.then(function(projects){
+		res.json(projects);
+	});
+});
+
 //get scan sessions
 router.get('/raw/scanSessions', ensureAuthenticated, function(req, res) {
 
-	scanSession.getScanSessions()
+	var uid = req.user.uid;
+	scanSession.getScanSessions(uid)
 	.then(function(scanSessions) {
 		res.json(scanSessions);
 	});
@@ -84,9 +201,46 @@ router.get('/raw/scanSessions', ensureAuthenticated, function(req, res) {
 
 //get individual subject detail page by subjectID
 router.get('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
-	subject.getSubjectById(req.params.ID)
+	
+	var uid = req.user.uid;
+
+	var registeredUsers = [];
+
+	AuthenList.getAllUsers()
+	.then(function(users){
+		for (var num in users)
+		{
+			registeredUsers.push({uid: users[num].uid, Type:users[num].Type});
+		}
+	})
+	.then(function(){
+		var isAdmin = false;
+		for (var num in registeredUsers)
+		{
+			if (registeredUsers[num].uid==uid && registeredUsers[num].Type == 'admin')
+			{
+				isAdmin = true;
+			}
+		}
+		if(isAdmin)
+		{
+			return subject.getSubjectById(req.params.ID, uid);
+		}
+		else{
+			return Promise.resolve('empty');
+		}
+		
+	})
 	.then(function(subject){
-		res.json(subject);
+		if (subject == 'empty')
+		{
+			res.sendStatus(403)
+		}
+		else
+		{
+			res.json(subject);
+		}
+
 	});
 
 });
@@ -103,6 +257,17 @@ router.get('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		
 });
 
+//get individual project detail page by projectID
+router.get('/raw/projectsSubjectInfo/:ProjectID', ensureAuthenticated, function(req, res) {
+
+	var uid = req.user.uid;
+	project.getProjectByIdSubjectInfo(req.params.ProjectID, uid)
+	.then(function (project){
+		res.json(project);
+	});
+		
+});
+
 //get scan session of a subjects in a project details page (front end: -
 // - can be requested from subject details or project details page)
 router.get('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticated,
@@ -113,7 +278,7 @@ router.get('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticate
 	var uid = req.user.uid;
 	scanSession.getScanSessionBySubjectIDinProject(projectID, subjectID, uid)
 	.then(function(scanSession) {
-		res.json(scanSession);
+		res.json(scanSession[0]);
 	});
 });
 
@@ -135,6 +300,13 @@ router.get('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 	});
 });
 
+
+
+
+
+
+//=============================== ADD INFORMATION ========================
+
 //add a new subject, also add to projects collection and create scan session
 router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 	var _subject = req.body;
@@ -142,63 +314,117 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 	//create two arrays of same length containing projectIDs and SubjectIDs
 	var ProjectIDs = SubjectProjects.map(function (a) {return a.ProjectID;});
 	var SubjectIDs = SubjectProjects.map(function (a) {return a.SubjectIDinProject;});
-	//add the subject
-	subject.addSubject(_subject)
+	var uid = req.user.uid;
 
+	var registeredUsers = [];
+
+	AuthenList.getAllUsers()
+	.then(function(users){
+		for (var num in users)
+		{
+			registeredUsers.push({uid: users[num].uid, Type:users[num].Type});
+		}
+	})
+	.then(function(){
+		var isAdmin = false;
+		for (var num in registeredUsers)
+		{
+			if (registeredUsers[num].uid==uid && registeredUsers[num].Type == 'admin')
+			{
+				isAdmin = true;
+			}
+		}
+		if(isAdmin)
+		{
+			//add the subject
+			return subject.addSubject(_subject);
+		}
+		else{
+			return Promise.resolve('empty');
+		}
+		
+	})
 	//something wrong with creating this new subject
 	.catch (function (err){
-		console.log("error with adding a new subject");
 		console.log(err);
-		if (err != undefined)
+		if (err.errors != undefined)
 		{	
 			for (var num in err.errors)
 			{
 				console.log(num);
 				if ((err.errors[num].path == 'ID')){
 					console.log("This subject ID already exists, please give a new ID!");
+					var newerr = "Error: This subject ID already exists, please give a new ID!";
 				}
 				
 				if ((err.errors[num].path == 'SubjectIDinProject'))
 				{
 					console.log("This subject ("+ err.errors[num].value
 					+ ") already exists in the project!");
+					var newerr = "Error: This subject ("+ err.errors[num].value
+					+ ") already exists in the project!";
 				}
 			}
-			
+			return Promise.reject(newerr);	
 		}
-		res.sendStatus(500);
-		var err = new Error("cannot add subject");
-		return Promise.reject(err);
+		else
+		{
+			return Promise.reject(err);	
+		}
+		
 	})
 
 	//there's nothing wrong with new subject's content
 	//proceed to check if it can be added to the projects list
-	.then(function(){
-		var subjectGlobalID = _subject.ID;
-		return project.addSubject(ProjectIDs, SubjectIDs, subjectGlobalID);
+	.then(function(subject){
+		if (subject == 'empty')
+		{
+			return Promise.resolve('empty');
+		}
+		else
+		{
+			var subjectGlobalID = _subject.ID;
+			return project.addSubject(ProjectIDs, SubjectIDs, subjectGlobalID);
+		}
+		
 	})
-	.then(function(){
-		console.log("everything's good");
-		res.json(subject);
+	.then(function(subject){
+		if (subject == 'empty')
+		{
+			res.sendStatus(403);
+		}
+		else
+		{
+			console.log("everything's good");
+			res.json(subject);
+		}
+		
 	})
 
 	//something wrong with creating this new subject or adding this new subject to project list 
 	.catch(function(err){
 		console.log(err);
+		var checkerr = err.split(":");
+		console.log(checkerr);
 
 		//if subject content itself is okay, but cannot be added to project list
 		//then delete this subject because it has already been added
-		if (err != "Error: cannot add subject")
+		if (checkerr[0] != 'Error')
 		{
 			subject.deleteSubjectOnly(_subject.ID)
 			.then(function(){
-				res.sendStatus(500);
+				res.status(400).send(err);
 				console.log("deleted subject");
 			})
 			.catch(function(err){
 				console.log(err);
 				console.log("error with delete");
 			});
+		}
+		else
+		{
+			console.log("error with subject content");
+			res.status(400).send(err);
 		}
 		
 	});
@@ -210,29 +436,36 @@ router.post('/raw/projects', ensureAuthenticated, function(req, res) {
 	var _project = req.body;
 	console.log(_project);
 	project.addProject(_project)
-
+	.then(function (project){
+		res.json(project);
+	})
 	.catch(function(err){
 		console.log(err);
-		if (err != undefined)
+		if (err.errors != undefined)
 		{
 			for (var num in err.errors)
 			{
 				if ((err.errors[num].path == 'ProjectID')){
-				console.log("This project ID already exists, please give a new ID!");
+					console.log("This project ID already exists, please give a new ID!");
+					var err = "This project ID already exists, please give a new ID!";
+					return Promise.reject("This project ID already exists, please give a new ID!");
 				}
 				if ((err.errors[num].path == 'ProjectName')){
-				console.log("This project name already exists, please give a new name!");
+					console.log("This project name already exists, please give a new name!");
+					var err = "This project name already exists, please give a new name!";
+					return Promise.reject("This project name already exists, please give a new name!");
 				}
 			}
 		}
 		
-		res.sendStatus(404);
+		res.status(400).send(err);
 		//res.redirect('raw/projects');
 	})
-
-	.then(function (project){
-		res.json(project);
-	});
+	.catch(function(err){
+		console.log(err);
+		res.status(400).send(err);
+	})
+	
 });
 
 //add a new scan session
@@ -258,7 +491,8 @@ router.post('/raw/scanSession', ensureAuthenticated, function(req, res) {
 				}
 			}
 		}
-		res.redirect('/scanSessions');
+		console.log(err);
+		res.status(400).send(err);
 	});
 });
 
@@ -282,13 +516,13 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 		if (checkIfUniqueArray(sessionIDs) == false)
 		{
 			console.log("Session ID already exists");
-			return Promise.reject();
+			return Promise.reject("Session ID already exists");
 		}
 
 		if(newScanSession.SessionID == '')
 		{
 			console.log("Session ID must not be empty");
-			return Promise.reject();
+			return Promise.reject("Session ID must not be empty");
 		}
 
 		else
@@ -302,10 +536,13 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 	})
 	.catch(function(err){
 		console.log(err);
-		res.redirect('./scanSession/:ProjectID:SubjectIDinProject');
+		res.status(400).send(err);
 	});
 });
 
+
+
+//============================= EDIT INFORMATION ==============================
 
 //edit a subject
 router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
@@ -330,66 +567,131 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 		});
 	}
 
-	subject.getSubjectById(id)
+	var registeredUsers = [];
+
+	AuthenList.getAllUsers()
+	.then(function(users){
+		for (var num in users)
+		{
+			registeredUsers.push({uid: users[num].uid, Type:users[num].Type});
+		}
+	})
+	.then(function(){
+		var isAdmin = false;
+		for (var num in registeredUsers)
+		{
+			if (registeredUsers[num].uid==uid && registeredUsers[num].Type == 'admin')
+			{
+				isAdmin = true;
+			}
+		}
+		if(isAdmin)
+		{
+			return subject.getSubjectById(id);
+		}
+		else{
+			return Promise.resolve('empty');
+		}
+		
+	})
 	.then(function(OldSubject) {
-		//console.log(OldSubject);
-		var oldSubjectProjects = OldSubject.Projects;
-		var oldProjectIDs = oldSubjectProjects.map(function(a){return a.ProjectID});
-		var oldSubjectIDs = oldSubjectProjects.map(function(a){return a.SubjectIDinProject});
+
+		if (OldSubject == 'empty')
+		{
+			return Promise.resolve('empty');
+		}
+
+		else
+		{
+			//console.log(OldSubject);
+			var oldSubjectProjects = OldSubject.Projects;
+			var oldProjectIDs = oldSubjectProjects.map(function(a){return a.ProjectID});
+			var oldSubjectIDs = oldSubjectProjects.map(function(a){return a.SubjectIDinProject});
+			
+			var oldSubject = [];
+			var olen = oldProjectIDs.length;
+			for(var i = 0; i<olen; i++)
+			{
+				oldSubject.push({
+					projectID: oldProjectIDs[i],
+					subjectID: oldSubjectIDs[i],
+					used: false
+				});
+			}
+
+			var updatePackage = {old:[], new:[]};
+			
+			for(var i = 0; i< oldSubject.length; i++)
+			{
+				(updatePackage.old).push(oldSubject[i]);
+			}
+			for(var i = 0; i< newSubject.length; i++)
+			{
+				(updatePackage.new).push(newSubject[i]);
+			}
+
+			console.log(updatePackage);
+			return updatePackage;
+		}
 		
-		var oldSubject = [];
-		var olen = oldProjectIDs.length;
-		for(var i = 0; i<olen; i++)
+	})
+	.then(function (value){
+		console.log("value" + value);
+		if (value == 'empty')
 		{
-			oldSubject.push({
-				projectID: oldProjectIDs[i],
-				subjectID: oldSubjectIDs[i],
-				used: false
-			});
+			return Promise.resolve('empty');
 		}
-
-		var updatePackage = {old:[], new:[]};
+		else
+		{
+			return subject.updateSubject(id, _subject, value);
+		}
 		
-		for(var i = 0; i< oldSubject.length; i++)
+	})
+	.then(function(subject){
+		if (subject == 'empty')
 		{
-			(updatePackage.old).push(oldSubject[i]);
+			res.sendStatus(403);
 		}
-		for(var i = 0; i< newSubject.length; i++)
+		else
 		{
-			(updatePackage.new).push(newSubject[i]);
+			res.json(subject);
 		}
-
-		console.log(updatePackage);
-		return updatePackage;
-
-	}).then(function (value){
-		console.log(value);
-		//console.log(value.old);
-
-		return subject.updateSubject(id, _subject, value);
-	}).catch(function(err){
-		console.log("here");
-		console.log(err);
-		if (err != undefined)
+	})
+	.catch(function(err){
+		//console.log(err);
+		
+		if (err.errors == undefined)
+		{
+			var checkerr = err.split(":");
+			console.log(checkerr);
+		}
+		
+		else if (err.errors != undefined)
 		{
 			for (var num in err.errors)
 			{
 				if ((err.errors[num].path ) == 'ID'){
 					console.log("This subject ID already exists, please choose a new ID!");
+					err = "This subject ID already exists, please choose a new ID!";
+					return Promise.reject(err);
 				}
 				if ((err.errors[num].path) != 'ID'){
 					console.log("This subject ("+ err.errors[num].value
 					+ ") already exists in the project!");
+					err = "This subject ("+ err.errors[num].value
+					+ ") already exists in the project!";
+					return Promise.reject(err);
 				}
 			}
-			
 		}
-		//res.sendStatus(404);
-		res.redirect('/subjects');
+
+		res.status(400).send(err);
 	})
-	.then(function(subject){
-		res.json(subject);
+	.catch(function(err){
+		console.log("new error "+ err);
+		res.status(400).send(err);
 	});
+	
 
 });
 
@@ -421,25 +723,6 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		}
 		
 	})
-	.catch(function(err){
-		console.log(err);
-		if (err != undefined)
-		{
-			console.log(err.code);
-			if ((err.errors['ProjectID']!=undefined) && 
-				(err.errors['ProjectID'].path == 'ProjectID')){
-				console.log("This project ID already exists, please give a new ID!");
-			}
-			if ((err.errors['ProjectName']!=undefined) && 
-				(err.errors['ProjectName'].path == 'ProjectName')){
-				console.log("This project name already exists, please give a new name!");
-			}
-		}
-		
-		//res.sendStatus(404);
-		//res.redirect('/projects');
-		return Promise.reject();
-	})
 	.then(function(project){
 		if (project == "empty")
 		{
@@ -459,6 +742,34 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		}
 		
 	})
+	.then(function (project) {
+		res.json(project);
+	})
+	.catch(function(err){
+		console.log(err);
+		if (err.errors != undefined)
+		{
+			console.log(err.errors);
+			if ((err.errors['ProjectID']!=undefined) && 
+				(err.errors['ProjectID'].path == 'ProjectID')){
+				console.log("This project ID already exists, please give a new ID!");
+				var newerr = "This project ID already exists, please give a new ID!";
+				return Promise.reject(newerr);
+			}
+			if ((err.errors['ProjectName']!=undefined) && 
+				(err.errors['ProjectName'].path == 'ProjectName')){
+				console.log("This project name already exists, please give a new name!");
+				var newerr = "This project name already exists, please give a new name!";
+				return Promise.reject(newerr);
+			}
+		}
+		
+		else
+		{
+			res.status(400).send(err);
+		}
+		
+	})
 	.catch(function(err){
 		if (err == "empty")
 		{
@@ -467,13 +778,11 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		else
 		{
 			console.log("error updating subjects" + err);
-			res.redirect('/projects');
+			res.status(400).send(err);
 		}
 		
-	})
-	.then(function (project) {
-		res.json(project);
 	});
+	
 
 });
 
@@ -506,7 +815,18 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 		}
 		
 	})
-	
+
+	.then(function(scanSession){
+		//check scan data
+		if (scanSession == "empty")
+		{
+			res.sendStatus(403);
+		}
+		else{
+			res.json(scanSession);
+		}
+		
+	})
 	.catch(function(err){
 		if (err != undefined && err != "Cannot find session ID")
 		{
@@ -519,30 +839,60 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 			}			
 		}
 		
-		res.redirect('./scanSession/:SubjectIDinProject');
-	})
-	.then(function(scanSession){
-		//check scan data
-		if (scanSession == "empty")
-		{
-			res.sendStatus(403);
-		}
-		else{
-			res.json(scanSession);
-		}
-		
+		console.log("new error "+ err);
+		res.status(400).send(err);
 	});
+
 });
-	
+
+
+
+
+//===================== DELETE INFORMATION ===============================
 
 //delete a subject
 router.delete('/raw/subjects/:ID', function(req, res) {
 	var id = req.params.ID;
 	var _subject = req.body;
-	//alert("are you sure");
-	subject.deleteSubject(id)
+
+	var uid = req.user.uid;
+	var registeredUsers = [];
+
+	AuthenList.getAllUsers()
+	.then(function(users){
+		for (var num in users)
+		{
+			registeredUsers.push({uid: users[num].uid, Type:users[num].Type});
+		}
+	})
+	.then(function(){
+		var isAdmin = false;
+		for (var num in registeredUsers)
+		{
+			if (registeredUsers[num].uid==uid && registeredUsers[num].Type == 'admin')
+			{
+				isAdmin = true;
+			}
+		}
+		if(isAdmin)
+		{
+			return subject.deleteSubject(id);
+		}
+		else{
+			return Promise.resolve('empty');
+		}
+		
+	})
 	.then(function (subject){
-		res.json(subject);	
+		if (subject == 'empty')
+		{
+			res.sendStatus(403);
+		}
+		else
+		{
+			res.json(subject);
+		}
+			
 	}).catch(function(err) {
 		res.sendStatus(500);
 		console.log(err);
@@ -694,7 +1044,7 @@ router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(
 });
 
 //search subject by demographic information
-router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Projects', ensureAuthenticated, function(req, res) {
+router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:FirstName/:LastName/:Projects', ensureAuthenticated, function(req, res) {
 
 	var Sex = req.params.Sex;
 	var Handedness = req.params.Handedness;
@@ -702,9 +1052,11 @@ router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Pro
 	var Contact = req.params.Contact;
 	var Age = req.params.Age;
 	var MRN = req.params.MRN;
+	var FirstName = req.params.FirstName;
+	var LastName = req.params.LastName;
 	var Projects = req.params.Projects.split(',');
 	console.log(Projects);
-	subject.getSubjectsByInfo(Sex, Handedness, Diagnosis, Contact, Age, MRN, Projects)
+	subject.getSubjectsByInfo(Sex, Handedness, Diagnosis, Contact, Age, MRN, FirstName, LastName, Projects)
 	.then(function(subjects) {
 		if(subjects == '')
 		{
@@ -807,6 +1159,8 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/
 		SubjectGID: SubjectGID,
 		SubjectPID:SubjectPID
 	};
+
+	console.log(scanInfoObj);
 
 
 	scanSession.searchScanSessionsByInfo(scanInfoObj, uid)
@@ -1153,8 +1507,120 @@ router.delete('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 // });
 
 
+
+//======================== OTHER FEATURES ===========================
+
+//table of information for projects page
+router.get('/raw/getprojectinfo/:ProjectID', ensureAuthenticated, function(req, res){
+	var uid = req.user.uid;
+	var projectID = req.params.ProjectID;
+
+	scanSession.getScanSessionByProjectID(projectID, uid)
+	.then(function(scans){
+		var Ages = [];
+		var MEGScanTypes = [];
+		var MRIScanTypes = [];
+		var TestTypes = [];
+		var scansessions = [];
+
+		//gather all scan sessions
+		for (var temp in scans)
+		{
+			var SubjectScanSessions = scans[temp].ScanSessions;
+			var scansessions = scansessions.concat(SubjectScanSessions);
+		}
+
+		//go through all scan sessions
+		//console.log(scansessions);
+		for (var num in scansessions)
+		{
+			//console.log(scansessions[num]);
+			var MEGforThisSubject = scansessions[num].MEGScans;
+			var MRIforThisSubject = scansessions[num].MRIScans;
+			var TestsforThisSubject = scansessions[num].TestResults;
+
+			//add all meg scan types into one array and age to age array
+			for (var i in MEGforThisSubject)
+			{
+				MEGScanTypes.push(MEGforThisSubject[i].ScanType);
+				if (MEGforThisSubject[i].AgeAtScan != '' && MEGforThisSubject[i].AgeAtScan != undefined
+					&& MEGforThisSubject[i].AgeAtScan != null)
+				{
+					Ages.push(MEGforThisSubject[i].AgeAtScan);
+				}
+				
+			}
+
+			//add all mri scan types into one array and age to age array
+			for (var j in MRIforThisSubject)
+			{
+				MRIScanTypes.push(MRIforThisSubject[j].ScanType);
+				if (MRIforThisSubject[j].AgeAtScan != '' && MRIforThisSubject[j].AgeAtScan != undefined
+					&& MRIforThisSubject[j].AgeAtScan != null)
+				{
+					Ages.push(MRIforThisSubject[j].AgeAtScan);
+				}
+				
+			}
+
+			//add all test types into one array and age to age array
+			for (var k in TestsforThisSubject)
+			{
+				TestTypes.push(TestsforThisSubject[k].Type);
+				if (TestsforThisSubject[k].Age != '' && TestsforThisSubject[k].Age != undefined
+					&& TestsforThisSubject[k].Age != null)
+				{
+					Ages.push(TestsforThisSubject[k].Age);
+				}
+				
+			}
+
+		}
+
+		//find max and min ages
+		var maxAge = getMaxOfArray(Ages);
+		var minAge = getMinOfArray(Ages);
+		//console.log(maxAge, minAge);
+
+		
+		//sort the meg and mri scan types and test types
+		var MEGTypes = {};
+		MEGScanTypes.forEach(function(x) { MEGTypes[x] = (MEGTypes[x] || 0)+1; });
+		//console.log(MEGTypes);
+		var MRITypes = {};
+		MRIScanTypes.forEach(function(x) { MRITypes[x] = (MRITypes[x] || 0)+1; });
+		//console.log(MRITypes);
+		var Testtypes = {};
+		TestTypes.forEach(function(x) { Testtypes[x] = (Testtypes[x] || 0)+1; });
+		//console.log(Testtypes);
+
+		var projectInfo = {
+			subjectNumber: scans.length,
+			subjectMaxAge: maxAge,
+			subjectMinAge: minAge,
+			MEGTypes: MEGTypes,
+			MRITypes: MRITypes,
+			TestTypes: Testtypes
+		};
+		res.json(projectInfo);
+	})
+
+});
+
+
+
+
+
 module.exports = router;
 
 function checkIfUniqueArray (array){
 	return array.length === new Set(array).size;
+}
+
+function getMaxOfArray(numArray) {
+  return Math.max.apply(null, numArray);
+}
+
+function getMinOfArray(numArray) {
+  return Math.min.apply(null, numArray);
 }

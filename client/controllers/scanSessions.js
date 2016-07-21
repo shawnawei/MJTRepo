@@ -1,14 +1,18 @@
 var myApp = angular.module('myApp');
 
-myApp.controller('scanSessionsController', [ '$state','$scope', '$http', '$location', '$stateParams', 'authenFact',
-	function ($state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('scanSessionsController', ['$rootScope', '$state','$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function ($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
 	console.log('scanSessionsController loaded');
 
-	console.log("logged in: "+ authenFact.getAccessToken());
 
 	if (!authenFact.getAccessToken())
 	{
 		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in as: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
 	}
 
 	var sessionID = $stateParams.SessionID;
@@ -18,6 +22,34 @@ myApp.controller('scanSessionsController', [ '$state','$scope', '$http', '$locat
 	$scope.ProjectID = projectID;
 	$scope.SubjectIDinProject = subjectID;
 	$scope.forbidden = true;
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
 
 	$scope.getAuthenList = function(forbidden){
 		
@@ -207,10 +239,6 @@ myApp.controller('scanSessionsController', [ '$state','$scope', '$http', '$locat
 	}
 
 
-
-
-
-
 	$scope.addMEGScan = function(){
 		$scope.scanSession.MEGScans.push(
 			{ScanName: '', ScanDate: '', ScanPath: '', Allowed:false, 
@@ -247,8 +275,12 @@ myApp.controller('scanSessionsController', [ '$state','$scope', '$http', '$locat
 		var subjectID = $stateParams.SubjectIDinProject;
 		var sessionID = $stateParams.SessionID;
 		$http.put('/raw/scanSession/'+ projectID + '/'+ subjectID +'/'+ sessionID, $scope.scanSession)
-		.success(function(response){
+		.then(function(response){
 			window.location.href = '/ScanInfo/'+ projectID + '/'+ subjectID;
+		})
+		.catch(function(err){
+			console.log(err);
+			$scope.error = err.data;
 		});
 	}
 
@@ -270,54 +302,224 @@ myApp.controller('scanSessionsController', [ '$state','$scope', '$http', '$locat
 		}
 		
 
-	$scope.exportData = function(name){
-		console.log("oh what");
-		var blob = new Blob([document.getElementById('exportable').innerHTML], {
-            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
-        });
+	var selectedMEGs = [];
+	var selectedMRIs = [];
+	var selectedTests = [];
 
-        saveAs(blob, name+".xls");
+	$scope.exportData = function(scanSessions, subjectInfo){
+
+		var MEGs = scanSessions.MEGScans;
+		var MRIs = scanSessions.MRIScans;
+		var Tests = scanSessions.TestResults;
+
+		for (var num in MEGs)
+		{
+			if (MEGs[num].selected == true)
+			{
+				selectedMEGs.push(MEGs[num]);
+			}
+			else
+			{
+				var index = selectedMEGs.indexOf(MEGs[num]);
+				if(index > -1){
+					selectedMEGs.splice(index, 1);
+				}
+			}
+		}
+
+		for (var num in MRIs)
+		{
+			if (MRIs[num].selected == true)
+			{
+				selectedMRIs.push(MRIs[num]);
+			}
+			else
+			{
+				var index = selectedMRIs.indexOf(MRIs[num]);
+				if(index > -1){
+					selectedMRIs.splice(index, 1);
+				}
+			}
+		}
+
+		for (var num in Tests)
+		{
+			if (Tests[num].selected == true)
+			{
+				selectedTests.push(Tests[num]);
+			}
+			else
+			{
+				var index = selectedTests.indexOf(Tests[num]);
+				if(index > -1){
+					selectedTests.splice(index, 1);
+				}
+			}
+		}
+
+		// console.log(selectedMEGs);
+		// console.log(selectedMRIs);
+		// console.log(selectedTests);
+		// console.log(subjectInfo);
+		var tobeExportedMEG = formatToExcel_MEGs(selectedMEGs);
+		var tobeExportedMRI = formatToExcel_MRIs(selectedMRIs);
+		var tobeExportedTests = formatToExcel_Tests(selectedTests);
+		var tobeExportedSubjectInfo = formatToExcel_SubjectInfo(subjectInfo);
+		// console.log(tobeExportedMEG, tobeExportedMRI, tobeExportedTests);
+
+		var opts = [{
+			sheetid:'MEGs',header:true},
+			{sheetid:'MRIs',header:true},
+			{sheetid:'Tests',header:true},
+			{sheetid:'SubjectInfo',header:false}];
+
+    	alasql('SELECT INTO XLSX("scansInSession.xlsx",?) FROM ?',
+                     [opts,[tobeExportedMEG, tobeExportedMRI, tobeExportedTests, tobeExportedSubjectInfo]]);
+		
+		// alasql('SELECT * INTO XLSX("scansInSession.xlsx",{headers:true}) FROM ?', 
+		// 	[tobeExported]);
 	}
 
-	$scope.selectAll = function(session){
-		for (var num in session)
+
+	$scope.selectMEGAll = function(sessions){
+		selectedMEGs = [];
+		for (var num in sessions)
 		{
-			console.log(session[num]);
-			session[num].selected = true;
+			sessions[num].selected = true;
 		}
 	}
 
-	$scope.deselectAll = function(session){
-		for (var num in session)
+	$scope.deselectMEGAll = function(sessions){
+		selectedMEGs = [];
+		for (var num in sessions)
 		{
-			console.log(session[num]);
-			session[num].selected = false;
+			sessions[num].selected = false;
 		}
+		var tobeExportedMEG = [];
+		//$scope.getArray = tobeExported;
+	}
+
+	$scope.selectMRIAll = function(sessions){
+		selectedMRIs = [];
+		for (var num in sessions)
+		{
+			sessions[num].selected = true;
+		}
+	}
+
+	$scope.deselectMRIAll = function(sessions){
+		selectedMRIs = [];
+		for (var num in sessions)
+		{
+			sessions[num].selected = false;
+		}
+		var tobeExportedMRI = [];
+		//$scope.getArray = tobeExported;
+	}
+
+	$scope.selectTestAll = function(sessions){
+		selectedTests = [];
+		for (var num in sessions)
+		{
+			sessions[num].selected = true;
+		}
+	}
+
+	$scope.deselectTestAll = function(sessions){
+		selectedTests = [];
+		for (var num in sessions)
+		{
+			sessions[num].selected = false;
+		}
+		var tobeExportedTests = [];
+		//$scope.getArray = tobeExported;
 	}
 
 }]);
 
 
 
-myApp.controller('addScanSessionController', ['$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
-	function ($state,$scope, $http, $location, $stateParams, authenFact){
+myApp.controller('addScanSessionController', ['$rootScope', '$state', '$scope', '$http', '$location', '$stateParams', 'authenFact',
+	function ($rootScope, $state,$scope, $http, $location, $stateParams, authenFact){
 	console.log('addScanSessionController loaded');
 
-	$scope.checkAuthen = function(){
-		if (authenFact.getAccessToken().uid != 'shawnawei')
-		{
-			$state.go('scanDetails', {'ProjectID': $stateParams.ProjectID, 'SubjectIDinProject':$stateParams.SubjectIDinProject});
-			alert("You are not authorized to add new scans to project "+ $stateParams.ProjectID + " !");
-		}
+	// $scope.checkAuthen = function(){
+	// 	if (authenFact.getAccessToken().uid != 'shawnawei')
+	// 	{
+	// 		$state.go('scanDetails', {'ProjectID': $stateParams.ProjectID, 'SubjectIDinProject':$stateParams.SubjectIDinProject});
+	// 		alert("You are not authorized to add new scans to project "+ $stateParams.ProjectID + " !");
+	// 	}
+	// }
+
+	if (!authenFact.getAccessToken())
+	{
+		$state.go('login');
+	}
+	else
+	{
+		console.log("logged in as: "+ authenFact.getAccessToken().uid);
+		$rootScope.loggedin = true;
 	}
 
-	$scope.newSession = {
-		"SessionID": '',
-		"ParticipantAge": '',
-		"MEGScans":[],
-		"MRIScans":[],
-		"TestResults": []
-	};
+	$scope.getNextSessionID = function(){
+		var projectID = $stateParams.ProjectID;
+		var subjectID = $stateParams.SubjectIDinProject;
+		$http.get('/raw/scanSession/'+ projectID + '/' +subjectID)
+		.then(function(response){
+			console.log(response);
+			if (response.data != null)
+			{
+				var sessionIDLength = response.data.ScanSessions.length;
+				$scope.newSessionID = '0'+ (sessionIDLength+1);
+				console.log($scope.newSessionID);
+			}
+		})
+		.then(function(response){
+			var newID = $scope.newSessionID;
+			$scope.newSession = {
+				"SessionID": subjectID+'_'+newID,
+				"MEGScans":[],
+				"MRIScans":[],
+				"TestResults": []
+			};
+		});
+	}
+
+	// var newID = $scope.newSessionID;
+	// $scope.newSession = {
+	// 	"SessionID": '',
+	// 	"MEGScans":[],
+	// 	"MRIScans":[],
+	// 	"TestResults": []
+	// };
+
+	$scope.checkAuthen = function(){
+
+		$http.get('raw/Users')
+		.then(function(response){
+			var Users = response.data;
+			var uid = authenFact.getAccessToken().uid;
+			var adminTypes = [];
+			for (var num in Users)
+			{
+				if (Users[num].Type == 'admin')
+				{
+					adminTypes.push(Users[num].uid);
+				}
+			}
+
+			if (!adminTypes.includes(uid))
+			{				
+				$rootScope.adminloggedin = false;
+			}
+
+			else
+			{
+				$rootScope.adminloggedin = true;
+			}
+		})
+		
+	}
 
 	$scope.getTestTypes = function(){
 
@@ -362,9 +564,11 @@ myApp.controller('addScanSessionController', ['$state', '$scope', '$http', '$loc
 	$scope.SubjectIDinProject = subjectID;
 	$scope.ProjectID = projectID;
 
+	
+
 	$scope.addScanSession = function(){
 
-		console.log('add scanSession');
+		//console.log('add scanSession');
 		var projectID = $stateParams.ProjectID;
 		var subjectID = $stateParams.SubjectIDinProject;
 
@@ -372,8 +576,12 @@ myApp.controller('addScanSessionController', ['$state', '$scope', '$http', '$loc
 		$scope.ProjectID = projectID;
 
 		$http.post('/raw/scanSession/'+ projectID + '/' + subjectID, $scope.newSession)
-		.success(function(response){
+		.then(function(response){
 			window.location.href= '/ScanInfo/'+ projectID + '/'+ subjectID;
+		})
+		.catch(function(err){
+			//console.log(err);
+			$scope.error = err.data;
 		});
 	}
 
@@ -406,3 +614,185 @@ myApp.controller('addScanSessionController', ['$state', '$scope', '$http', '$loc
 	}
 
 }]);
+
+
+
+function formatToExcel_MEGs (selectedMEGs) {
+
+	var tobeExported = [];
+
+	if (selectedMEGs.length < 1)
+	{
+		var scanSession = {
+			// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+			// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+			// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+			// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+			// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+			MEG_Name: "",
+			MEG_Date: "",
+			MEG_Type:"",
+			MEG_Path:"",
+			MEG_AgeAtScan: "",
+			MEG_Approved: "",
+			MEG_Comment: ""
+		}
+
+		tobeExported.push(scanSession);
+		return tobeExported;
+	}
+	else
+	{
+		for (var num in selectedMEGs)
+		{
+			var scanSession = {
+				// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+				// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+				// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+				// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+				// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+				MEG_Name: selectedMEGs[num].ScanName,
+				MEG_Date: selectedMEGs[num].ScanDate,
+				MEG_Type: selectedMEGs[num].ScanType,
+				MEG_Path: selectedMEGs[num].ScanPath,
+				MEG_AgeAtScan: selectedMEGs[num].AgeAtScan,
+				MEG_Approved: selectedMEGs[num].Allowed,
+				MEG_Comment: selectedMEGs[num].Comment
+			}
+
+			tobeExported.push(scanSession);
+		}
+
+		console.log(tobeExported);
+		return tobeExported;
+	}
+	
+}
+
+function formatToExcel_MRIs (selectedMRIs) {
+
+	var tobeExported = [];
+
+	if (selectedMRIs.length < 1)
+	{
+		var scanSession = {
+			// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+			// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+			// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+			// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+			// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+			MRI_Name: "",
+			MRI_Date: "",
+			MRI_Type:"",
+			MRI_Path:"",
+			MRI_AgeAtScan: "",
+			MRI_Approved: "",
+			MRI_Comment: ""
+		}
+
+		tobeExported.push(scanSession);
+		return tobeExported;
+	}
+
+	else
+	{
+		for (var num in selectedMRIs)
+		{
+			var scanSession = {
+				// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+				// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+				// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+				// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+				// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+				MRI_Name: selectedMRIs[num].ScanName,
+				MRI_Date: selectedMRIs[num].ScanDate,
+				MRI_Type: selectedMRIs[num].ScanType,
+				MRI_Path: selectedMRIs[num].ScanPath,
+				MRI_AgeAtScan: selectedMRIs[num].AgeAtScan,
+				MRI_Approved: selectedMRIs[num].Allowed,
+				MRI_Comment: selectedMRIs[num].Comment
+			}
+
+			tobeExported.push(scanSession);
+		}
+
+		console.log(tobeExported);
+		return tobeExported;
+	}
+	
+}
+
+function formatToExcel_Tests (selectedTests) {
+
+	var tobeExported = [];
+
+	if (selectedTests.length < 1)
+	{
+		var scanSession = {
+			// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+			// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+			// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+			// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+			// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+			Test_Type: "",
+			Test_Date: "",
+			Test_Age: "",
+			Test_Result:"",
+			Test_Comment: ""
+		}
+
+		tobeExported.push(scanSession);
+		return tobeExported;
+	}
+
+	else
+	{
+		for (var num in selectedTests)
+		{
+			var scanSession = {
+				// 'SUBJECT ID': selectedMEGs[num].SubjectID,
+				// 'Sex': selectedMEGs[num].SubjectInfo.Sex,
+				// 'Diagnosis': selectedMEGs[num].SubjectInfo.Diagnosis,
+				// 'SESSION ID': selectedMEGs[num].ScanSessions.SessionID,
+				// 'IN PROJECT': selectedMEGs[num].relatedProject + "/" + selectedMEGs[num].SubjectIDinProject
+				Test_Type: selectedTests[num].Type,
+				Test_Date: selectedTests[num].TestDate,
+				Test_Age: selectedTests[num].Age,
+				Test_Result: selectedTests[num].Result,
+				Test_Comment: selectedTests[num].Comment
+			}
+
+			tobeExported.push(scanSession);
+		}
+
+		console.log(tobeExported);
+		return tobeExported;
+	}
+	
+}
+
+
+function formatToExcel_SubjectInfo (selectedSubject) {
+	//console.log(selectedSubject);
+
+	var projectList = selectedSubject.SubjectInfo.Projects;
+	var projects = [];
+	for (var i in projectList)
+	{
+		projects.push(projectList[i].ProjectID);
+	}
+
+	var scanSession = {
+		'Subject ID': selectedSubject.SubjectIDinProject,
+		'For Project': selectedSubject.relatedProject,
+		'Sex': selectedSubject.SubjectInfo.Sex,
+		'Diagnosis': selectedSubject.SubjectInfo.Diagnosis,
+		'Handedness': selectedSubject.SubjectInfo.Handedness,
+		'In Projects': projects
+	}
+	var tobeExported = [];
+	tobeExported.push(scanSession);
+	
+	return tobeExported;
+	
+}
