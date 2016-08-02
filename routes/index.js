@@ -4,6 +4,7 @@
 
 //var homePage = require('./views/HomePage');
 var Promise = require("bluebird");
+var path = require('path');
 var express = require('express');
 var passport = require('passport');
 var router = express.Router();
@@ -17,6 +18,8 @@ var testTypes = require('../models/testTypes');
 var MEGTypes = require('../models/MEGTypes');
 var MRITypes = require('../models/MRITypes');
 var AuthenList = require('../models/authenList');
+var xlsxj = require('xlsx-to-json');
+var convert = require('xlsx-to-json-plus');
 // var subjectNum = 0;
 // var projectNum = 0;
 // var scansessionNum = 0;
@@ -346,21 +349,21 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 	})
 	//something wrong with creating this new subject
 	.catch (function (err){
-		console.log(err);
+		//console.log(err);
 		if (err.errors != undefined)
 		{	
 			for (var num in err.errors)
 			{
-				console.log(num);
+				//console.log(num);
 				if ((err.errors[num].path == 'ID')){
-					console.log("This subject ID already exists, please give a new ID!");
+					//console.log("This subject ID already exists, please give a new ID!");
 					var newerr = "Error: This subject ID already exists, please give a new ID!";
 				}
 				
 				if ((err.errors[num].path == 'SubjectIDinProject'))
 				{
-					console.log("This subject ("+ err.errors[num].value
-					+ ") already exists in the project!");
+					//console.log("This subject ("+ err.errors[num].value
+					//+ ") already exists in the project!");
 					var newerr = "Error: This subject ("+ err.errors[num].value
 					+ ") already exists in the project!";
 				}
@@ -395,7 +398,7 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 		}
 		else
 		{
-			console.log("everything's good");
+			//console.log("everything's good");
 			res.json(subject);
 		}
 		
@@ -403,9 +406,9 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 
 	//something wrong with creating this new subject or adding this new subject to project list 
 	.catch(function(err){
-		console.log(err);
+		//console.log(err);
 		var checkerr = err.split(":");
-		console.log(checkerr);
+		//console.log(checkerr);
 
 		//if subject content itself is okay, but cannot be added to project list
 		//then delete this subject because it has already been added
@@ -413,17 +416,18 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 		{
 			subject.deleteSubjectOnly(_subject.ID)
 			.then(function(){
+				console.log("add new subject error: "+ err);
 				res.status(400).send(err);
-				console.log("deleted subject");
+				//console.log("deleted subject");
 			})
 			.catch(function(err){
-				console.log(err);
-				console.log("error with delete");
+				//console.log(err);
+				//console.log("error with delete");
 			});
 		}
 		else
 		{
-			console.log("error with subject content");
+			console.log("add new subject error: "+ err);
 			res.status(400).send(err);
 		}
 		
@@ -434,24 +438,24 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 //add a new project
 router.post('/raw/projects', ensureAuthenticated, function(req, res) {
 	var _project = req.body;
-	console.log(_project);
+	//console.log(_project);
 	project.addProject(_project)
 	.then(function (project){
 		res.json(project);
 	})
 	.catch(function(err){
-		console.log(err);
+		//console.log(err);
 		if (err.errors != undefined)
 		{
 			for (var num in err.errors)
 			{
 				if ((err.errors[num].path == 'ProjectID')){
-					console.log("This project ID already exists, please give a new ID!");
+					//console.log("This project ID already exists, please give a new ID!");
 					var err = "This project ID already exists, please give a new ID!";
 					return Promise.reject("This project ID already exists, please give a new ID!");
 				}
 				if ((err.errors[num].path == 'ProjectName')){
-					console.log("This project name already exists, please give a new name!");
+					//console.log("This project name already exists, please give a new name!");
 					var err = "This project name already exists, please give a new name!";
 					return Promise.reject("This project name already exists, please give a new name!");
 				}
@@ -462,7 +466,7 @@ router.post('/raw/projects', ensureAuthenticated, function(req, res) {
 		//res.redirect('raw/projects');
 	})
 	.catch(function(err){
-		console.log(err);
+		console.log("add new project error: " + err);
 		res.status(400).send(err);
 	})
 	
@@ -473,12 +477,12 @@ router.post('/raw/scanSession', ensureAuthenticated, function(req, res) {
 	var scan_session = req.body;
 	scanSession.addScanSession(scan_session)
 	.then(function(session){
-		console.log("hi" + session);
+		//console.log("hi" + session);
 		res.json(session);
 		return Promise.resolve();
 	})
 	.catch(function(err){
-		console.log(err);
+		//console.log(err);
 		if(err != undefined)
 		{
 			for (var num in err.errors)
@@ -491,7 +495,7 @@ router.post('/raw/scanSession', ensureAuthenticated, function(req, res) {
 				}
 			}
 		}
-		console.log(err);
+		console.log("add scan session error: " +err);
 		res.status(400).send(err);
 	});
 });
@@ -505,8 +509,8 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 
 	scanSession.findOneAsync({SubjectIDinProject: subjectIDinProject})
 	.catch(function(err){
-		console.log(err);
-		console.log("cannot find this subject ID in the scan session collection");
+		//console.log(err);
+		//console.log("cannot find this subject ID in the scan session collection");
 		return Promise.reject(err);
 	})
 	.then(function(oldScanSession){
@@ -515,13 +519,13 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 		sessionIDs.push(newScanSession.SessionID);
 		if (checkIfUniqueArray(sessionIDs) == false)
 		{
-			console.log("Session ID already exists");
+			//console.log("Session ID already exists");
 			return Promise.reject("Session ID already exists");
 		}
 
 		if(newScanSession.SessionID == '')
 		{
-			console.log("Session ID must not be empty");
+			//console.log("Session ID must not be empty");
 			return Promise.reject("Session ID must not be empty");
 		}
 
@@ -535,7 +539,7 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 		res.json(scanSession);
 	})
 	.catch(function(err){
-		console.log(err);
+		console.log("add scan error: " + err);
 		res.status(400).send(err);
 	});
 });
@@ -630,13 +634,13 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 				(updatePackage.new).push(newSubject[i]);
 			}
 
-			console.log(updatePackage);
+			//console.log(updatePackage);
 			return updatePackage;
 		}
 		
 	})
 	.then(function (value){
-		console.log("value" + value);
+		//console.log("value" + value);
 		if (value == 'empty')
 		{
 			return Promise.resolve('empty');
@@ -663,7 +667,7 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 		if (err.errors == undefined)
 		{
 			var checkerr = err.split(":");
-			console.log(checkerr);
+			//console.log(checkerr);
 		}
 		
 		else if (err.errors != undefined)
@@ -671,24 +675,24 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 			for (var num in err.errors)
 			{
 				if ((err.errors[num].path ) == 'ID'){
-					console.log("This subject ID already exists, please choose a new ID!");
+					//console.log("This subject ID already exists, please choose a new ID!");
 					err = "This subject ID already exists, please choose a new ID!";
 					return Promise.reject(err);
 				}
 				if ((err.errors[num].path) != 'ID'){
-					console.log("This subject ("+ err.errors[num].value
-					+ ") already exists in the project!");
+					//console.log("This subject ("+ err.errors[num].value
+					//+ ") already exists in the project!");
 					err = "This subject ("+ err.errors[num].value
 					+ ") already exists in the project!";
 					return Promise.reject(err);
 				}
 			}
 		}
-
+		console.log("edit subjec error: " + err);
 		res.status(400).send(err);
 	})
 	.catch(function(err){
-		console.log("new error "+ err);
+		console.log("edit subject error: "+ err);
 		res.status(400).send(err);
 	});
 	
@@ -738,7 +742,7 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 				subjectIDs.push(newSubjectsInProject.GlobalID);
 				inProjectIDs.push(newSubjectsInProject.inProjectID);
 			}
-			return subject.updateSubjectFromProject(project, id, oldSubjectsinProject, newSubjectsInProject);
+			return subject.updateSubjectFromProject(_project, id, oldSubjectsinProject, newSubjectsInProject);
 		}
 		
 	})
@@ -746,19 +750,19 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		res.json(project);
 	})
 	.catch(function(err){
-		console.log(err);
+		//console.log(err);
 		if (err.errors != undefined)
 		{
-			console.log(err.errors);
+			//console.log(err.errors);
 			if ((err.errors['ProjectID']!=undefined) && 
 				(err.errors['ProjectID'].path == 'ProjectID')){
-				console.log("This project ID already exists, please give a new ID!");
+				//console.log("This project ID already exists, please give a new ID!");
 				var newerr = "This project ID already exists, please give a new ID!";
 				return Promise.reject(newerr);
 			}
 			if ((err.errors['ProjectName']!=undefined) && 
 				(err.errors['ProjectName'].path == 'ProjectName')){
-				console.log("This project name already exists, please give a new name!");
+				//console.log("This project name already exists, please give a new name!");
 				var newerr = "This project name already exists, please give a new name!";
 				return Promise.reject(newerr);
 			}
@@ -766,6 +770,7 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		
 		else
 		{
+			console.log("edit project error " + err);
 			res.status(400).send(err);
 		}
 		
@@ -777,7 +782,7 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		}
 		else
 		{
-			console.log("error updating subjects" + err);
+			console.log("edit project error " + err);
 			res.status(400).send(err);
 		}
 		
@@ -803,14 +808,14 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 
 	scanSession.findOneAsync(query)
 	.then(function(OldScanSession){
-		console.log(OldScanSession);
+		//console.log(OldScanSession);
 		if (OldScanSession == null)
 		{
 			return Promise.resolve("empty");
 		}
 		else
 		{
-			console.log(scan_session);
+			//console.log(scan_session);
 			return scanSession.updateSingleScanSession(OldScanSession, subjectID, sessionID, scan_session);
 		}
 		
@@ -834,12 +839,12 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 			{
 				if ((err.errors[num]!=undefined) && 
 				(err.errors[num].properties.path == 'SessionID')){
-				console.log("This Scan Session ID already exists!");
+				//console.log("This Scan Session ID already exists!");
 				}
 			}			
 		}
 		
-		console.log("new error "+ err);
+		console.log("error with editing a scan session "+ err);
 		res.status(400).send(err);
 	});
 
@@ -1160,7 +1165,7 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/
 		SubjectPID:SubjectPID
 	};
 
-	console.log(scanInfoObj);
+	//console.log(scanInfoObj);
 
 
 	scanSession.searchScanSessionsByInfo(scanInfoObj, uid)
@@ -1607,6 +1612,70 @@ router.get('/raw/getprojectinfo/:ProjectID', ensureAuthenticated, function(req, 
 
 });
 
+//convert to json
+router.get('/raw/convertthistojson',  ensureAuthenticated, function(req, res){
+
+	["./Data/MJTdata_subjectlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/subjects"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+	["./Data/MJTdata_projectlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/projects"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+	["./Data/MJTdata_scansessionlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/scansessions"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+
+
+	//console.log(req);
+
+	// xlsxj({
+ //    input: "./test1.xlsx", 
+ //    output: "output.json"
+ //  }, function(err, result) {
+ //    if(err) {
+ //      console.error(err);
+ //    }else {
+ //      console.log(result);
+ //      res.json(result);
+ //    }
+ //  });
+ // 	return Promise.resolve()
+ // 	.then(function(){
+
+ // 		["./test1.xlsx"].forEach(function (element) {	
+	//   	convert.toJson(
+	// 	    path.join(__dirname, element),  //excell file 
+	// 	    path.join(__dirname, "./json"), //json dir 
+	// 	    1,  //excell head line number 
+	// 	    "," //array separator 
+ //  		)
+  	
+ // 		})
+	// 	return Promise.resolve();
+ // 	})
+	
+	// .then(function(){
+	//   var jsonfile = require('./json/Sheet1.json');
+	//   console.log(jsonfile);
+	// });
+
+
+});
 
 
 

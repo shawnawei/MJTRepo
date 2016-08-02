@@ -31,7 +31,7 @@ var subjectSchema = new Schema({
 	Diagnosis: {type:String, enum:enumDiagnosis},
 	DateOfBirth: {type:String},
 	Other: String,
-	ContactPermit: String,
+	ContactPermit: Boolean,
 	ContactInfo: String,
 	//this can't be set as unique because when adding a new subject to project
 	//the MRN is given as null, thus may cause duplicate error when creating
@@ -44,12 +44,20 @@ var subjectSchema = new Schema({
 //projectPerSubjectSchema.plugin(beautifyUnique);
 subjectSchema.plugin(uniqueValidator);
 projectPerSubjectSchema.plugin(uniqueValidator)
-
+var allsubjectIDs = [];
 var Subject = module.exports = mongoose.model('Subject', subjectSchema, 'subjectsList');
+Subject.findAsync()
+.then (function(subjects){
+	allsubjectIDs = subjects.map(function (a) {return a.ID;});
+	//console.log(allsubjectIDs);
+})
+
+
 
 //get all subjects
 module.exports.getSubjects = function(){
-	return Promise.resolve().then (function(){
+	return Promise.resolve()
+	.then (function(){
 		return Subject.findAsync();
 	});
 }
@@ -143,6 +151,7 @@ module.exports.addSubject = function(subject){
 			// 	return Promise.reject();
 			// }
 		}
+
 		return Promise.resolve();
 	})
 	.then(function (){
@@ -158,6 +167,13 @@ module.exports.addSubject = function(subject){
 //update a subject
 module.exports.updateSubject = function(id, subject, value){
 	return Promise.resolve()
+	.then(function(){
+		return Subject.findAsync()
+	})
+	.then (function(subjects){
+		allsubjectIDs = subjects.map(function (a) {return a.ID;});
+		//console.log(allsubjectIDs);
+	})
 	.then(function(){
 		//check data
 
@@ -220,12 +236,33 @@ module.exports.updateSubject = function(id, subject, value){
 				return Promise.reject(err);
 			}
 		}
+
+
+		var index = allsubjectIDs.indexOf(id);
+		if (index > -1) {
+		    allsubjectIDs.splice(index, 1);
+		}
+
+		console.log(allsubjectIDs, subject.ID);
+
+		for (var num in allsubjectIDs)
+		{
+			if (allsubjectIDs[num] == subject.ID)
+			{
+				console.log("This subject ID already exists, please choose a new ID!");
+				var err = "Error: This subject ID already exists, please choose a new ID!";
+				return Promise.reject(err);
+			}
+		}
+
+
 		return Promise.resolve();
 	})
 	.then(function(){
 		var project = require('./projects');
 		console.log(value);
-		return project.updateSubject(id, value.old, value.new);
+		var newid = subject.ID;
+		return project.updateSubject(id, newid, value.old, value.new);
 	})
 	.catch(function(err){
 		console.log("error with update subject + " + err);
@@ -425,10 +462,12 @@ module.exports.updateOrAddSubject = function(project, subjectsID){
 //use when updating a project, check the subjects list and update accordingly
 module.exports.updateSubjectFromProject = function(project, projectID, oldSubjects, newSubjects){
 	
+	//console.log(project);
+	//console.log("oldProject: " + projectID);
 
 	return Promise.resolve().then(function(){
 		var subjectIDs = formUpdatedSubjectArray(oldSubjects, newSubjects);
-		console.log(subjectIDs);
+		//console.log(subjectIDs);
 		return Promise.all(
 			subjectIDs.map(function(cur_subject, ind){
 				Subject.findOneAsync({ID:cur_subject.globalID})
@@ -440,13 +479,14 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 					if (subject != null)
 					{
 						var subjectGID = subject.ID;
-						console.log(subject.ID, cur_subject)
+						//console.log(subject.ID, cur_subject)
 
 						//if making a change to the existing subject in the project.
 						if((cur_subject.oldsubjectID!=null) && (cur_subject.newsubjectID!=null))
 						{
+							var newsubject = {ProjectID: project.ProjectID, SubjectIDinProject:cur_subject.newsubjectID};
 							var query = {ID: subjectGID, "Projects.ProjectID": projectID};
-							var update = {$set:{'Projects.$.SubjectIDinProject':cur_subject.newsubjectID}};
+							var update = {$set:{'Projects.$':newsubject}};
 							console.log("update");
 							
 							Subject.updateAsync(query, update)
@@ -455,7 +495,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 
 								var newSessionInfo = {
 									SubjectID:subjectGID,
-									relatedProject: projectID,
+									relatedProject: project.ProjectID,
 									AccessAuthen:project.AccessAuthen,
 									SubjectIDinProject: cur_subject.newsubjectID
 								};
@@ -474,7 +514,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 						//and add a new scan document for the subject in this project
 						else if (cur_subject.oldsubjectID==null)
 						{
-							var newProject = {ProjectID:projectID, SubjectIDinProject:cur_subject.newsubjectID};
+							var newProject = {ProjectID:project.ProjectID, SubjectIDinProject:cur_subject.newsubjectID};
 							var query = {ID: subject.ID};
 							var update = {$addToSet:{'Projects':newProject}};
 							console.log("add");
@@ -484,7 +524,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 								var theScanSession = require('./scanSessions');
 								var newscansession = {
 									"SubjectID": subjectGID,
-									"relatedProject":projectID,
+									"relatedProject":project.ProjectID,
 									"SubjectIDinProject": cur_subject.newsubjectID,
 									"AccessAuthen": project.AccessAuthen,
 									"ScanSessions": [{
@@ -531,7 +571,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 
 					else 
 					{
-						var newProject = {ProjectID: projectID, SubjectIDinProject:cur_subject.newsubjectID};
+						var newProject = {ProjectID: project.ProjectID, SubjectIDinProject:cur_subject.newsubjectID};
 						var newSubject = {
 							ID: cur_subject.globalID,
 							Sex: "Unknown",
@@ -546,7 +586,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 							var theScanSession = require('./scanSessions');
 							var newscansession = {
 								"SubjectID": cur_subject.globalID,
-								"relatedProject":projectID,
+								"relatedProject":project.ProjectID,
 								"SubjectIDinProject": cur_subject.newsubjectID,
 								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions": [{

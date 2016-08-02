@@ -43,73 +43,147 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         <div class = "form-group row" ng-init = "getMEGTypes()">
           <div class = "col-md-2"><h4>MEG Scans</h4></div>
           <div class = "col-md-1"> 
-            <button type="button" class="btn btn-sm" ng-click= "addMEGScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+            <button type="button" class="btn btn-sm" ng-click= "addMEGScan()" data-toggle = "modal" data-target = "#EditMEG-{{(scanSession.MEGScans.length)-1}}"><span class="glyphicon glyphicon-plus"></span></button>
           </div>
         </div>
 
-        <div class = "well" ng-repeat = "MEGScan in scanSession.MEGScans">
-          <div class="form-group row">
+        <div class = "container">
+          <div class = "col-md-12">
 
-            <label class= "form-control-label col-sm-2">Scan Name:</label>
-            <div class="col-sm-3" ng-class = "{'has-error': editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$invalid, 'has-success':editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$valid}">
-              <input required type = "text" class="form-control" ng-model="MEGScan.ScanName" name = "meg{{$index}}">
-              <div class = "error msg_error" data-ng-show = "editScanForm.meg{{$index}}.$touched">
-               <span ng-show = "editScanForm.meg{{$index}}.$invalid">
-                  Scan name is required!
-               </span>
-              </div>
-            </div>
+            <table class = "table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Scan Name</th>
+                  <th>Scan Date</th>
+                  <th>Scan Path</th>
+                  <th>Scan Type</th>
+                  <th>Approved</th>
+                  <th>Comment</th>
+                  <th></th>
+                </tr>
+              </thead>
 
-            <label class= "form-control-label col-sm-2">Scan Date:</label>
-            <div class="col-sm-3" ng-class = "{'has-error': editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$invalid, 'has-success':editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$valid}">
-            <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MEGScan.ScanDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "megdate{{$index}}"></datepicker>
-              <div class = "error msg_error" data-ng-show = "editScanForm.$dirty">
-                 <span ng-show = "editScanForm.megdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
-                 </span>
-                </div>
-            </div>
+              <tbody>
+                <tr ng-repeat = "MEGScan in scanSession.MEGScans">
+                  <td>{{MEGScan.ScanName}}</td>
+                  <td>{{MEGScan.ScanDate}}</td>
+                  <td>{{MEGScan.ScanPath}}</td>
+                  <td>{{MEGScan.ScanType}}</td>
+                  <td>{{MEGScan.Allowed}}</td>
+                  <td>{{MEGScan.Comment}}</td>
+                  <td>
 
-            
-            <div class = "col-md-1 btn-group btn-group-sm">
-               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMEGScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
-            </div>
+                  <a data-toggle = "modal" data-target="#EditMEG-{{$index}}" class = "btn btn-info btn-xs"><span class = "glyphicon glyphicon-pencil"></span></a>
+                  <a data-toggle = "modal" data-target="#deleteMEG-{{$index}}" class = "btn btn-danger btn-xs"><span class = "glyphicon glyphicon-remove"></span></a>
+                    
+                     <!-- edit meg-->
+                    <div class="modal fade" id="EditMEG-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                              <h4 class="modal-title">Edit {{MEGScan.ScanName}}</h4>
+                            </div>
 
+                           <form role= "form">
+                            <div class="modal-body">
+
+                              <div class = "form-group row">
+                                <label class= "form-control-label col-md-3">Scan Name:</label>
+                                <div class="col-sm-5" ng-class = "{'has-error': editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$invalid, 'has-success':editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$valid}">
+                                  <input required type = "text" class="form-control" ng-model="MEGScan.ScanName" name = "meg{{$index}}">
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.meg{{$index}}.$touched">
+                                   <span ng-show = "editScanForm.meg{{$index}}.$invalid">
+                                      Scan name is required!
+                                   </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class = "form-group row">
+                               <label class= "form-control-label col-md-3">Scan Date:</label>
+                                <div class="col-md-5" ng-class = "{'has-error': editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$invalid, 'has-success':editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$valid}">
+                                <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MEGScan.ScanDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "megdate{{$index}}"></datepicker>
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.$dirty">
+                                     <span ng-show = "editScanForm.megdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                                     </span>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div class = "form-group row">
+                                <label class= "form-control-label col-md-3">Scan Path:</label>
+                                <div class="col-md-8">
+                                <input type = "text" class="form-control" ng-model="MEGScan.ScanPath" placeholder=" ">
+                                </div>
+                              </div>  
+
+                              <div class = "form-group row">
+                               <label class= "form-control-label col-md-3">Scan Type:</label>
+                                <div class = "col-md-3">
+                                    <select class = "form-control" ng-model="MEGScan.ScanType">
+                                    <optgroup>
+                                      <option>{{MEGScan.ScanType}}</option>
+                                    </optgroup>
+                                    <optgroup>
+                                      <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
+                                    </optgroup>
+                                    </select>
+                                </div>
+                              </div>
+
+                              <div class="form-group row">
+                                <label class= "form-control-label col-md-3">Approved:</label>
+                                <div class="col-md-1">
+                                <input type = "checkbox" class = "form-control" ng-model = "MEGScan.Allowed"> 
+                                </div>
+                              </div>
+
+
+                              <div class="form-group row">
+                                <label class= "form-control-label col-md-3">Comment:</label>
+                                  <div class="col-md-8">
+                                  <textarea class="form-control" ng-model="MEGScan.Comment" placeholder=" "></textarea>
+                                  </div>
+                              </div>
+
+                                  
+                            </div>
+                            <div class="modal-footer">
+                              <a class="btn btn-success" ng-disabled = "editScanForm.$invalid" data-dismiss="modal">Save Edit</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+                            </div>
+                          </form>
+
+                          </div>
+                        </div>
+                    </div>
+
+                    <!-- delete meg-->
+                     <div class="modal fade" id="deleteMEG-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class = "modal-header">
+                            Delete {{MEGScan.ScanName}}
+                          </div>
+                          <div class = "modal-body">
+                            This scan will be permanently deleted, are you sure?
+                          </div>
+                          <div class = "modal-footer">
+                            <a class="btn btn-danger" data-dismiss="modal" ng-click = "removeMEGScan($index)">I am sure!</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal"">Close</button>
+                          </div>
+                        </div>
+                     </div>
+
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
           </div>
+          <br>
 
-
-          <div class="form-group row">
-
-            <label class= "form-control-label col-sm-2">Scan Path:</label>
-            <div class="col-sm-8">
-            <input type = "text" class="form-control" ng-model="MEGScan.ScanPath" placeholder=" ">
-            </div>
-
-            <label class= "form-control-label col-sm-1">Allowed:</label>
-            <div class="col-sm-1">
-            <input type = "checkbox" class = "form-control" ng-model = "MEGScan.Allowed"> 
-            </div>
-          </div>
-
-          <div class="form-group row">
-
-
-            <label class= "form-control-label col-sm-2">Scan Type:</label>
-            <div class = "col-md-3">
-                <select class = "form-control" ng-model="MEGScan.ScanType">
-                <optgroup>
-                  <option>{{MEGScan.ScanType}}</option>
-                </optgroup>
-                <optgroup>
-                  <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
-                </optgroup>
-                </select>
-              </div>
-
-            <label class= "form-control-label col-sm-2">Comment:</label>
-            <div class="col-sm-5">
-            <textarea class="form-control" ng-model="MEGScan.Comment" placeholder=" "></textarea>
-            </div>
-          </div>
         </div>
 
         </section>
@@ -119,11 +193,11 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         <div class = "form-group row" ng-init = "getMRITypes()">
           <div class = "col-md-2"><h4>MRI Scans</h4></div>
           <div class = "col-md-1"> 
-            <button type="button" class="btn btn-sm" ng-click= "addMRIScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+            <button type="button" class="btn btn-sm" ng-click= "addMRIScan()" data-toggle = "modal" data-target = "#EditMRI-{{(scanSession.MRIScans.length)-1}}"><span class="glyphicon glyphicon-plus"></span></button>
           </div>
         </div>
 
-        <div class = "well" ng-repeat = "MRIScan in scanSession.MRIScans">
+        <!-- <div class = "well" ng-repeat = "MRIScan in scanSession.MRIScans">
           <div class="form-group row">
 
             <label class= "form-control-label col-sm-2">Scan Name:</label>
@@ -185,9 +259,148 @@ REDESIGN THE PAGE IF TIME PREMITS-->
             <textarea class="form-control" ng-model="MRIScan.Comment" placeholder=" "></textarea>
             </div>
           </div>
+        </div>
+ -->
+        <div class = "container">
+          <div class = "col-md-12">
 
+            <table class = "table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Scan Name</th>
+                  <th>Scan Date</th>
+                  <th>Scan Path</th>
+                  <th>Scan Type</th>
+                  <th>Approved</th>
+                  <th>Comment</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat = "MRIScan in scanSession.MRIScans">
+                  <td>{{MRIScan.ScanName}}</td>
+                  <td>{{MRIScan.ScanDate}}</td>
+                  <td>{{MRIScan.ScanPath}}</td>
+                  <td>{{MRIScan.ScanType}}</td>
+                  <td>{{MRIScan.Allowed}}</td>
+                  <td>{{MRIScan.Comment}}</td>
+                  <td>
+
+                  <a data-toggle = "modal" data-target="#EditMRI-{{$index}}" class = "btn btn-info btn-xs"><span class = "glyphicon glyphicon-pencil"></span></a>
+                  <a data-toggle = "modal" data-target="#deleteMRI-{{$index}}" class = "btn btn-danger btn-xs"><span class = "glyphicon glyphicon-remove"></span></a>
+                    
+                     <!-- edit mri-->
+                    <div class="modal fade" id="EditMRI-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" onclick="javascript:window.location.reload()">&times;</span></button>
+                              <h4 class="modal-title">Edit {{MRIScan.ScanName}}</h4>
+                            </div>
+
+                           <form role= "form">
+                            <div class="modal-body">
+
+                              <div class = "form-group row">
+                                <label class= "form-control-label col-md-3">Scan Name:</label>
+                                <div class="col-sm-5" ng-class = "{'has-error':editScanForm.mri{{$index}}.$touched && editScanForm.mri{{$index}}.$invalid, 'has-success':editScanForm.mri{{$index}}.$touched && editScanForm.mri{{$index}}.$valid}">
+                                  <input required type = "text" class="form-control" ng-model="MRIScan.ScanName" name = "mri{{$index}}">
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.mri{{$index}}.$touched">
+                                   <span ng-show = "editScanForm.mri{{$index}}.$invalid">
+                                      Scan name is required!
+                                   </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class = "form-group row">
+                               <label class= "form-control-label col-md-3">Scan Date:</label>
+                                <div class="col-md-5" ng-class = "{'has-error': editScanForm.mridate{{$index}}.$touched && editScanForm.mridate{{$index}}.$invalid, 'has-success':editScanForm.mridate{{$index}}.$touched && editScanForm.mridate{{$index}}.$valid}">
+                                <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MRIScan.ScanDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "mridate{{$index}}"></datepicker>
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.$dirty">
+                                     <span ng-show = "editScanForm.mridate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                                     </span>
+                                    </div>
+                                </div>
+                              </div>
+
+                              <div class = "form-group row">
+                                <label class= "form-control-label col-md-3">Scan Path:</label>
+                                <div class="col-md-8">
+                                <input type = "text" class="form-control" ng-model="MRIScan.ScanPath" placeholder=" ">
+                                </div>
+                              </div>  
+
+                              <div class = "form-group row">
+                               <label class= "form-control-label col-md-3">Scan Type:</label>
+                                <div class = "col-md-3">
+                                    <select class = "form-control" ng-model="MRIScan.ScanType">
+                                    <optgroup>
+                                      <option>{{MRIScan.ScanType}}</option>
+                                    </optgroup>
+                                    <optgroup>
+                                      <option ng-repeat="MRIType in MRITypes">{{MRIType}}</option>
+                                    </optgroup>
+                                    </select>
+                                </div>
+                              </div>
+
+                              <div class="form-group row">
+                                <label class= "form-control-label col-md-3">Approved:</label>
+                                <div class="col-md-1">
+                                <input type = "checkbox" class = "form-control" ng-model = "MRIScan.Allowed"> 
+                                </div>
+                              </div>
+
+
+                              <div class="form-group row">
+                                <label class= "form-control-label col-md-3">Comment:</label>
+                                  <div class="col-md-8">
+                                  <textarea class="form-control" ng-model="MRIScan.Comment" placeholder=" "></textarea>
+                                  </div>
+                              </div>
+
+                                  
+                            </div>
+                            <div class="modal-footer">
+                              <a class="btn btn-success" ng-disabled = "editScanForm.$invalid" data-dismiss="modal">Save Edit</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+                            </div>
+                          </form>
+
+                          </div>
+                        </div>
+                    </div>
+
+                    <!-- delete mri-->
+                     <div class="modal fade" id="deleteMRI-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class = "modal-header">
+                            Delete {{MRIScan.ScanName}}
+                          </div>
+                          <div class = "modal-body">
+                            This scan will be permanently deleted, are you sure?
+                          </div>
+                          <div class = "modal-footer">
+                            <a class="btn btn-danger" data-dismiss="modal" ng-click = "removeMRIScan($index)">I am sure!</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal"">Close</button>
+                          </div>
+                        </div>
+                     </div>
+
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
+          </div>
+          <br>
 
         </div>
+
+
         </container>
 
         <container>
@@ -195,12 +408,12 @@ REDESIGN THE PAGE IF TIME PREMITS-->
           <div class = "form-group row" ng-init = "getTestTypes()">
           <div class = "col-md-2"><h4>Test Results</h4></div>
           <div class = "col-md-1"> 
-            <button type="button" class="btn btn-sm" ng-click= "addTestType()" ><span class="glyphicon glyphicon-plus"></span></button>
+            <button type="button" class="btn btn-sm" ng-click= "addTestType()"  data-toggle = "modal" data-target = "#EditTest-{{(scanSession.TestResults.length)-1}}"><span class="glyphicon glyphicon-plus"></span></button>
           </div>
         </div>
 
 
-        <div class="well" ng-repeat = "test in scanSession.TestResults">
+        <!-- <div class="well" ng-repeat = "test in scanSession.TestResults">
           
             <div class = "form-group row">
 
@@ -262,10 +475,146 @@ REDESIGN THE PAGE IF TIME PREMITS-->
                 <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
               </div>
 
-            </div>
+            </div>   
+        </div> -->
 
-            
+        <div class = "container">
+          <div class = "col-md-12">
+
+            <table class = "table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Test Type</th>
+                  <th>Test Result</th>
+                  <th>Test Date</th>
+                  <th>Age at Test</th>
+                  <th>Comment</th>
+                  <th></th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr ng-repeat = "test in scanSession.TestResults">
+                  <td>{{test.Type}}</td>
+                  <td>{{test.Result}}</td>
+                  <td>{{test.TestDate}}</td>
+                  <td>{{test.Age}}</td>
+                  <td>{{test.Comment}}</td>
+                  <td>
+
+                  <a data-toggle = "modal" data-target="#EditTest-{{$index}}" class = "btn btn-info btn-xs"><span class = "glyphicon glyphicon-pencil"></span></a>
+                  <a data-toggle = "modal" data-target="#deleteTest-{{$index}}" class = "btn btn-danger btn-xs"><span class = "glyphicon glyphicon-remove"></span></a>
+                    
+                     <!-- edit test-->
+                    <div class="modal fade" id="EditTest-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" onclick="javascript:window.location.reload()">&times;</span></button>
+                              <h4 class="modal-title">Edit {{test.Type}}</h4>
+                            </div>
+
+                           <form role= "form">
+                            <div class="modal-body">
+
+                              <div class = "form-group row">
+                               <div class = "col-md-3">
+                                  <label class= "form-control-label">Test Type:</label>
+                                </div>
+                                <div class = "col-md-3" ng-class = "{'has-error': editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$invalid, 'has-success':editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$valid}">
+                                  <select required class = "form-control" ng-model="test.Type" name = "test{{$index}}">
+                                  <optgroup>
+                                    <option value="">Please select</option>
+                                    <option>{{test.Type}}</option>
+                                  </optgroup>
+                                  <optgroup>
+                                    <option ng-repeat="testType in testTypes">{{testType}}</option>
+                                  </optgroup>
+                                  </select>
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.test{{$index}}.$touched">
+                                 <span ng-show = "editScanForm.test{{$index}}.$invalid">
+                                    Please select a test type!
+                                 </span>
+                                </div>
+                                </div>
+                              </div>
+
+                              <div class = "form-group row">
+                                <div class = "col-md-3">
+                                  <label class= "form-control-label">Test Result:</label>
+                                </div>
+
+                                <div class = "col-md-3">
+                                  <input class = "form-control" type="number" ng-model="test.Result" placeholder="Result">
+                                </div>
+                                
+                              </div>
+
+
+                              <div class="form-group row">
+                                <div class = "col-md-3">
+                                  <label class= "form-control-label">Test Date:</label>
+                                </div>
+
+                                <div class = "col-md-3" ng-class = "{'has-error': editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$invalid, 'has-success':editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$valid}">
+                                  <datepicker date-format="yyyy-MM-dd"><input class = "form-control" type="text" ng-model="test.TestDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "testdate{{$index}}"></datepicker>
+                                  <div class = "error msg_error" data-ng-show = "editScanForm.testdate{{$index}}.$touched">
+                                   <span ng-show = "editScanForm.testdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                                   </span>
+                                  </div>
+                                </div>
+                              </div>
+
+
+                              <div class="form-group row">
+                                <div class = "col-md-3">
+                                  <label class= "form-control-label">Comment:</label>
+                                </div>
+                                <div class = "col-md-8">
+                                  <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
+                                </div>
+
+                              </div>
+
+                                  
+                            </div>
+                            <div class="modal-footer">
+                              <a class="btn btn-success" ng-disabled = "editScanForm.$invalid" data-dismiss="modal">Save Edit</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="javascript:window.location.reload()">Close</button>
+                            </div>
+                          </form>
+
+                          </div>
+                        </div>
+                    </div>
+
+                    <!-- delete mri-->
+                     <div class="modal fade" id="deleteMRI-{{$index}}" tabindex="-1" role="dialog">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class = "modal-header">
+                            Delete {{MRIScan.ScanName}}
+                          </div>
+                          <div class = "modal-body">
+                            This scan will be permanently deleted, are you sure?
+                          </div>
+                          <div class = "modal-footer">
+                            <a class="btn btn-danger" data-dismiss="modal" ng-click = "removeMRIScan($index)">I am sure!</a>
+                              <button type="button" class="btn btn-primary" data-dismiss="modal"">Close</button>
+                          </div>
+                        </div>
+                     </div>
+
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
+          </div>
+          <br>
+
         </div>
+
 
 
         </container>

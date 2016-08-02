@@ -31,6 +31,7 @@ th {
 <nav>
   <a class="nav-link" ui-sref="projects">Go Back</a>
 </nav>
+<br>
 
 <div class = "jumbotron jumbotron-fluiod">
   <div ng-init="checkAuthen(!addProject);getProject(); getAuthenList(oldProjectID); getProjectInfo()">
@@ -173,7 +174,7 @@ th {
               <div class = "form-group row">
                 <label class= "form-control-label col-md-4">Subject Global ID:</label>
                 <div class="col-md-6" ng-class = "{'has-error': addnewsub.GID.$touched && addnewsub.GID.$invalid, 'has-success':addnewsub.GID.$touched && addnewsub.GID.$valid}">
-                  <input required type = "text" class="form-control" name = "GID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].GlobalID">
+                  <input required type = "text" class="form-control" name = "GID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].GlobalID" placeholder="MJT###" ng-pattern = "/^MJT\d{3,6}$/" >
                   <div class = "error msg_error" data-ng-messages = "addnewsub.GID.$error" data-ng-show = "addnewsub.GID.$touched">
                      <span ng-show = "addnewsub.GID.$invalid">
                        <span class = "glyphicon glyphicon-exclamation-sign"></span>

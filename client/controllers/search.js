@@ -405,8 +405,6 @@ myApp.controller('searchController', ['$rootScope','$state', '$scope', '$http', 
 			$scope.searchTestType.push({Type:'', Result:''});
 		}
 
-		console.log("testTypes: " + $scope.searchTestType);
-
 		$scope.removeTestType = function(index){
 			$scope.searchTestType.splice(index,1);
 		}

@@ -1,0 +1,36 @@
+[
+  {
+    "ProjectID": "WM",
+    "ProjectName": "Working Memory",
+    "AccessAuthen": [
+      {
+        "uid": "shawnawei",
+        "ViewOnly": false
+      }
+    ],
+    "ProjectDesc": "For more info contact",
+    "Other": "",
+    "SubjectsID": [
+      {
+        "GlobalID": " MJT001",
+        "inProjectID": " WMA01"
+      },
+      {
+        "GlobalID": " MJT002",
+        "inProjectID": " WMA02"
+      },
+      {
+        "GlobalID": " MJT003",
+        "inProjectID": " WMA04"
+      },
+      {
+        "GlobalID": " MJT004",
+        "inProjectID": " WMA04"
+      },
+      {
+        "GlobalID": " MJT005",
+        "inProjectID": " WMA05"
+      }
+    ]
+  }
+]

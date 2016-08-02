@@ -426,7 +426,7 @@ module.exports.addSubject = function(id, subject, globalID){
 }
 
 
-module.exports.updateSubject = function(globalID, oldsubject, newsubject){
+module.exports.updateSubject = function(globalID, newGID, oldsubject, newsubject){
 	return Promise.resolve().then (function (){
 		//check data
 		return Promise.resolve();
@@ -453,9 +453,9 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 						//create old subject object
 						var tobeReplaced = {GlobalID:globalID,inProjectID:curProject.oldsubjectID};
 						//create new subject object
-						var replace = {GlobalID:globalID, inProjectID:curProject.newsubjectID};
+						var replace = {GlobalID:newGID, inProjectID:curProject.newsubjectID};
 
-						//console.log(ID, tobeReplaced,replace);
+						console.log(ID, tobeReplaced, replace);
 
 						//subjectID in project exists, update subjectID
 						//update the scan session collection too
@@ -468,17 +468,18 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 
 							if(checkIfUniqueArray(subjectPIDs)==false)
 							{
-								console.log("This ID already exists in project, please give a new in-Project ID!");
-								return Promise.reject("This ID already exists in project, please give a new in-Project ID!");
+								//console.log(replace.inProjectID + " already exists in "+ ID +", please give a new in-Project ID!");
+								var newerr = replace.inProjectID + " already exists in "+ ID +", please give a new in-Project ID!"
+								return Promise.reject(newerr);
 							}
 							else
 							{
 								var query = {ProjectID:ID, "SubjectsID.GlobalID":tobeReplaced.GlobalID};
-								var update ={$set: {'SubjectsID.$.inProjectID': replace.inProjectID}};
+								var update ={$set: {'SubjectsID.$': replace}};
 
 								var theScanSession = require('./scanSessions');
 								var newSession = {
-									SubjectID: replace.GlobalID,
+									SubjectID: newGID,
 									relatedProject: ID,
 									AccessAuthen:project.AccessAuthen,
 									SubjectIDinProject: replace.inProjectID
@@ -512,7 +513,7 @@ module.exports.updateSubject = function(globalID, oldsubject, newsubject){
 								
 								var theScanSession = require('./scanSessions');
 								var newScanObject = {
-									SubjectID:globalID, 
+									SubjectID:newGID, 
 									SubjectIDinProject:replace.inProjectID, 
 									relatedProject: ID,
 									AccessAuthen:project.AccessAuthen,

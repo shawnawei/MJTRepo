@@ -9,13 +9,21 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 <br>
 
 <div class = "jumbotron jumbotron-fluiod">
-  <div class="panel panel-default" ng-init="checkAuthen(oldSubjectID);getSubject()">
+  <div ng-init="checkAuthen(oldSubjectID);getSubject()">
 
-    <div class="panel-heading">
-      <h3 class="panel-title"><strong>Subject Information: </strong>{{subject.ID}}</h3>
+
+
+    <div class = "pull-right">
+      <a class = "btn btn-sm btn-danger" href = "subjects/{{subject.ID}}/edit"><span class = "glyphicon glyphicon-pencil"></span></a> <a class = "btn btn-sm btn-danger" data-toggle="modal" data-target="#myDeleteModal"><span class = "glyphicon glyphicon-remove"></span></a>
     </div>
 
-    <div class="panel-body">
+
+    <div>
+      <h3><strong>Subject Information: </strong>{{subject.FirstName}} {{subject.LastName}}</h3>
+    </div>
+
+
+    <div>
     <section>
       <div class = "well text-center verticle-align: left">
         <div class="col-md-3"><strong>ID: </strong>{{subject.ID}}</div>
@@ -25,7 +33,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         <br><br>
         <div class="col-md-3"><strong>DOB: </strong>{{subject.DateOfBirth | date:'yyyy-MM-dd'}} </div>
         <div class="col-md-3"><strong>MRN: </strong>{{subject.MRN}} </div>
-        <div class="col-md-4"><strong>Contact for future studies: </strong>{{subject.ContactPermit}} </div>
+        <div class="col-md-6"><strong>Contact for Future Studies: </strong>{{subject.ContactPermit}} / {{subject.ContactInfo}} </div>
         <br>
       </div>
       </section>
@@ -58,9 +66,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
     </div>
   </div>
 
-  <div class = "pull-right">
-  <a href = "subjects/{{subject.ID}}/edit">Edit</a> | <a class = "btn" data-toggle="modal" data-target="#myDeleteModal">Delete</a>
-  </div>
+
 
 
   <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

@@ -1,0 +1,162 @@
+[
+  {
+    "ID": "MJT001",
+    "FirstName": "Alexander",
+    "LastName": "Hughes",
+    "DateOfBirth": "1998-03-08",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA01"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT002",
+    "FirstName": "Lydia ",
+    "LastName": "Yu",
+    "DateOfBirth": "2000-11-26",
+    "Sex": "Female",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA02"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT003",
+    "FirstName": "Alexander",
+    "LastName": "Philippopoulos",
+    "DateOfBirth": "2002-08-15",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA03"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT004",
+    "FirstName": "Dylan",
+    "LastName": "Scharfe",
+    "DateOfBirth": "1998-06-09",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA04"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT005",
+    "FirstName": "Nathaniel Dave",
+    "LastName": "Velarde",
+    "DateOfBirth": "2005-05-26",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA05"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT006",
+    "FirstName": "Matthew ",
+    "LastName": "Miller",
+    "DateOfBirth": "2002-07-23",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA06"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT007",
+    "FirstName": "Matthew ",
+    "LastName": "Phillips",
+    "DateOfBirth": "1999-09-30",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA07"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT008",
+    "FirstName": "Alexzander",
+    "LastName": "Mcgrath-Morrow",
+    "DateOfBirth": "2004-07-07",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA08"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT009",
+    "FirstName": "Fernando",
+    "LastName": "Fernandez",
+    "DateOfBirth": "2002-01-05",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA09"
+      }
+    ],
+    "ContactPermit": false
+  },
+  {
+    "ID": "MJT010",
+    "FirstName": "Tyrone",
+    "LastName": "Shih",
+    "DateOfBirth": "2001-12-23",
+    "Sex": "Male",
+    "Handedness": "Right",
+    "Diagnosis": "ASD",
+    "Project": [
+      {
+        "ProjectID": " WM",
+        "SubjectIDinProject": " WMA10"
+      }
+    ],
+    "ContactPermit": false
+  }
+]

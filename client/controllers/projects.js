@@ -345,7 +345,7 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 				//console.log("hi" + gotoscansession);
 				$http.put('/raw/projects/'+id, $scope.project)
 				.then(function(response){
-					window.location.href= ('/projects/' + id);
+					window.location.href= ('/projects/' + $scope.project.ProjectID);
 				})
 				.catch(function(err){
 					if (err.status == 403)

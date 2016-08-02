@@ -205,6 +205,18 @@ myApp.controller('adminController', ['$rootScope','$state', '$scope', '$http', '
 				window.location.href= '/admin/manage_user';
 			});
 		}
+
+
+		// $scope.converttojson = function(rawFile){
+		// 	console.log(rawFile);
+		// 	var newraw = rawFile.split(";base64,");
+		// 	console.log(newraw);
+		// 	$http.post('/raw/converthistojson', newraw[1])
+		// 	.then(function(response){
+		// 		console.log(response);
+		// 		$scope.jsonfile = response.data;
+		// 	});
+		// }
 	}
 
 

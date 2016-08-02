@@ -184,29 +184,29 @@ module.exports.addScanSession = function(scanSession){
 	return Promise.resolve().then(function(){
 		var testSession = new ScanSession(scanSession);
 		var error = testSession.validateSync();
-		console.log(scanSession);
-		console.log("HELLO" + error + scanSession);
+		//console.log(scanSession);
+		//console.log("HELLO" + error + scanSession);
 		
 		if (error != undefined)
 		{
 			if ((error.errors['SubjectID'] != undefined) &&
 				(error.errors['SubjectID'].message) == "Path `SubjectID` is required.")
 			{
-				console.log('Please enter the Subject ID!');
+				//console.log('Please enter the Subject ID!');
 				var err = 'Please enter the Subject ID!';
 			}
 
 			if ((error.errors['SubjectIDinProject'] != undefined) &&
 				(error.errors['SubjectIDinProject'].message) == "Path `SubjectIDinProject` is required.")
 			{
-				console.log('Please enter the in Subject ID in project!');
+				//console.log('Please enter the in Subject ID in project!');
 				var err = 'Please enter the in Subject ID in project!';
 			}
 
 			if ((error.errors['SessionID'] != undefined) &&
 				(error.errors['SessionID'].message) == "Path `SessionID` is required.")
 			{
-				console.log('Please enter the ID of this scan session!');
+				//console.log('Please enter the ID of this scan session!');
 				var err = 'Please enter the ID of this scan session!';
 			}
 
@@ -234,21 +234,21 @@ module.exports.updateScanSessionBasicInfo = function(projectID, subjectID, scanS
 		//check update data
 		var testSession = new ScanSession(scanSession);
 		var error = testSession.validateSync();
-		console.log(error);
+		//console.log(error);
 
 		if (error != undefined)
 		{
 			if ((error.errors['SubjectIDinProject'] != undefined) &&
 				(error.errors['ProjectID'].message) == "Path `SubjectIDinProject` is required.")
 			{
-				console.log('SubjectIDinProject is required!');
+				//console.log('SubjectIDinProject is required!');
 				return Promise.reject("SubjectIDinProject is required!");
 			}
 
 			if ((error.errors['SessionID'] != undefined) &&
 				(error.errors['SessionID'].message) == "Path `SessionID` is required.")
 			{
-				console.log('Session ID for this scan session is required!');
+				//console.log('Session ID for this scan session is required!');
 				return Promise.reject("Session ID for this scan session is required!");
 			}
 
@@ -282,21 +282,21 @@ module.exports.updateScanSession = function(projectID, subjectID, scanSession){
 		//check update data
 		var testSession = new ScanSession(scanSession);
 		var error = testSession.validateSync();
-		console.log(error);
+		//console.log(error);
 
 		if (error != undefined)
 		{
 			if ((error.errors['SubjectIDinProject'] != undefined) &&
 				(error.errors['ProjectID'].message) == "Path `SubjectIDinProject` is required.")
 			{
-				console.log('SubjectIDinProject is required!');
+				//console.log('SubjectIDinProject is required!');
 				return Promise.reject("SubjectIDinProject is required!");
 			}
 
 			if ((error.errors['SessionID'] != undefined) &&
 				(error.errors['SessionID'].message) == "Path `SessionID` is required.")
 			{
-				console.log('Session ID for this scan session is required!');
+				//console.log('Session ID for this scan session is required!');
 				return Promise.reject("Session ID for this scan session is required!");
 			}
 
@@ -335,13 +335,13 @@ module.exports.updateSingleScanSession = function(OldScanSession, subjectID, ses
 
 		if (checkIfUniqueArray(scanIDs) == false)
 		{
-			console.log("The session ID you entered already exists!");
+			//console.log("The session ID you entered already exists!");
 			return Promise.reject("The session ID you entered already exists!");
 		}
 
 		if(newScanID == '')
 		{
-			console.log("Session ID must not be empty");
+			//console.log("Session ID must not be empty");
 			return Promise.reject("Session ID must not be empty");
 		}
 
@@ -381,12 +381,12 @@ module.exports.addSingleScanSession = function(GlobalID, projectID, inProjectID,
 		return subject.findOneAsync({ID:GlobalID});
 	})
 	.then(function(subject){
-		console.log(subject);
+		//console.log(subject);
 		var bday = subject.DateOfBirth;
-		console.log(bday);
+		//console.log(bday);
 		calculate_age_at_scan_and_test(scanSession, bday);
 
-		console.log("inhere", scanSession);
+		//console.log("inhere", scanSession);
 		var query = {SubjectIDinProject:inProjectID};
 		var update = {$addToSet:{'ScanSessions':scanSession}};
 		return ScanSession.updateAsync(query, update);
@@ -588,7 +588,7 @@ module.exports.searchScanSessionsByInfo = function(scanInfo, _uid){
 		console.log(scanInfo);
 
 		var query = queryScanInfo(scanInfo, _uid);
-		console.log(query);
+		//console.log(query);
 
 		return ScanSession.aggregateAsync(query);
 	});
@@ -651,7 +651,7 @@ function queryScanInfo (scanInfo, _uid){
 	if (scanInfo.Allowed != 'All')
 	{
 		var allowed = getBool(scanInfo.Allowed);
-		console.log(maxAge, minAge, allowed, testType, Projects, SubjectGID, SubjectPID);
+		//console.log(maxAge, minAge, allowed, testType, Projects, SubjectGID, SubjectPID);
 
 
 		if (MEGType[0] == 'None')
@@ -686,26 +686,48 @@ function queryScanInfo (scanInfo, _uid){
 						}
 					}
 				},
+
+
+				'ScanSessions.TestResults':{
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+							]
+						}
+					}
+				},
 				
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MRIScans'},
+			{$unwind: {path:'$ScanSessions.MRIScans', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
-					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}}
+				{$or: [
+					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}},
+					{'ScanSessions.MRIScans': {$exists: false}}
 					]
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.TestResults': {$exists: false}},
 					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -772,10 +794,22 @@ function queryScanInfo (scanInfo, _uid){
 								]}
 						},
 					},
+
+				'ScanSessions.TestResults':{
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+							]
+						}
+					}
+				},
 				
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
+				//'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
@@ -784,6 +818,7 @@ function queryScanInfo (scanInfo, _uid){
 			{$unwind:'$ScanSessions.MEGScans'},
 			{$match:
 				{$and: [
+					{'ScanSessions.MEGScans': {$exists: false}},
 					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}}
 					]
 				}
@@ -791,7 +826,17 @@ function queryScanInfo (scanInfo, _uid){
 			{$unwind:'$ScanSessions.TestResults'},
 			{$match:
 				{$and: [
+					{'ScanSessions.TestResults': {$exists: false}},
 					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -858,6 +903,7 @@ function queryScanInfo (scanInfo, _uid){
 								{$eq: ['$$scans.Allowed', allowed]}
 								]}
 						},
+
 					},
 
 					'ScanSessions.MRIScans':{
@@ -872,34 +918,66 @@ function queryScanInfo (scanInfo, _uid){
 							}
 						}
 					},
-				
+
+					'ScanSessions.TestResults':{
+					
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{
+							$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+
+							]
+						}
+					}
+				},
+
+
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
+				//'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MEGScans'},
+			{$unwind: {path:'$ScanSessions.MEGScans', preserveNullAndEmptyArrays: true}},
+			// {$project: {
+		 //        'ScanSessions.MEGScans': { $ifNull: [ "ScanSessions.MEGScans", []] ] }
+		 //        }
+		 //    },
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.MEGScans': {$exists: false}},
 					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}}
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.MRIScans'},
+
+			{$unwind: {path: '$ScanSessions.MRIScans', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
-					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}}
+				{$or: [
+					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}},
+					{'ScanSessions.MRIScans': {$exists: false}}
 					]
 				}
 			},
 
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind: {path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.TestResults': {$exists: false}},
 					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -931,7 +1009,8 @@ function queryScanInfo (scanInfo, _uid){
 			},
 
 			{$unwind:'$_id.SubjectInfo'}
-			]
+
+			];
 
 		}
 				
@@ -940,7 +1019,7 @@ function queryScanInfo (scanInfo, _uid){
 
 	else if (scanInfo.Allowed == 'All')
 	{
-		console.log(maxAge, minAge, allowed, Projects, SubjectGID, SubjectPID);
+		//console.log(maxAge, minAge, allowed, Projects, SubjectGID, SubjectPID);
 
 
 		if (MEGType[0] == 'None')
@@ -974,26 +1053,49 @@ function queryScanInfo (scanInfo, _uid){
 						}
 					}
 				},
+
+				'ScanSessions.TestResults':{
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+							]
+						}
+					}
+				},
 				
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
+				//'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MRIScans'},
+			{$unwind:{path:'$ScanSessions.MRIScans', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
-					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}}
+				{$or: [
+					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}},
+					{'ScanSessions.MRIScans': {$exists: false}}
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind: {path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.TestResults': {$exists: false}},
 					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -1059,10 +1161,22 @@ function queryScanInfo (scanInfo, _uid){
 								]}
 						},
 					},
+
+					'ScanSessions.TestResults':{
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+							]
+						}
+					}
+				},
 				
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
+				//'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
@@ -1070,15 +1184,25 @@ function queryScanInfo (scanInfo, _uid){
 
 			{$unwind:'$ScanSessions.MEGScans'},
 			{$match:
-				{$and: [
-					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}}
+				{$or: [
+					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}},
+					{'ScanSessions.MEGScans': {$exists: false}}
 					]
 				}
 			},
 			{$unwind:'$ScanSessions.TestResults'},
 			{$match:
-				{$and: [
-					{'ScanSessions.TestResults.Type': {$in:testType}}
+				{$or: [
+					{'ScanSessions.TestResults.Type': {$in:testType}},
+					{'ScanSessions.TestResults': {$exists: false}}
+					]
+				}
+			},
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -1117,32 +1241,6 @@ function queryScanInfo (scanInfo, _uid){
 		else if (MEGType[0] != 'None' && MRIType[0] != 'None')
 		{
 
-			// var query = [
-			// 	{$unwind:'$ScanSessions'},
-			// 	{$match:
-			// 		{$and: [
-			// 			{'relatedProject':{$in: Projects}},
-			// 			{'AccessAuthen.uid': {$in:[_uid, 'AllUsers', 'AllUser']}}
-			// 			]
-			// 		}
-			// 	},
-			// 	{$match:
-			// 		{$or: [
-			// 			{'SubjectID': {$in: SubjectGID}},
-			// 			{'SubjectIDinProject':{$in: SubjectPID}}
-			// 		]} 
-			// 	},
-			// 	{$project: {'ScanSessions.TestResults': 1}},
-			// 	{$unwind:'$ScanSessions.TestResults'},
-			// 	{$match:
-			// 		{$and: [
-			// 			{'ScanSessions.TestResults.Type': {$in:testType}}
-			// 			]
-			// 		}
-			// 	},
-
-			// ];
-
 			var query = [
 			{$unwind:'$ScanSessions'},
 			{$match:
@@ -1170,6 +1268,7 @@ function queryScanInfo (scanInfo, _uid){
 								{$gte: ['$$scans.AgeAtScan',minAge]}
 								]}
 						},
+
 					},
 
 					'ScanSessions.MRIScans':{
@@ -1184,34 +1283,65 @@ function queryScanInfo (scanInfo, _uid){
 						}
 					},
 
+					'ScanSessions.TestResults':{
+					
+					$filter:{
+						input:"$ScanSessions.TestResults",
+						as:'tests',
+						cond:{
+							$and:[
+							{$lte: ['$$tests.Age',maxAge]}, 
+							{$gte: ['$$tests.Age',minAge]}
+
+							]
+						}
+					}
+				},
+
 
 				'_id':0,
 				'ScanSessions.SessionID': 1,
-				'ScanSessions.TestResults': 1,
+				//'ScanSessions.TestResults': 1,
 				'relatedProject': 1,
 				'SubjectIDinProject': 1,
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MEGScans'},
+			{$unwind: {path:'$ScanSessions.MEGScans', preserveNullAndEmptyArrays: true}},
+			// {$project: {
+		 //        'ScanSessions.MEGScans': { $ifNull: [ "ScanSessions.MEGScans", []] ] }
+		 //        }
+		 //    },
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.MEGScans': {$exists: false}},
 					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}}
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.MRIScans'},
+
+			{$unwind: {path: '$ScanSessions.MRIScans', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
-					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}}
+				{$or: [
+					{'ScanSessions.MRIScans.ScanType': {$in:MRIType}},
+					{'ScanSessions.MRIScans': {$exists: false}}
 					]
 				}
 			},
 
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind: {path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
-				{$and: [
+				{$or: [
+					{'ScanSessions.TestResults': {$exists: false}},
 					{'ScanSessions.TestResults.Type': {$in:testType}}
+					]
+				}
+			},
+			{$match:
+				{$or: [
+					{'ScanSessions.TestResults': {$ne: null}},
+					{'ScanSessions.MEGScans': {$ne: null}},
+					{'ScanSessions.MRIScans': {$ne: null}}
 					]
 				}
 			},
@@ -1342,46 +1472,3 @@ function getBool(val) {
 
 
 
-	/*var query = {'ScanSessions.SessionID': {$regex:".*" + sessionID + ".*", $options:'i'},
-				 'ScanSessions.ParticipantAge':{$lte: maxAge, $gte:minAge}};
-
-	var projection = {ScanSessions:{$elemMatch:{'ScanSessions.SessionID': {$regex:".*" + sessionID + ".*", $options:'i'},
-				 'ScanSessions.ParticipantAge':{$lte: maxAge, $gte:minAge}}}};
-	
-	if (sessionID == 'All')
-	{
-		delete query['ScanSessions.SessionID'];
-		projection = {ScanSessions:{$elemMatch: {'ParticipantAge':{$lte:maxAge, $gte:minAge}}}};
-	}*/
-	
-
-/*{$project:
-				{'ScanSessions.MEGScans':{
-						$filter:{
-							input:"$ScanSessions.MEGScans",
-							as:'scans',
-							cond:{$and:[
-								{$eq: ['$$scans.Allowed', allowed]},
-								{$lte: ['$$scans.AgeAtScan',maxAge]}, 
-								{$gte: ['$$scans.AgeAtScan',minAge]}]}
-						},
-					},
-
-					'ScanSessions.MRIScans':{
-						$filter:{
-							input:"$ScanSessions.MRIScans",
-							as:'scans',
-							cond:{$and:[
-								{$eq: ['$$scans.Allowed', allowed]},
-								{$lte: ['$$scans.AgeAtScan',maxAge]}, 
-								{$gte: ['$$scans.AgeAtScan',minAge]}]}
-						}
-					},
-
-					_id: 0,
-					SubjectID:1,
-					SubjectIDinProject:1,
-					relatedProject:1
-				},
-
-			}*/

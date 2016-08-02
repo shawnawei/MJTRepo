@@ -1,0 +1,14 @@
+[
+  {
+    "SubjectID": "MJT001",
+    "relatedProject": "WM",
+    "SubjectIDinProject": "WMA01",
+    "AccessAuthen": [
+      {
+        "uid": "shawnawei",
+        "ViewOnly": false
+      }
+    ],
+    "ScanSessions": []
+  }
+]

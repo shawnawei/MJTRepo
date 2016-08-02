@@ -24,19 +24,20 @@ th {
 </nav>
 
 <br>
-<div ng-init = "checkAuthen()" class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><strong>Subject Information: </strong>{{scanSession.SubjectIDinProject}}
-      <div class = "pull-right">
 
-        <a class = "btn btn-sm" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject)">New Session</a>
+<div class = "jumbotron jumbotron-fluiod">
+  <div ng-init = "checkAuthen()">
 
-    </div>
-    </h3>
+  <div class = "pull-right">
+    <a class = "btn btn-sm btn-primary" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject)"><span class = "glyphicon glyphicon-plus"></span> New Session</a>
+  </div>
+
+  <div>
+    <h3><strong>Scan Sessions For: </strong>{{scanSession.SubjectIDinProject}}</h3>
   </div>
 
 
-  <div class="panel-body">
+  <div>
 
       <form class = "well well-lg" style = "text-align: left">
         <fieldset class = "form-group">
@@ -68,53 +69,50 @@ th {
         
 
         <div class="panel panel-info" >
-      <div class="panel-heading" role="tab" id="heading-{{$index}}"> 
-        <h4 class="panel-title"> 
-        <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{sessionID['SessionID']}}</strong></a> 
-        <div class = "pull-right">
+        <div class="panel-heading" role="tab" id="heading-{{$index}}"> 
+          <h4 class="panel-title"> 
+          <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{sessionID['SessionID']}}</strong></a> 
+          <div class = "pull-right">
 
 
-         <a class = "btn" ng-click="exportData(sessionID, scanSession)"><span class = "glyphicon glyphicon-save"></span></a>
+           <a class = "btn" ng-click="exportData(sessionID, scanSession)"><span class = "glyphicon glyphicon-save"></span></a>
 
-          <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
+            <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
 
-          <a class = "btn" ng-hide= "!editable" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
+            <a class = "btn" ng-hide= "!editable" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
 
 
-          <!-- Modal -->
-        <div class="modal fade" id="myModal-{{$index}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
-              </div>
-              <div class="modal-body">
-                    Scan session {{sessionID['SessionID']}} and it's associated scans will be permenantly deleted, are you sure?
-              </div>
-              <div class="modal-footer">
-                <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            <!-- Modal -->
+          <div class="modal fade" id="myModal-{{$index}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
+                </div>
+                <div class="modal-body">
+                      Scan session {{sessionID['SessionID']}} and it's associated scans will be permenantly deleted, are you sure?
+                </div>
+                <div class="modal-footer">
+                  <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                </div>
               </div>
             </div>
           </div>
+          </div>
+          </h4>
         </div>
-
-
-
-        </div>
- 
-        </h4> </div>
 
         <div id="collapse-{{$index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{$index}}"> 
 
 
          <div class="panel-body">
-          <ul>
-            <div><li><h4><strong>MEG Scans: </strong></h4>
+  
+          <div><h4 style =  "text-align: center"><strong>MEG Scans </strong></h4>
             <p>
 
-              <table class = "table table-stripe table-bordered">
+            <table class = "table table-stripe table-bordered">
               <thead>
                 <tr>
                   <th class = "col-md-1"><a class="btn btn-xs" ng-click = "selectMEGAll(sessionID.MEGScans)">All</a><a class="btn btn-xs" ng-click = "deselectMEGAll(sessionID.MEGScans)">Clear</a></th>
@@ -146,11 +144,11 @@ th {
 
 
             </p>
-            </li></div>
+          </div>
 
-
-           <div> <li><h4><strong>MRI Scans: </strong></h4>
-           <p>
+          <br>
+          <div> <h4 style =  "text-align: center"><strong>MRI Scans </strong></h4>
+            <p>
             	<table class = "table table-stripe table-bordered">
               <thead>
                 <tr>
@@ -179,11 +177,11 @@ th {
               </tbody>
             </table>
            	</p>
-            </li></div>
+          </div>
             
 
-
-            <div><li><h4><strong>Clinical Test Results: </strong></h4>
+          <br>
+          <div><h4 style =  "text-align: center"><strong>Clinical Tests </strong></h4>
             <div>
             <table class = "table table-stripe table-bordered">
               <thead>
@@ -209,24 +207,21 @@ th {
               </tbody>
             </table>
             </div>
-            </li></div>
+          </div>
 
             
-          </ul>
          </div> 
         </div>
       </div>
       </div>
     </div>
 
-    
-
-
    </div>
  
   
 
  </div>
+</div>
 
 
    

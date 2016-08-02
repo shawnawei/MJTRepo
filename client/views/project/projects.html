@@ -9,16 +9,24 @@
 }
 </style>
 
-<div class="panel panel-default" ng-init="getProjects(); checkAuthen(!addProject);">
-  <div class="panel-heading">
-    <h3 class="panel-title pull-left"><strong>Projects</strong></h3>
-    <a><button type = "button" class = "btn btn-default pull-right"><a ng-click = "checkAuthen(addProject)">New Project</a></button>
+<div ng-init="getProjects(); checkAuthen(!addProject);">
+  <div class = "col-md-3">
+    <h2><strong>Projects List</strong></h2>
+  </div>
+  <br>
+   <div class = "form-group-row">
+      <div class = "col-md-6">
+        <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
+      </div>
+      <a class = "btn btn-sm btn-primary col-md-offset-1" ng-click = "checkAuthen(addProject)" ng-hide = "!adminloggedin"><span class = "glyphicon glyphicon-plus"></span> New Project</a>
     <div class= "clearfix"></div>
 
   </div>
-  <div class="panel-body">
+
+  <hr>
+  <div>
     <div class="row">
-      <div ng-repeat="project in projects">
+      <div ng-repeat="project in projects | filter: searchText">
         <div class="col-md-3">
           <div class="col-md-3">
             <h4>{{project['ProjectID']}}</h4>

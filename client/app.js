@@ -186,9 +186,35 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 		templateUrl:'views/adminOptions/manage_users.html'
 	})
 
+	.state("convertojson", {
+		url:'/admin/converttojson',
+		controller:'adminController',
+		templateUrl:'views/adminOptions/converttojson.html'
+	})
+
 	$urlRouterProvider.otherwise("/home");
 
 });
+
+
+myApp.directive("fileread", [function () {
+    return {
+        scope: {
+            fileread: "="
+        },
+        link: function (scope, element, attributes) {
+            element.bind("change", function (changeEvent) {
+                var reader = new FileReader();
+                reader.onload = function (loadEvent) {
+                    scope.$apply(function () {
+                        scope.fileread = loadEvent.target.result;
+                    });
+                }
+                reader.readAsDataURL(changeEvent.target.files[0]);
+            });
+        }
+    }
+}]);
 
 // myApp.run(["$rootScope", "$location", "authenFact", 
 // 	function($rootScope, $location, authenFact){

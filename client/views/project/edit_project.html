@@ -79,7 +79,7 @@
                    </div>
                 </div>
               <div class = "col-md-4" ng-class = "{'has-error': updateProjectForm.subjectGID{{$index}}.$touched && updateProjectForm.subjectGID{{$index}}.$invalid, 'has-success':updateProjectForm.subjectGID{{$index}}.$touched&& updateProjectForm.subjectinGID{{$index}}.$valid}">
-                <input required type = "text" class="form-control" name="subjectGID{{$index}}" ng-model = "subject.GlobalID" placeholder="Global ID">
+                <input required type = "text" class="form-control" name="subjectGID{{$index}}" ng-model = "subject.GlobalID" placeholder="Global ID: MJT###" ng-pattern = "/^MJT\d{3,6}$/">
                 <div class = "error msg_error" data-ng-show = "updateProjectForm.subjectGID{{$index}}.$touched">
                  <span ng-show = "updateProjectForm.subjectGID{{$index}}.$invalid">
                    <span class = "glyphicon glyphicon-exclamation-sign"></span>

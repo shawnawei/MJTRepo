@@ -200,7 +200,7 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 		var id = $stateParams.ID;
 		$http.put('/raw/subjects/'+id, $scope.subject)
 		.then(function(response){
-			window.location.href= '/subjects/' + id;
+			window.location.href= '/subjects/' + $scope.subject.ID;
 		})
 		.catch(function(err){
 			$scope.error = err.data;

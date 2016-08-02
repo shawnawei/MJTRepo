@@ -1,0 +1,133 @@
+<div class = "well" ng-repeat = "MEGScan in scanSession.MEGScans">
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Name:</label>
+            <div class="col-sm-3" ng-class = "{'has-error': editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$invalid, 'has-success':editScanForm.meg{{$index}}.$touched && editScanForm.meg{{$index}}.$valid}">
+              <input required type = "text" class="form-control" ng-model="MEGScan.ScanName" name = "meg{{$index}}">
+              <div class = "error msg_error" data-ng-show = "editScanForm.meg{{$index}}.$touched">
+               <span ng-show = "editScanForm.meg{{$index}}.$invalid">
+                  Scan name is required!
+               </span>
+              </div>
+            </div>
+
+            <label class= "form-control-label col-sm-2">Scan Date:</label>
+            <div class="col-sm-3" ng-class = "{'has-error': editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$invalid, 'has-success':editScanForm.megdate{{$index}}.$touched && editScanForm.megdate{{$index}}.$valid}">
+            <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MEGScan.ScanDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "megdate{{$index}}"></datepicker>
+              <div class = "error msg_error" data-ng-show = "editScanForm.$dirty">
+                 <span ng-show = "editScanForm.megdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                 </span>
+                </div>
+            </div>
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMEGScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          </div>
+
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Path:</label>
+            <div class="col-sm-8">
+            <input type = "text" class="form-control" ng-model="MEGScan.ScanPath" placeholder=" ">
+            </div>
+
+            <label class= "form-control-label col-sm-1">Allowed:</label>
+            <div class="col-sm-1">
+            <input type = "checkbox" class = "form-control" ng-model = "MEGScan.Allowed"> 
+            </div>
+          </div>
+
+          <div class="form-group row">
+
+
+            <label class= "form-control-label col-sm-2">Scan Type:</label>
+            <div class = "col-md-3">
+                <select class = "form-control" ng-model="MEGScan.ScanType">
+                <optgroup>
+                  <option>{{MEGScan.ScanType}}</option>
+                </optgroup>
+                <optgroup>
+                  <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
+                </optgroup>
+                </select>
+              </div>
+
+            <label class= "form-control-label col-sm-2">Comment:</label>
+            <div class="col-sm-5">
+            <textarea class="form-control" ng-model="MEGScan.Comment" placeholder=" "></textarea>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+  <div class="well" ng-repeat = "test in scanSession.TestResults">
+          
+            <div class = "form-group row">
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Type:</label>
+              </div>
+              <div class = "col-md-3" ng-class = "{'has-error': editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$invalid, 'has-success':editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$valid}">
+                <select required class = "form-control" ng-model="test.Type" name = "test{{$index}}">
+                <optgroup>
+                  <option value="">Please select</option>
+                  <option>{{test.Type}}</option>
+                </optgroup>
+                <optgroup>
+                  <option ng-repeat="testType in testTypes">{{testType}}</option>
+                </optgroup>
+                </select>
+                <div class = "error msg_error" data-ng-show = "editScanForm.test{{$index}}.$touched">
+               <span ng-show = "editScanForm.test{{$index}}.$invalid">
+                  Please select a test type!
+               </span>
+              </div>
+              </div>
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Result:</label>
+              </div>
+
+              <div class = "col-md-3">
+                <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
+              </div>
+
+
+              <div class = "col-md-1 btn-group btn-group-sm">
+                <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+
+            </div>
+
+            <div class = "form-group row">
+
+              
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Date:</label>
+              </div>
+
+              <div class = "col-md-3" ng-class = "{'has-error': editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$invalid, 'has-success':editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$valid}">
+                <datepicker date-format="yyyy-MM-dd"><input class = "form-control" type="text" ng-model="test.TestDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "testdate{{$index}}"></datepicker>
+                <div class = "error msg_error" data-ng-show = "editScanForm.testdate{{$index}}.$touched">
+                 <span ng-show = "editScanForm.testdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                 </span>
+                </div>
+              </div>
+
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Comment:</label>
+              </div>
+              <div class = "col-md-5">
+                <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
+              </div>
+
+            </div>   
+        </div>

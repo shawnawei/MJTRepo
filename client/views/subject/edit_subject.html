@@ -26,11 +26,11 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         <div class="form-group row">
           <label class="form-control-label col-md-2">Subject ID* :</label>
           <div class = "col-md-3"  ng-class = "{'has-error': editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$invalid, 'has-success':editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$valid}">
-            <input required type="text" class="form-control" ng-model="subject.ID" name = "subjectID">
+            <input required type="text" class="form-control" ng-model="subject.ID" name = "subjectID" placeholder="MJT###" ng-pattern = "/^MJT\d{3,6}$/" >
             <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectID.$error" data-ng-show = "editSubjectForm.subjectID.$touched">
                <span ng-show = "editSubjectForm.subjectID.$invalid">
                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
-                  Please give this subject an unique ID!
+                  Please give this subject a ID in MJT### format!
                </span>
             </div>
           </div>

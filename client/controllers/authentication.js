@@ -52,7 +52,7 @@ myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$
 			$http.get('raw/Users')
 			.then(function(response){
 				var Users = response.data;
-				console.log(authenFact.getAccessToken());
+				//console.log(authenFact.getAccessToken());
 				var _uid = authenFact.getAccessToken().uid;
 				var userdisplayname = authenFact.getAccessToken().displayName;
 				var usertitle = authenFact.getAccessToken().title;

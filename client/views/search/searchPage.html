@@ -9,18 +9,14 @@
 
 <!--============================== Nav tabs =========================== -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role = "presentation" class = "active">
-          <a class="nav-link" data-toggle="tab" aria-controls = "searchSubject" data-target ="#searchSubject" role="tab">Subject</a>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" aria-controls = "searchSubject" data-target ="#searchSubject" role="tab" ng-hide = "!adminloggedin">Subject</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" aria-controls = "searchProject" data-target="#searchProject" role="tab">Project</a>
         </li>
-        <li class="nav-item">
+        <li class = "nav-item active">
           <a class="nav-link" data-toggle="tab" aria-controls = "searchScan" data-target="#searchScan" role="tab">Scans</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link" data-toggle="tab" aria-controls = "searchAdvance" data-target="#searchAdvance" role="tab">Advance</a>
         </li>
       </ul>
 
@@ -28,11 +24,10 @@
 <!--============================ Tab panes =====================================-->
   <br><br> 
   <div class="tab-content">
+
 <!--================================= SUBJECT SEARCH =======================================-->    
       
-        <div class="tab-pane active" id="searchSubject" role="tabpanel">
-
-
+      <div class="tab-pane" id="searchSubject" role="tabpanel">
           <div class = "container">
             <form ng-submit="searchSubjectByGlobalID(search.ID)" ng-init = "getSubjects()" class = "form-horizontal">
                 <div class="form-group row">
@@ -61,7 +56,7 @@
 
               <button type="submit" class="btn btn-primary col-md-offset-4">Find</button></div>
             </form>
-          </div>
+        </div>
 
 
       <br>
@@ -184,13 +179,11 @@
             </form>
             <br> <br>
 
-        </div>
-
-
+    </div>
 
 
 <!--================================= PROJECT SEARCH =======================================-->
-        <div class="tab-pane" id="searchProject" role="tabpanel">
+      <div class="tab-pane" id="searchProject" role="tabpanel">
         
 
         <container>
@@ -236,9 +229,12 @@
         </div>
 
 
+
+
+
 <!--================================= Scan SEARCH =======================================-->
 
-    <div class="tab-pane " id="searchScan" role="tabpanel">
+    <div class="tab-pane active " id="searchScan" role="tabpanel">
         
       <div class = "container">
 
@@ -448,6 +444,7 @@
                     <option disabled>         </option>
                     <option ng-repeat="project in projects">{{project.ProjectID}}</option>
                   </select>
+
               </div>
 
               <br>
@@ -475,7 +472,7 @@
               
               <div class="form-group row">
 
-               <label class = "form-control-label col-md-2">Age at Scan: </label>
+               <label class = "form-control-label col-md-2">Age at Scan/Test: </label>
                 <div style="margin:0;padding:0" class = "form-group-row col-md-1">
                   <input type="text" class="form-control" ng-model = "scanDetail.ParticipantAge.min" placeholder="Min">
                 </div>
