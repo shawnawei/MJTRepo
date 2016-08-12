@@ -73,7 +73,7 @@ td {
 
 <div style = "width:10%; float:right;">
 
-<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-show="(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"> Export</span></button>
+<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-disabled="!(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"> Export</span></button>
 
 </div>
 

@@ -30,7 +30,7 @@ module.exports.getTestTypes = function(){
 //get one test type
 module.exports.getTestTypeByType = function(type){
 	return Promise.resolve().then(function() {
-		return TestTypes.findOneAsync({TestName:type});
+		return TestTypes.findOneAsync({TestID:type});
 	});
 }
 

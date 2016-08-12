@@ -3,6 +3,32 @@
 REDESIGN THE PAGE IF TIME PREMITS-->
 
 
+
+<style>
+ul#scanList li
+{
+  display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center;
+    width:100%;
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:30px;
+}
+
+td {
+  height:30px;
+}
+
+</style>
+
 <nav>
   <a class="nav-link" ui-sref="subjects">To Subjects List</a>
 </nav>
@@ -14,7 +40,9 @@ REDESIGN THE PAGE IF TIME PREMITS-->
 
 
     <div class = "pull-right">
-      <a class = "btn btn-sm btn-danger" href = "subjects/{{subject.ID}}/edit"><span class = "glyphicon glyphicon-pencil"></span></a> <a class = "btn btn-sm btn-danger" data-toggle="modal" data-target="#myDeleteModal"><span class = "glyphicon glyphicon-remove"></span></a>
+      <a class = "btn btn-link" href = "subjects/{{subject.ID}}/edit"><span class = "glyphicon glyphicon-pencil"></span></a>
+      
+      <div class = "btn btn-link" ng-click = "ToOneChangelog(subject._id)"  data-toggle="modal" data-target="#viewchangelog"> <span class = "glyphicon glyphicon-calendar"></span></div>
     </div>
 
 
@@ -52,11 +80,8 @@ REDESIGN THE PAGE IF TIME PREMITS-->
          <div class="panel-body">
           <ul>
             <li><strong>View subject's scan sessions in {{project.ProjectID}}  </strong>
-            <a class = "btn btn-xs btn-info" ng-click = "getAuthenViewList(project.ProjectID, project.SubjectIDinProject, !onsubjects)">  View</a></li>
-            <p>
-            </li>
-            </p>
-          </ul>
+              <a class = "btn btn-xs btn-info" ng-click = "getAuthenViewList(project.ProjectID, project.SubjectIDinProject, !onsubjects)">  View</a></li>
+            </ul>
          </div> 
         </div>
       </div>
@@ -64,9 +89,81 @@ REDESIGN THE PAGE IF TIME PREMITS-->
       </div>
 
     </div>
+
+    
+
+    <br><br>
+    <a class = "btn btn-sm btn-danger" data-toggle="modal" data-target="#myDeleteModal"><span class = "glyphicon glyphicon-trash"></span> Danger! </a>
+
+     <!-- view user changelog -->
+  <div class="modal fade" id="viewchangelog" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4><strong>{{subject.ID}} - Changelog </strong></h4>
+        </div>
+
+        <div class="modal-body" style=" font-weight:normal;text-align: left; word-wrap: break-word">
+
+        View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option><option>20</option></select> records at a time.
+
+        <pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+       
+         
+
+         <table class = "table table-bordered table-condensed">
+          <thead>
+              <th class = "col-md-1">User</th>
+              <th class = "col-md-1">Date</th>
+              <th class = "col-md-1">Action</th>
+              <th class = "col-md-8">Changes</th>
+          </thead> 
+
+           <tbody>
+              <tr ng-repeat = "change in changelog | orderBy: '-Date' | filter : paginate">
+                <td>{{change.User}}</td>
+                <td>{{change.Date | date: 'short'}}</td>
+                <td>{{change.ChangeType}}</td>
+                <td>
+                  <div class = "well" ng-repeat = "key in change.ChangedField">
+                    <h4>{{key.Key}}</h4>
+
+                    <div class="form-group row">
+                          <label class="form-control-label col-md-2">Old:</label>
+                            <div class = "col-md-8">
+                              {{key.OldValue}}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="form-control-label col-md-2">New:</label>
+                            <div class = "col-md-8">
+                              {{key.NewValue}}
+                            </div>
+                        </div>
+                  </div>
+                </td> 
+              </tr>
+            </tbody>
+         </table>
+
+          <pre>Page: {{currentPage}} / {{numPages}}</pre>
+
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
   </div>
 
 
+  </div>
+
+ 
 
 
   <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

@@ -31,7 +31,7 @@ module.exports.getMEGScanTypes = function(){
 //get one test type
 module.exports.getMEGByType = function(type){
 	return Promise.resolve().then(function() {
-		return MEGScanTypes.findOneAsync({_id:type});
+		return MEGScanTypes.findOneAsync({TypeID:type});
 	});
 }
 

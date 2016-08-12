@@ -13,7 +13,7 @@
     <div class = "heading"></heading></div>
     <br>
 
-      <form ng-submit="updateProjectForm.$valid && updateProject()" method = "post" class = "form-horizontal" name = "updateProjectForm" novalidate>
+      <form ng-submit="updateProjectForm.$valid && updateProject(!gotosession)" method = "post" class = "form-horizontal" name = "updateProjectForm" novalidate>
 
       <h5>* Required fields</h5>
 
@@ -63,7 +63,6 @@
         <div class = "form-group row">
           <label class = "form-control-label col-md-2">Subjects: </label>
           <div class = "col-md-1"> 
-          <button type="button" class="btn btn-secondary btn-sm" ng-click= "addSubject()" ><span class="glyphicon glyphicon-plus"></span></button>
           </div>
         </div>  
 

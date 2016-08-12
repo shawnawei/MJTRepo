@@ -40,7 +40,7 @@ td {
 <div style = "width:10%; float:right;">
 <!-- <button class = "btn btn-sm btn-default" ng-click="exportData()" ng-show="(subjects|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span></button> -->
 
-<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-show="(projects|filter:{selected: true}).length" filename = "projectname_{{requestID}}.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
+<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-disabled="!(projects|filter:{selected: true}).length" filename = "projectname_{{requestID}}.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
 
 </div>
 

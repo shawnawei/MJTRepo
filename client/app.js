@@ -1,6 +1,6 @@
 var myApp = angular.module('myApp', 
 	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv', 'ngMessages',
-	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime']);
+	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime', 'ui.bootstrap']);
 
 myApp.controller('mainCtrl',  [ '$scope', '$http', '$location','localStorageService', 'authenFact',
  function ($scope, $http, $location, localStorageService, authenFact){
@@ -190,6 +190,20 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 		url:'/admin/converttojson',
 		controller:'adminController',
 		templateUrl:'views/adminOptions/converttojson.html'
+	})
+
+//========================= Changelog ==================================
+
+	.state("Changelog", {
+		url: '/changelog/:doctype',
+		controller:'changelogController',
+		templateUrl: 'views/changelog/changelog.html'
+	})
+
+	.state("ChangelogScans", {
+		url: '/changelogscans/:docID',
+		controller:'changelogController',
+		templateUrl: 'views/changelog/changelogscans.html'
 	})
 
 	$urlRouterProvider.otherwise("/home");

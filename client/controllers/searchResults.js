@@ -1766,12 +1766,19 @@ function formatToExcel_ScanSessionsInfo (selectedScanSession) {
 		
 		for (var i = 0; i < columnNum; i++)
 		{
+			var projectenrollment = (selectedScanSession[num]._id.SubjectInfo.Projects).map(
+				function(cv){
+					return cv.ProjectID;
+				});
+
+
 			var scanSession = {
 				'SUBJECT ID': selectedScanSession[num]._id.SubjectID,
 				'SEX':selectedScanSession[num]._id.SubjectInfo.Sex,
+				'ENROLLED IN': projectenrollment,
 				'DIAGNOSIS':selectedScanSession[num]._id.SubjectInfo.Diagnosis,
 				'SESSION ID': selectedScanSession[num]._id.SessionID,
-				'IN PROJECT': selectedScanSession[num]._id.relatedProject + "/" + selectedScanSession[num]._id.SubjectIDinProject
+				'FOR PROJECT': selectedScanSession[num]._id.relatedProject + "/" + selectedScanSession[num]._id.SubjectIDinProject
 			}
 
 			if (MEGs.length <= i )

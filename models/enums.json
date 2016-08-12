@@ -1,4 +1,4 @@
 {
-	"diagnoses": ["ASD", "NONE", "ADHD", "OCD", "Control","Pre-term","Autism","BPD", "Other","TD","Unknown"],
+	"diagnoses": ["ASD", "NONE", "ADHD", "OCD", "Control","Pre-term","Autism","BPD", "Other","Unknown"],
 	"handedness": ["Right", "Left", "Amb", "Unknown"]
 }

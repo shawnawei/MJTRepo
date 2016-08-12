@@ -73,7 +73,7 @@ td {
 
 <div style = "width:10%; float:right;">
 
-<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-show="(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"> Export</span></button>
+<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-disabled="!(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"> Export</span></button>
 
 <!-- <button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-show="(scanSessions|filter:{selected: true}).length" filename = "scans_{{requestID.GlobalID}}.csv"><span class = "glyphicon glyphicon-save"></span> Export</button> -->
 

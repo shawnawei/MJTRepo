@@ -20,6 +20,8 @@ var MRITypes = require('../models/MRITypes');
 var AuthenList = require('../models/authenList');
 var xlsxj = require('xlsx-to-json');
 var convert = require('xlsx-to-json-plus');
+var changelog = require('../models/changelog');
+
 // var subjectNum = 0;
 // var projectNum = 0;
 // var scansessionNum = 0;
@@ -359,6 +361,11 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 					//console.log("This subject ID already exists, please give a new ID!");
 					var newerr = "Error: This subject ID already exists, please give a new ID!";
 				}
+
+				if ((err.errors[num].path == 'MRN')){
+					//console.log("This subject ID already exists, please give a new ID!");
+					var newerr = "Error: A subject with this MRN already exists!";
+				}
 				
 				if ((err.errors[num].path == 'SubjectIDinProject'))
 				{
@@ -387,7 +394,8 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 		else
 		{
 			var subjectGlobalID = _subject.ID;
-			return project.addSubject(ProjectIDs, SubjectIDs, subjectGlobalID);
+			project.addSubject(ProjectIDs, SubjectIDs, subjectGlobalID);
+			return Promise.resolve(subject);
 		}
 		
 	})
@@ -398,7 +406,11 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 		}
 		else
 		{
-			//console.log("everything's good");
+			var changeinfo = {DocType: 'Subjects', ChangeType: 'add', DocID: subject.ID};
+			var newDoc = subject;
+			var oldDoc = 'addnew';
+			var uid = req.user.uid;
+			changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 			res.json(subject);
 		}
 		
@@ -406,7 +418,7 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 
 	//something wrong with creating this new subject or adding this new subject to project list 
 	.catch(function(err){
-		//console.log(err);
+		console.log(err);
 		var checkerr = err.split(":");
 		//console.log(checkerr);
 
@@ -438,13 +450,20 @@ router.post('/raw/subjects', ensureAuthenticated, function(req, res) {
 //add a new project
 router.post('/raw/projects', ensureAuthenticated, function(req, res) {
 	var _project = req.body;
+	var uid = req.user.uid;
 	//console.log(_project);
-	project.addProject(_project)
-	.then(function (project){
-		res.json(project);
+	project.addProject(_project,uid)
+	.then(function (newproject){
+		console.log(newproject);
+		var changeinfo = {DocType: 'Projects', ChangeType: 'add', DocID: newproject.ProjectID};
+		var newDoc = newproject;
+		var oldDoc = 'addnew';
+		var uid = req.user.uid;
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+		res.json(newproject);
 	})
 	.catch(function(err){
-		//console.log(err);
+		console.log(err);
 		if (err.errors != undefined)
 		{
 			for (var num in err.errors)
@@ -504,6 +523,7 @@ router.post('/raw/scanSession', ensureAuthenticated, function(req, res) {
 router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticated, function(req,res){
 	var projectID = req.params.ProjectID;
 	var subjectIDinProject = req.params.SubjectIDinProject;
+	var uid = req.user.uid;
 	//var sessionID = req.params.SessionID;
 	var newScanSession = req.body;
 
@@ -531,12 +551,17 @@ router.post('/raw/scanSession/:ProjectID/:SubjectIDinProject', ensureAuthenticat
 
 		else
 		{
-			return scanSession.addSingleScanSession(subjectGlobalID, projectID, subjectIDinProject, newScanSession);
+			return scanSession.addSingleScanSession(oldScanSession, subjectGlobalID, projectID, subjectIDinProject, newScanSession, uid);
 		}
 		
 	})
-	.then(function(scanSession){
-		res.json(scanSession);
+	.then(function(newandold){
+		console.log(newandold);
+		var oldDoc = newandold[0];
+		var newDoc = newandold[1];
+		var changeinfo = {DocType: 'ScanSessions', ChangeType: 'update', DocID: oldDoc.SubjectIDinProject};
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+		res.json(newDoc);
 	})
 	.catch(function(err){
 		console.log("add scan error: " + err);
@@ -635,34 +660,27 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 			}
 
 			//console.log(updatePackage);
-			return updatePackage;
+			subject.updateSubject(id, _subject, updatePackage);
+			return Promise.resolve(OldSubject);
 		}
 		
 	})
-	.then(function (value){
-		//console.log("value" + value);
-		if (value == 'empty')
-		{
-			return Promise.resolve('empty');
-		}
-		else
-		{
-			return subject.updateSubject(id, _subject, value);
-		}
-		
-	})
-	.then(function(subject){
-		if (subject == 'empty')
+	.then(function(oldDoc){
+		if (oldDoc == 'empty')
 		{
 			res.sendStatus(403);
 		}
 		else
 		{
-			res.json(subject);
+			//console.log(oldDoc);
+			var newDoc = _subject;
+			var changeinfo = {DocType: 'Subjects', ChangeType: 'update', DocID: _subject.ID};
+			changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+			res.json(newDoc);
 		}
 	})
 	.catch(function(err){
-		//console.log(err);
+		console.log(err);
 		
 		if (err.errors == undefined)
 		{
@@ -679,7 +697,13 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 					err = "This subject ID already exists, please choose a new ID!";
 					return Promise.reject(err);
 				}
-				if ((err.errors[num].path) != 'ID'){
+				else if ((err.errors[num].path ) == 'MRN'){
+					//console.log("This subject ID already exists, please choose a new ID!");
+					err = "A subject with the MRN you entered already exists!";
+					return Promise.reject(err);
+				}
+
+				else if ((err.errors[num].path) != 'ID' && (err.errors[num].path ) != 'MRN'){
 					//console.log("This subject ("+ err.errors[num].value
 					//+ ") already exists in the project!");
 					err = "This subject ("+ err.errors[num].value
@@ -703,6 +727,7 @@ router.put('/raw/subjects/:ID', ensureAuthenticated, function(req, res) {
 router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 	var id = req.params.ProjectID;
 	var _project = req.body;
+	var newproject = req.body;
 	var newSubjectsInProject = _project.SubjectsID;
 	var _uid = req.user.uid;
 
@@ -723,7 +748,8 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 		else
 		{
 			var oldSubjectsinProject = theProject.SubjectsID;
-			return project.updateProject(id, _project);
+			project.updateProject(id, _project);
+			return Promise.resolve(theProject);
 		}
 		
 	})
@@ -742,11 +768,14 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 				subjectIDs.push(newSubjectsInProject.GlobalID);
 				inProjectIDs.push(newSubjectsInProject.inProjectID);
 			}
-			return subject.updateSubjectFromProject(_project, id, oldSubjectsinProject, newSubjectsInProject);
+			subject.updateSubjectFromProject(_project, id, oldSubjectsinProject, newSubjectsInProject);
+			return Promise.resolve(project);
 		}
 		
 	})
 	.then(function (project) {
+		var changeinfo = {DocType: 'Projects', ChangeType: 'update', DocID: project.ProjectID};
+		changelog.addChange(_uid, project, newproject, changeinfo);
 		res.json(project);
 	})
 	.catch(function(err){
@@ -795,7 +824,7 @@ router.put('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res) {
 router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureAuthenticated, function(req,res){
 	var subjectID = req.params.SubjectIDinProject;
 	var sessionID = req.params.SessionID;
-	var scan_session = req.body;
+	var newScanSession = req.body;
 	var _uid = req.user.uid;
 
 	var testUID = {uid:_uid, ViewOnly:false};
@@ -816,7 +845,8 @@ router.put('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureA
 		else
 		{
 			//console.log(scan_session);
-			return scanSession.updateSingleScanSession(OldScanSession, subjectID, sessionID, scan_session);
+			return scanSession.updateSingleScanSession(OldScanSession, subjectID, sessionID, 
+				newScanSession, _uid);
 		}
 		
 	})
@@ -871,6 +901,9 @@ router.delete('/raw/subjects/:ID', function(req, res) {
 		}
 	})
 	.then(function(){
+		return subject.getSubjectById(id);
+	})
+	.then(function(oldsubject){
 		var isAdmin = false;
 		for (var num in registeredUsers)
 		{
@@ -881,24 +914,30 @@ router.delete('/raw/subjects/:ID', function(req, res) {
 		}
 		if(isAdmin)
 		{
-			return subject.deleteSubject(id);
+			subject.deleteSubject(id);
+			return Promise.resolve(oldsubject);
 		}
 		else{
 			return Promise.resolve('empty');
 		}
 		
 	})
-	.then(function (subject){
-		if (subject == 'empty')
+	.then(function (oldsubject){
+		if (oldsubject == 'empty')
 		{
 			res.sendStatus(403);
 		}
 		else
 		{
+			var changeinfo = {DocType: 'Subjects', ChangeType: 'delete', DocID: id};
+			var uid = req.user.uid;
+			var newDoc = "deleteDoc";
+			changelog.addChange(uid, oldsubject, newDoc, changeinfo);
 			res.json(subject);
 		}
 			
-	}).catch(function(err) {
+	})
+	.catch(function(err) {
 		res.sendStatus(500);
 		console.log(err);
 	});
@@ -924,14 +963,22 @@ router.delete('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res
 			return Promise.reject("not authorized");
 		}
 		else{
-			return Promise.resolve();
+			return Promise.resolve(project);
 		}
 	})
-	.then(function(){
-		return project.deleteProject(id);
+	.then(function(oldproject){
+
+		project.deleteProject(id);
+		return Promise.resolve(oldproject);
 	})	
-	.then(function (project){
-		res.json(project);	
+	.then(function (oldproject){
+
+		var changeinfo = {DocType: 'Projects', ChangeType: 'delete', DocID: id};
+		var uid = req.user.uid;
+		var newDoc = "deleteDoc";
+		changelog.addChange(uid, oldproject, newDoc, changeinfo);
+
+		res.json(oldproject);	
 	}).catch(function(err){
 		if (err == "not authorized")
 		{
@@ -946,12 +993,12 @@ router.delete('/raw/projects/:ProjectID', ensureAuthenticated, function(req, res
 	});
 });
 
-//delete a scan
+//delete a single scan session
 router.delete('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensureAuthenticated,
  function(req, res) {
 	var subject_id = req.params.SubjectIDinProject;
 	var scan_id = req.params.SessionID;
-	console.log(subject_id, scan_id);
+	var uid = req.user.uid;
 
 	scanSession.findOneAsync({SubjectIDinProject: subject_id})
 	.catch(function(err){
@@ -961,8 +1008,8 @@ router.delete('/raw/scanSession/:ProjectID/:SubjectIDinProject/:SessionID', ensu
 	.then(function(oldScanSession){
 		var GlobalID = oldScanSession.SubjectID;
 		var projectID = oldScanSession.relatedProject;
-		console.log(GlobalID, projectID);
-		return scanSession.deleteScanSession(GlobalID, projectID, subject_id, scan_id);
+		scanSession.deleteScanSession(uid, GlobalID, projectID, subject_id, scan_id);
+		return Promise.resolve(oldScanSession);
 	})
 	.then(function (scanSession){
 		res.redirect('/raw/scanSession/:ProjectID/:SubjectIDinProject');	
@@ -1060,7 +1107,7 @@ router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Fir
 	var FirstName = req.params.FirstName;
 	var LastName = req.params.LastName;
 	var Projects = req.params.Projects.split(',');
-	console.log(Projects);
+	//console.log(Projects);
 	subject.getSubjectsByInfo(Sex, Handedness, Diagnosis, Contact, Age, MRN, FirstName, LastName, Projects)
 	.then(function(subjects) {
 		if(subjects == '')
@@ -1119,7 +1166,7 @@ router.get('/raw/FindScanSessionsSessionID/:SessionID', ensureAuthenticated, fun
 	var SessionID = req.params.SessionID;
 	var uid = req.user.uid;
 
-	console.log(Projects);
+	//console.log(Projects);
 	scanSession.searchScanSessionBySessionID(SessionID, uid)
 	.then(function(scanSessions) {
 		if(scanSessions == '')
@@ -1289,10 +1336,23 @@ router.get('/raw/testTypes/:Type', ensureAuthenticated, function(req, res) {
 router.put('/raw/testTypes/:Type', ensureAuthenticated, function(req, res) {
 	var newTestType = req.body;
 	var type = req.params.Type;
+	var uid = req.user.uid;
 	//console.log(type, newTestType);
-	testTypes.editTestTypeByType(type, newTestType)
-	.then(function(testTypes) {
-		res.json(testTypes);
+
+	testTypes.getTestTypeByType(type)
+	.then(function(oldTestType){
+		var oldDoc = oldTestType;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		testTypes.editTestTypeByType(type, newTestType);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		console.log(oldDoc);
+		var newDoc = newTestType;
+		var changeinfo = {DocType: 'TestType', ChangeType: 'update', DocID: newTestType.TestID};
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1305,7 +1365,16 @@ router.post('/raw/testTypes', ensureAuthenticated, function(req, res) {
 	var newTestType = req.body;
 	testTypes.addTestType(newTestType)
 	.then(function(testType) {
-		res.json(testType);
+		//res.json(testType);
+		return Promise.resolve(testType);
+	})
+	.then(function(testType){
+		//console.log(testType);
+		var changeinfo = {DocType: 'TestType', ChangeType: 'add', DocID: newTestType.TestID};
+		var newDoc = testType;
+		var oldDoc = 'addnew';
+		var uid = req.user.uid;
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1315,9 +1384,22 @@ router.post('/raw/testTypes', ensureAuthenticated, function(req, res) {
 //remove a test type
 router.delete('/raw/testTypes/:Type', ensureAuthenticated, function(req, res) {
 	var type = req.params.Type;
-	testTypes.deleteTestTypeByType(type)
-	.then(function(){
-		res.redirect('raw/testTypes');
+
+	testTypes.getTestTypeByType(type)
+	.then(function(oldTest){
+		var oldDoc = oldTest;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		testTypes.deleteTestTypeByType(type)
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		//console.log(oldDoc);
+		var changeinfo = {DocType: 'TestType', ChangeType: 'delete', DocID: type};
+		var uid = req.user.uid;
+		var newDoc = "deleteDoc";
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1347,10 +1429,21 @@ router.get('/raw/MRITypes/:Type', ensureAuthenticated, function(req, res) {
 router.put('/raw/MRIType/:Type', ensureAuthenticated, function(req, res) {
 	var newMRIType = req.body;
 	var type = req.params.Type;
-	console.log("hi"+newMRIType, type);
-	MRITypes.editMRIType(type, newMRIType)
-	.then(function(MRIType) {
-		res.json(MRIType);
+	var uid = req.user.uid;
+
+	MRITypes.getMRIByType(type)
+	.then(function(oldMRIType){
+		var oldDoc = oldMRIType;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		MRITypes.editMRIType(type, newMRIType);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		var newDoc = newMRIType;
+		var changeinfo = {DocType: 'MRIType', ChangeType: 'update', DocID: newMRIType.TypeID};
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1363,7 +1456,16 @@ router.post('/raw/MRITypes', ensureAuthenticated, function(req, res) {
 	var newMRIType = req.body;
 	MRITypes.addMRIType(newMRIType)
 	.then(function(MRIType) {
-		res.json(MRIType);
+		//res.json(MRIType);
+		return Promise.resolve(MRIType);
+	})
+	.then(function(MRIType){
+		//console.log(MRIType);
+		var changeinfo = {DocType: 'MRIType', ChangeType: 'add', DocID: newMRIType.TypeID};
+		var newDoc = MRIType;
+		var oldDoc = 'addnew';
+		var uid = req.user.uid;
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1373,9 +1475,22 @@ router.post('/raw/MRITypes', ensureAuthenticated, function(req, res) {
 //remove a mri type
 router.delete('/raw/MRITypes/:Type', ensureAuthenticated, function(req, res) {
 	var type = req.params.Type;
-	MRITypes.deleteMRIType(type)
-	.then(function(){
-		res.redirect('raw/MRITypes');
+
+	MRITypes.getMRIByType(type)
+	.then(function(oldMRIType){
+		var oldDoc = oldMRIType;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		MRITypes.deleteMRIType(type)
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		//console.log(oldDoc);
+		var changeinfo = {DocType: 'MRIType', ChangeType: 'delete', DocID: type};
+		var uid = req.user.uid;
+		var newDoc = "deleteDoc";
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1399,6 +1514,9 @@ router.get('/raw/MEGTypes/:Type', ensureAuthenticated, function(req, res) {
 	MEGTypes.getMEGByType(type)
 	.then(function(megType) {
 		res.json(megType);
+	})
+	.catch(function(err){
+		console.log(err);
 	});
 });
 
@@ -1406,11 +1524,23 @@ router.get('/raw/MEGTypes/:Type', ensureAuthenticated, function(req, res) {
 //edit a meg type
 router.put('/raw/MEGType/:Type', ensureAuthenticated, function(req, res) {
 	var newMEGType = req.body;
+	var uid = req.user.uid;
 	var type = req.params.Type;
-	console.log("hi"+newMEGType, type);
-	MEGTypes.editMEGType(type, newMEGType)
-	.then(function(MEGType) {
-		res.json(MEGType);
+	//console.log("hi"+newMEGType, type);
+
+	MEGTypes.getMEGByType(type)
+	.then(function(oldMEGType){
+		var oldDoc = oldMEGType;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		MEGTypes.editMEGType(type, newMEGType);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		var newDoc = newMEGType;
+		var changeinfo = {DocType: 'MEGType', ChangeType: 'update', DocID: newMEGType.TypeID};
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1423,7 +1553,16 @@ router.post('/raw/MEGTypes', ensureAuthenticated, function(req, res) {
 	var newMEGType = req.body;
 	MEGTypes.addMEGType(newMEGType)
 	.then(function(MEGType) {
-		res.json(MEGType);
+		//res.json(MEGType);
+		return Promise.resolve(MEGType);
+	})
+	.then(function(MEGType){
+		console.log(MEGType);
+		var changeinfo = {DocType: 'MEGType', ChangeType: 'add', DocID: newMEGType.TypeID};
+		var newDoc = MEGType;
+		var oldDoc = 'addnew';
+		var uid = req.user.uid;
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1433,9 +1572,22 @@ router.post('/raw/MEGTypes', ensureAuthenticated, function(req, res) {
 //remove a meg type
 router.delete('/raw/MEGTypes/:Type', ensureAuthenticated, function(req, res) {
 	var type = req.params.Type;
-	MEGTypes.deleteMEGType(type)
-	.then(function(){
-		res.redirect('raw/MEGTypes');
+
+	MEGTypes.getMEGByType(type)
+	.then(function(oldMEGType){
+		var oldDoc = oldMEGType;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		MEGTypes.deleteMEGType(type);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		//console.log(oldDoc);
+		var changeinfo = {DocType: 'MEGType', ChangeType: 'delete', DocID: type};
+		var uid = req.user.uid;
+		var newDoc = "deleteDoc";
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1470,9 +1622,21 @@ router.get('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 router.put('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 	var newUser = req.body;
 	var uid = req.params.uid;
-	AuthenList.editUser(uid, newUser)
-	.then(function(user) {
-		res.json(user);
+	var edituid = req.user.uid;
+
+	AuthenList.getUser(uid)
+	.then(function(oldUser){
+		var oldDoc = oldUser;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		AuthenList.editUser(uid, newUser);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		var newDoc = newUser;
+		var changeinfo = {DocType: 'User', ChangeType: 'update', DocID: newUser.uid};
+		return changelog.addChange(edituid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1485,7 +1649,16 @@ router.post('/raw/Users', ensureAuthenticated, function(req, res) {
 	var newUser = req.body;
 	AuthenList.addUser(newUser)
 	.then(function(user) {
-		res.json(user);
+		//res.json(user);
+		return Promise.resolve(user);
+	})
+	.then(function(user){
+		console.log(user);
+		var changeinfo = {DocType: 'User', ChangeType: 'add', DocID: newUser.uid};
+		var newDoc = user;
+		var oldDoc = 'addnew';
+		var uid = req.user.uid;
+		return changelog.addChange(uid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
@@ -1495,21 +1668,89 @@ router.post('/raw/Users', ensureAuthenticated, function(req, res) {
 //remove a recorded user
 router.delete('/raw/Users/:uid', ensureAuthenticated, function(req, res) {
 	var uid = req.params.uid;
-	AuthenList.deleteUser(uid)
-	.then(function(){
-		res.redirect('raw/Users');
+	var edituid = req.user.uid;
+
+	AuthenList.getUser(uid)
+	.then(function(oldUser){
+		var oldDoc = oldUser;
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		AuthenList.deleteUser(uid);
+		return Promise.resolve(oldDoc);
+	})
+	.then(function(oldDoc){
+		//console.log(oldDoc);
+		var changeinfo = {DocType: 'User', ChangeType: 'delete', DocID: uid};
+		var newDoc = "deleteDoc";
+		return changelog.addChange(edituid, oldDoc, newDoc, changeinfo);
 	})
 	.catch(function(err){
 		console.log(err);
-	})
+	});
 });
 
 
 
-// router.post('/raw/exportToJson', ensureAuthenticated, function(req, res) {
-// 	console.log("hi");
-// 	console.log(req.body);
-// });
+
+
+
+// ==================== EVERYTHING RELATED TO CHANGELOG =================
+
+router.get('/raw/changelog', ensureAuthenticated, function(req, res){
+	var uid = req.user.uid;
+
+	changelog.getAllChanges(uid)
+	.then(function(changes){
+		res.json(changes);
+	});
+
+});
+
+
+router.get('/raw/changelog/:DocumentID', ensureAuthenticated, function(req, res){
+	var uid = req.user.uid;
+	var docID = req.params.DocumentID;
+
+	changelog.getChangeOfOne(docID)
+	.then(function(change){
+		res.json(change);
+	});
+
+});
+
+router.get('/raw/changelogs/:docType/:DocumentID', ensureAuthenticated, function(req, res){
+	var uid = req.user.uid;
+	var docID = req.params.DocumentID;
+	var docType = req.params.docType;
+
+	changelog.getChangeOfOne_scans(docType, docID)
+	.then(function(change){
+		res.json(change);
+	});
+
+});
+
+router.get('/raw/changelogdoctype/:DocumentType', ensureAuthenticated, function(req, res){
+	var uid = req.user.uid;
+	var docType = req.params.DocumentType;
+
+	changelog.getChangeOfDocType(docType)
+	.then(function(change){
+		res.json(change);
+	});
+
+});
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1640,39 +1881,6 @@ router.get('/raw/convertthistojson',  ensureAuthenticated, function(req, res){
   		)
 	 });
 
-
-	//console.log(req);
-
-	// xlsxj({
- //    input: "./test1.xlsx", 
- //    output: "output.json"
- //  }, function(err, result) {
- //    if(err) {
- //      console.error(err);
- //    }else {
- //      console.log(result);
- //      res.json(result);
- //    }
- //  });
- // 	return Promise.resolve()
- // 	.then(function(){
-
- // 		["./test1.xlsx"].forEach(function (element) {	
-	//   	convert.toJson(
-	// 	    path.join(__dirname, element),  //excell file 
-	// 	    path.join(__dirname, "./json"), //json dir 
-	// 	    1,  //excell head line number 
-	// 	    "," //array separator 
- //  		)
-  	
- // 		})
-	// 	return Promise.resolve();
- // 	})
-	
-	// .then(function(){
-	//   var jsonfile = require('./json/Sheet1.json');
-	//   console.log(jsonfile);
-	// });
 
 
 });

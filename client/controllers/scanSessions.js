@@ -76,7 +76,7 @@ myApp.controller('scanSessionsController', ['$rootScope', '$state','$scope', '$h
 					}
 				}
 			}
-			console.log(viewList, editList);
+			//console.log(viewList, editList);
 			$scope.viewList = viewList;
 			$scope.editList = editList;
 			var accessToken = authenFact.getAccessToken().uid;
@@ -181,7 +181,7 @@ myApp.controller('scanSessionsController', ['$rootScope', '$state','$scope', '$h
 		var subjectID = $stateParams.SubjectIDinProject;
 		$http.get('/raw/scanSession/'+ projectID + '/' +subjectID)
 		.then(function(response){
-			console.log(response);
+			//console.log(response);
 			if (response.data == null)
 			{
 				$state.go('subjects');
@@ -435,6 +435,21 @@ myApp.controller('scanSessionsController', ['$rootScope', '$state','$scope', '$h
 		//$scope.getArray = tobeExported;
 	}
 
+	$scope.ToScanChangelog = function(docID){
+		//console.log(docType);
+		window.open("/changelogscans/" + docID);
+	}
+
+	$scope.ToOneScanChangelog = function(docID){
+		console.log(docID);
+		$http.get('/raw/changelog/'+ docID).success(function(response){
+			$scope.changelog = response;
+			$scope.totalItems = response.length;
+		});
+	}
+
+
+
 }]);
 
 
@@ -466,12 +481,12 @@ myApp.controller('addScanSessionController', ['$rootScope', '$state', '$scope', 
 		var subjectID = $stateParams.SubjectIDinProject;
 		$http.get('/raw/scanSession/'+ projectID + '/' +subjectID)
 		.then(function(response){
-			console.log(response);
+			//console.log(response);
 			if (response.data != null)
 			{
 				var sessionIDLength = response.data.ScanSessions.length;
 				$scope.newSessionID = '0'+ (sessionIDLength+1);
-				console.log($scope.newSessionID);
+				//console.log($scope.newSessionID);
 			}
 		})
 		.then(function(response){
@@ -530,6 +545,13 @@ myApp.controller('addScanSessionController', ['$rootScope', '$state', '$scope', 
 				testTypes.push(response[num].TestID);
 			}
 			$scope.testTypes = testTypes;
+
+			var quicktesttypes = [];
+			for (var num in testTypes)
+			{
+				quicktesttypes.push({TestType: testTypes[num], Add: false});
+			}
+			$scope.quicktesttypes = quicktesttypes;
 		});
 	}
 
@@ -603,6 +625,47 @@ myApp.controller('addScanSessionController', ['$rootScope', '$state', '$scope', 
 
 	$scope.removeMRIScan = function(index){
 		$scope.newSession.MRIScans.splice(index,1);
+	}
+
+	$scope.quicktestdate = '';
+
+	$scope.quickAddTest = function(){
+
+		$scope.newSession.TestResults = [];
+
+		var qtesttypes = $scope.quicktesttypes;
+		// var temptests = $scope.newSession.TestResults;
+		// var temptesttypes = temptests.map(function(cv){return cv.Type});
+		// console.log(temptests, temptesttypes);
+
+		console.log(qtesttypes);
+
+		for (var num in qtesttypes)
+		{
+			if (qtesttypes[num].Add == true)
+			{
+				$scope.newSession.TestResults.push(
+				{Type:qtesttypes[num].TestType, Result:'', Comment:'', TestDate:$scope.quicktestdate, Age:''});
+			}
+		}
+
+
+		// for (var num in qtesttypes)
+		// {
+		// 	//console.log(temptesttypes);
+		// 	if (qtesttypes[num].Add == true)
+		// 	{
+
+		// 		if (!temptesttypes.includes(qtesttypes[num].TestType))
+		// 		{
+		// 			$scope.newSession.TestResults.push(
+		// 			{Type:qtesttypes[num].TestType, Result:'', Comment:'', TestDate:$scope.quicktestdate, Age:''});
+		// 		}
+				
+				
+		// 	}
+		// }
+		//console.log($scope.quicktesttypes, $scope.quicktestdate);
 	}
 
 	$scope.addTestType = function(){

@@ -9,6 +9,7 @@ table {
 th {
 	border: 1px solid white;
 	text-align: center;
+	height:40px;
   	background-color: #D3D3D3
 }
 
@@ -61,7 +62,7 @@ td {
 
 <div style = "width:10%; float:right;"> 
 
-<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-show="(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span> Export</button>
+<button class = "btn btn-sm btn-default" ng-click="exportData(scanSessions)" ng-disabled="!(scanSessions|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span> Export</button>
 
 </div>
 
@@ -214,8 +215,8 @@ td {
 				      	<p><strong>Sex:</strong> {{scanSession._id.SubjectInfo.Sex}}</p>
 				      	<p><strong>Diagnosis:</strong> {{scanSession._id.SubjectInfo.Diagnosis}}</p>
 				      	<p><strong>Handedness:</strong> {{scanSession._id.SubjectInfo.Handedness}}</p>
-				      	<p><strong>Date of Birth:</strong> {{scanSession._id.SubjectInfo.DateOfBirth|  date: 'yyyy-MM-dd'}}</p>
-				      	<p><strong>Also in Projects:</strong>
+				      	<!-- <p><strong>Date of Birth:</strong> {{scanSession._id.SubjectInfo.DateOfBirth|  date: 'yyyy-MM-dd'}}</p> -->
+				      	<p><strong>In Projects:</strong>
 					      	<li ng-repeat = "project in scanSession._id.SubjectInfo.Projects">
 					      		{{project.ProjectID}}
 					      	</li>

@@ -55,7 +55,7 @@ return Promise.resolve().then(function () {
 	})
 	.then(function () {
 		
-		console.log(newUser);
+		//console.log(newUser);
 		return AuthenList.createAsync(newUser);
 	});
 }
@@ -68,7 +68,7 @@ return Promise.resolve().then(function () {
 		// check your data
 		var test = new AuthenList(newUserInfo);
 		var error = test.validateSync();
-		console.log("enter function " + useruid, newUserInfo, error);
+		//console.log("enter function " + useruid, newUserInfo, error);
 		//check schema error
 		if (error != undefined)
 		{
@@ -85,7 +85,6 @@ return Promise.resolve().then(function () {
 	})
 	.then(function () {
 
-		console.log(useruid, newUserInfo);
 		// construct query and update database
 		var query = {uid:useruid};
 		var update = {

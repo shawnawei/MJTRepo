@@ -7,7 +7,9 @@ ul#scanList li
 table {
     border-collapse: collapse;
     border: #D3D3D3;
-    text-align: center
+    text-align: center;
+    table-layout:fixed;
+    width:100%;
 }
 
 th {
@@ -37,10 +39,9 @@ th {
   <div ng-init="checkAuthen(!addProject);getProject(); getAuthenList(oldProjectID); getProjectInfo()">
   <div ng-init = oldProjectID></div>
 
-
     <div class = "pull-right">
-      <a class = "btn btn-sm btn-danger" ng-click = " getAuthenEditList(project.ProjectID)" ng-hide = "!editable"><span class = "glyphicon glyphicon-pencil"></span></a> 
-      <a class = "btn btn-sm btn-danger"  data-toggle="modal" ng-hide = "!editable" data-target="#myDeleteModal"><span class = "glyphicon glyphicon-remove"></span></a>
+      <a class = "btn btn-link" ng-click = "getAuthenEditList(project.ProjectID)" ng-hide = "!editable"><span class = "glyphicon glyphicon-pencil"></span></a>
+      <a class = "btn btn-link" ng-click = "ToOneChangelog(project._id)"  data-toggle="modal" data-target="#viewchangelog" ng-hide = "!editable"> <span class = "glyphicon glyphicon-calendar"></span></a>
     </div>
 
 
@@ -87,21 +88,22 @@ th {
         </fieldset>
       </form>
 
-      <h3> <strong>Subjects List: </strong></h3>
+      <h3> <strong>Subjects List: </strong>
+        <a class = "pull-right btn btn-sm btn-primary" ng-hide = "!editable" data-toggle = "modal" data-target = "#findoraddSubject" data-backdrop="static" data-keyboard="false"><span class = "glyphicon glyphicon-plus-sign"></span> Search Existing or Add Subject</a> 
 
-  
+        <!-- <a class = " btn btn-sm btn-primary" ng-hide = "!editable" data-toggle = "modal" data-target = "#addSubject" data-backdrop="static" data-keyboard="false" ng-click = "addlastsubject()"><span class = "glyphicon glyphicon-plus-sign"></span> Add New Subject</a> -->
 
-      <div>
-        <a class = "col-md-offset-5 btn btn-sm btn-primary" ng-hide = "!editable" data-toggle = "modal" data-target = "#addSubject" data-backdrop="static" data-keyboard="false" ng-click = "addlastsubject()"><span class = "glyphicon glyphicon-plus-sign"></span> Add Subject</a> 
+        <br>
+      </h3>
 
-        <div class = "col-md-5">
-          <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
-        </div>
 
+      <div class = "col-md-12">
+      <div class = "form-control-row">
+         <label>Quick Search: </label>
+         <input class = "form-control" type= "text" placeholder="Find in following list..." ng-model = "searchText">
+         </div>
+          <br>
       </div>
-
-
-      <br>
 
       
       
@@ -140,8 +142,77 @@ th {
     </div>
   </div>
 
+  <a class =" btn btn-sm btn-danger"  data-toggle="modal" ng-hide = "!editable" data-target="#myDeleteModal"><span class = " glyphicon glyphicon-trash"></span> Danger! </a> 
 
-   <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+
+     <!-- view user changelog -->
+  <div class="modal fade" id="viewchangelog" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4><strong>{{project.ProjectName}} - Changelog </strong></h4>
+        </div>
+
+        <div class="modal-body" style=" font-weight:normal;text-align: left; word-wrap: break-word">
+
+        View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option><option>20</option></select> records at a time.
+        <br><br>
+
+        <pagination total-items="totalItems" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+       
+         
+
+         <table class = "table table-bordered table-condensed">
+          <thead>
+              <th class = "col-md-1">User</th>
+              <th class = "col-md-1">Date</th>
+              <th class = "col-md-1">Action</th>
+              <th class = "col-md-8">Changes</th>
+          </thead> 
+
+           <tbody>
+              <tr ng-repeat = "change in changelog | orderBy: '-Date' | filter : paginate">
+                <td>{{change.User}}</td>
+                <td>{{change.Date | date: 'short'}}</td>
+                <td>{{change.ChangeType}}</td>
+                <td>
+                  <div class = "well well-sm" ng-repeat = "key in change.ChangedField">
+                    <h4>{{key.Key}}</h4>
+
+                    <div class="form-group row">
+                          <label class="form-control-label col-md-2">Old:</label>
+                            <div class = "col-md-8">
+                              {{key.OldValue}}
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                          <label class="form-control-label col-md-2">New:</label>
+                            <div class = "col-md-8">
+                              {{key.NewValue}}
+                            </div>
+                        </div>
+                  </div>
+                </td> 
+              </tr>
+            </tbody>
+         </table>
+
+          <pre>Page: {{currentPage}} / {{numPages}}</pre>
+
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="myDeleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -161,12 +232,94 @@ th {
   </div>
 
 
+  <div class="modal fade findsubject" id="findoraddSubject" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" >&times;</span></button>
+            <h3 class="modal-title" id="myModalLabel">Find or Add a New Subject to {{project.ProjectID}}</h3>
+          </div>
+          <form name = "addnewsub"  ng-submit = "findSubject()" novalidate>
+            <div class="modal-body">
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-4">By Last Name:</label>
+                <div class="col-md-6">
+                  <input type = "text" class="form-control" ng-model = "searchLN" ng-init = "searchLN = 'All'">
+                  OR
+                </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-4">By First Name:</label>
+                <div class="col-md-6">
+                  <input type = "text" class="form-control" ng-model = "searchFN" ng-init = "searchFN = 'All'">OR
+                </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-4">By MRN:</label>
+                <div class="col-md-6">
+                  <input class="form-control" ng-model = "searchMRN" ng-init ="searchMRN = 'All'">
+
+                </div>
+              </div>
+              
+               <input class = "btn btn-primary btn-sm pull-right" type = "submit" value = "Find">
+
+              <br>
+              <div>
+              <br>
+                <table class = "table table-bordered table-hover">
+                  <thead>
+                    <th class ="col-md-2">Subject ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>MRN</th>
+                    <th></th>
+                  </thead>
+                  <tbody>
+                    <tr ng-repeat = "subject in qualifiedsubjects | limitTo: 7">
+                      <td>{{subject.ID}}</td>
+                      <td>{{subject.FirstName}}</td>
+                      <td>{{subject.LastName}}</td>
+                      <td>{{subject.MRN}}</td>
+                      <td><a class = "btn btn-xs" onclick="$('.findsubject').modal('hide')" data-toggle = "modal" data-target = "#addSubject" ng-click = "addlastsubject(subject.ID)"><span class = "glyphicon glyphicon-plus-sign"></span></a></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+               
+
+              </div>
+
+              <div class = "col-md-12"> 
+                  <div data-ng-show = "nomatch" class= "text-center text-danger">
+                      <strong data ng-bind = "nomatch"></strong>
+                  </div>
+                  <br>
+              </div>
+
+             <br>
+                  
+            </div>
+            <div class="modal-footer">
+              <a class="btn btn-danger" ng-hide = "!adminloggedin" ng-disabled = "!nomatch" onclick="$('.findsubject').modal('hide')" data-toggle = "modal" data-target = "#addnewsubject" ng-click = "addlastsubject()">Add New Subject</a>
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+
+
+
   <div class="modal fade" id="addSubject" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" ng-click = "removelastsubject()">&times;</span></button>
-            <h4 class="modal-title" id="myModalLabel">Add a New Subject to {{project.ProjectID}}</h4>
+            <h3 class="modal-title" id="myModalLabel">Add a {{project.SubjectsID[(project.SubjectsID.length)-1].GlobalID}} to {{project.ProjectID}}</h3>
           </div>
           <form name = "addnewsub" novalidate>
             <div class="modal-body">
@@ -200,11 +353,12 @@ th {
                 </div>
               </div>
 
+              <br>
                   
             </div>
             <div class="modal-footer">
 
-              <div class = "col-md-8"> 
+              <div class = "col-md-12"> 
                   <div data-ng-show = "error" class= "text-center text-danger">
                     <div class = "alert alert-danger" role="alert">
                       <strong data ng-bind = "error"></strong>
@@ -213,7 +367,178 @@ th {
                 </div>
 
 
-              <a ng-disabled = "addnewsub.$invalid" type = "submit" class="btn btn-danger" ng-click = "updateProject(); openSessionPage(project.ProjectID, project.SubjectsID[(project.SubjectsID.length)-1].inProjectID)">Add (!)</a>
+
+              <a ng-disabled = "addnewsub.$invalid" type = "submit" class="btn btn-danger" ng-click = "updateProject(gotosession)">Add and Edit Subject Scans</a>
+
+              <button type="button" ng-click = "removelastsubject()" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+          </form>
+        </div>
+      </div>
+  </div>
+
+
+  <div class = "modal fade" id = "addnewsubject" tabindex="-1" role = "dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true" ng-click = "removelastsubject()">&times;</span></button>
+            <h4 class="modal-title" id="myModalLabel">Create New Subject and Add to {{project.ProjectID}}</h4>
+          </div>
+          <form name = "addnewsub" novalidate>
+            <div class="modal-body">
+
+              <div class = "form-group row">
+                <label class= "form-control-label col-md-2">Global ID:</label>
+                <div class="col-md-3" ng-class = "{'has-error': addnewsub.GID.$touched && addnewsub.GID.$invalid, 'has-success':addnewsub.GID.$touched && addnewsub.GID.$valid}">
+                  <input required type = "text" class="form-control" name = "GID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].GlobalID" placeholder="MJT###" ng-pattern = "/^MJT\d{3,6}$/" >
+                  <div class = "error msg_error" data-ng-messages = "addnewsub.GID.$error" data-ng-show = "addnewsub.GID.$touched">
+                     <span ng-show = "addnewsub.GID.$invalid">
+                       <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please enter subject's global ID in MJT### format!
+                     </span>
+                  </div>
+
+                </div>
+                <div style="margin:0;padding:0" class = "col-md-1 btn btn-xs btn-link">Generate</div>
+
+
+                <label class= "form-control-label col-md-2">ID in Project:</label>
+                <div class="col-md-3" ng-class = "{'has-error': addnewsub.PID.$touched && addnewsub.PID.$invalid, 'has-success':addnewsub.PID.$touched && addnewsub.PID.$valid}">
+                  <input required type = "text" class="form-control" name = "PID" ng-model= "project.SubjectsID[(project.SubjectsID.length)-1].inProjectID">
+
+                  <div class = "error msg_error" data-ng-messages = "addnewsub.PID.$error" data-ng-show = "addnewsub.PID.$touched">
+                     <span ng-show = "addnewsub.PID.$invalid">
+                       <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please enter subject's in project ID!
+                     </span>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class = "form-group row">
+
+                  <label class="col-md-2 form-control-label">Sex:</label>
+                    <div class = "col-md-3">
+                    <select ng-model="newsubject.Sex" ng-init = "newsubject.Sex = 'Unknown'" class="form-control">
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Unknown">Unknown</option>
+                      <option value="Other">Other</option>
+                    </select>
+                   </div>
+
+                   <label class="col-md-2 col-md-offset-1 form-control-label">Diagnosis: </label>
+                    <div class = "col-md-3">
+                    <select name= "Diagnosis" id = "Diagnosis" class="form-control" ng-model="newsubject.Diagnosis" placeholder=" "  ng-init = "newsubject.Diagnosis = 'Unknown'">
+                        <option value = "ASD">ASD</option>
+                        <option value = "Pre-term">Pre-term</option>
+                        <option value = "ADHD">ADHD</option>
+                        <option value = "OCD">OCD</option>
+                        <option value = "BPD">BPD</option>
+                        <option value = "Control">Control</option>
+                        <option value = "Other">Other</option>
+                        <option value = "Unknown">Unknown</option>
+                    </select>
+                    </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class="form-control-label col-md-2">First Name :</label>
+                  <div class = "col-md-3">
+                    <input type="text" class="form-control" data-ng-model="newsubject.FirstName" name = "firstname">
+                  </div>
+
+                <label class="col-md-2 col-md-offset-1 form-control-label">Last Name:</label>
+                  <div class = "col-md-3">
+                    <input type="text" class="form-control" data-ng-model="newsubject.LastName" name = "lastname">
+                  </div>
+              </div>
+
+              <div class = "form-group row">
+                
+                 <label class="col-md-2 form-control-label">Handedness: </label>
+                   <div class = "col-md-3">
+                  <select name= "Handedness" id = "Handedness"  ng-init = "newsubject.Handedness = 'Unknown'" class="form-control" ng-model="newsubject.Handedness" placeholder=" ">
+                    <option value = "Left">Left</option>
+                    <option value = "Right">Right</option>
+                    <option value = "Unknown">Unknown</option>
+                  </select>
+                 </div>
+
+                 <label class="col-md-2 col-md-offset-1 form-control-label">MRN: </label>
+                 <div class = "col-md-3" ng-class = "{'has-error': addnewsub.subjectMRN.$touched && addnewsub.subjectMRN.$invalid, 'has-success':addnewsub.subjectMRN.$touched && addnewsub.subjectMRN.$valid}">
+                  <input type="number" class="form-control" ng-model="newsubject.MRN" name = "subjectMRN">
+                    <div class = "error msg_error" data-ng-messages = "addnewsub.subjectMRN.$error" data-ng-show = "addnewsub.$dirty" >
+                     <span ng-show = "addnewsub.subjectMRN.$invalid">
+                        <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Subject's MRN must be a number!
+                     </span>
+                    </div>
+                  </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class="col-md-2 form-control-label">Permission to Contact: </label>
+                  <div class = "col-md-3">
+                      <div class = "form-group-row">
+                           <input type="checkbox" ng-model="newsubject.ContactPermit" ng-true-value = "true"> Yes
+                           <input type="checkbox" ng-model="newsubject.ContactPermit" ng-true-value = "false"> No
+                        </div>
+                  </div>
+
+                  <label class="form-control-label col-md-offset-1 col-md-2">Contact Info:</label>
+                  <div class = "col-md-4">
+                    <input class="form-control" ng-model="newsubject.ContactInfo" placeholder=" ">
+                  </div>
+              </div>
+
+              <div class = "form-group row">
+                <label class="form-control-label col-md-2">Date of Birth :</label>
+                <div class = "col-md-3" ng-class = "{'has-error': addnewsub.subjectbday.$touched && addnewsub.subjectbday.$invalid, 'has-success':addnewsub.subjectbday.$touched && addnewsub.subjectbday.$valid}">
+                  <datepicker date-format="yyyy-MM-dd"><input type="text" class="form-control" ng-model="newsubject.DateOfBirth" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "subjectbday"></datepicker>
+
+                  <div class = "error msg_error" data-ng-messages = "addnewsub.subjectbday.$error" >
+                     <span ng-show = "addnewsub.subjectbday.$invalid">
+                        <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                        Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                     </span>
+                  </div>
+                </div>
+
+                <label class="form-control-label col-md-offset-1 col-md-2">Other:</label>
+                  <div class = "col-md-4">
+                    <textarea class="form-control" ng-model="newsubject.Other" placeholder=" "></textarea>
+                  </div>
+
+
+              </div>
+
+              <br>
+                  
+            </div>
+            <div class="modal-footer">
+
+              <div class = "col-md-8"> 
+                  <div data-ng-show = "adderror" class= "text-center text-danger">
+                    <div class = "alert alert-danger" role="alert">
+                      <strong data ng-bind = "adderror"></strong>
+                    </div>
+                  </div>
+                </div>
+
+                <div class = "col-md-8"> 
+                  <div data-ng-show = "error" class= "text-center text-danger">
+                    <div class = "alert alert-danger" role="alert">
+                      <strong data ng-bind = "error"></strong>
+                    </div>
+                  </div>
+                </div>
+
+
+              <a ng-disabled = "addnewsub.$invalid" type = "submit" class="btn btn-danger" ng-click = "updateProjectandSubject()">Add and Edit Subject Scans</a>
+
               <button type="button" ng-click = "removelastsubject()" class="btn btn-primary" data-dismiss="modal">Close</button>
             </div>
           </form>

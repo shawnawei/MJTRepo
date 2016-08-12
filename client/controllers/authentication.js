@@ -1,35 +1,46 @@
 var myApp = angular.module('myApp');
 
-myApp.controller('authenController', ['$rootScope','$scope', '$http', '$location','localStorageService', 'authenFact',
- function ($rootScope, $scope, $http, $location, localStorageService, authenFact){
+myApp.controller('authenController', ['$rootScope','$state', '$scope', '$http', '$location','localStorageService', 'authenFact',
+ function ($rootScope,$state, $scope, $http, $location, localStorageService, authenFact){
 	console.log('authenController loaded');
-	$rootScope.adminloggedin = false;
-	$rootScope.loggedin = false;
 
-	$scope.HomeLogin = function(User){
+	if (!authenFact.getAccessToken())
+	{
+		$rootScope.adminloggedin = false;
+		$rootScope.loggedin = false;
 
-		authenFact.setAccessToken(false);
+		$scope.HomeLogin = function(User){
 
-		$http.post('/raw/login', User)
-		.success(function(response){
-			authenFact.setAccessToken(response);
-			$location.path('/home');
-		})
-		.error(function(response){
-			if (response == 'Bad Request')
-			{
-				$scope.error = "Please enter your username and password!";
-			}
-
-			if (response == 'Unauthorized')
-			{
-				$scope.error = "Incorrect username or password!";
-			}
 			authenFact.setAccessToken(false);
-			
-		});
+
+			$http.post('/raw/login', User)
+			.success(function(response){
+				authenFact.setAccessToken(response);
+				$location.path('/home');
+			})
+			.error(function(response){
+				if (response == 'Bad Request')
+				{
+					$scope.error = "Please enter your username and password!";
+				}
+
+				if (response == 'Unauthorized')
+				{
+					$scope.error = "Incorrect username or password!";
+				}
+				authenFact.setAccessToken(false);
+				
+			});
+		}
+
 	}
 
+	else
+	{	
+		$state.go('home');
+	}
+
+	
 }]);
 
 
@@ -173,7 +184,6 @@ myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$
 			if(authenFact.getAccessToken())
 			{
 				authenFact.removeAccessToken();
-				console.log(authenFact);
 				$http.get('/raw/logOut').success(function(){});
 				$state.go('login');
 			}

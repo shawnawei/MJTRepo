@@ -31,8 +31,9 @@ td {
 
 <button  class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMEGType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
 </div>
-<br><br>
 
+
+	<div class = "pull-right btn btn-link" ng-click = "ToChangelog('MEGType')">View All Recent Changes</div>
 	<div class = "container col-md-12">
 		<table class = "table-stripe table-bordered">
 			<thead>
@@ -48,16 +49,70 @@ td {
 
 			<tbody>
 				<tr ng-repeat = "MEGType in MEGTypes">
+
 				  <td>{{MEGType.TypeID}}</td>
 		          <td>{{MEGType.TypeName}}</td>
 		          <td>{{MEGType.TypeCateg}}</td>
 		          <td><a href = "{{MEGType.Desc}}">{{MEGType.Desc}}</a></td>
 		          <td>{{MEGType.Comment}}</td>
 		          <td>
-		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editMEG-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#MEGchangelog-{{$index}}" ng-click = "getChangeLog(MEGType._id)"><span class = "glyphicon glyphicon-list-alt"></span></a></button>
+		          	<button class = "btn btn-xs btn-warning"><a data-toggle="modal" data-target="#editMEG-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
 		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteMEG-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
 
-		          	<!-- edit mri type-->
+		          	
+		          	<!-- view meg changelog -->
+		          	<div class="modal fade" id="MEGchangelog-{{$index}}" tabindex="-1" role="dialog">
+		          		<div class="modal-dialog modal-lg" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">{{MEGType.TypeName}} - Changelog </h4>
+			              </div>
+
+			             <form>
+			              <div class="modal-body">
+			              	<table class = "table table-bordered col-md-12">
+			              		<thead>
+			              			<tr>
+			              				<th class = "col-md-1">User</th>
+			              				<th class = "col-md-2">Date</th>
+			              				<th class = "col-md-1">Action</th>
+			              				<th>Changes</th>
+			              			</tr>
+			              		</thead>
+			              		<tbody>
+			              			<tr ng-repeat = "change in changelog | orderBy: '-Date'">
+			              				<td>{{change.User}}</td>
+			              				<td>{{change.Date | date: 'medium'}}</td>
+			              				<td>{{change.ChangeType}}</td>
+			              				<td>
+			              					<ul style = "text-align: left">
+			              						<li style = "text-align: left" ng-repeat = "key in change.ChangedField">
+			              							<strong>{{key.Key}}:</strong>"{{key.OldValue}}" -> "{{key.NewValue}}"
+			              						</li>
+			              					</ul>
+
+			              				</td>	
+			              			</tr>
+
+			              		</tbody>
+			              	</table>		              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+		          	</div>
+
+
+		          	<!-- edit meg type-->
 					<div class="modal fade" id="editMEG-{{$index}}" tabindex="-1" role="dialog">
 			          <div class="modal-dialog" role="document">
 			            <div class="modal-content">
@@ -109,7 +164,7 @@ td {
 			          </div>
 			        </div>
 
-		          	<!-- delete test type-->
+		          	<!-- delete meg type-->
 					<div class="modal fade" id="deleteMEG-{{$index}}" tabindex="-1" role="dialog">
 			          <div class="modal-dialog" role="document">
 			            <div class="modal-content">
@@ -165,7 +220,10 @@ td {
             <div class = "form-group row">
             	<label class= "form-control-label col-md-3">Category:</label>
 				<div class="col-md-5">
-					<input type = "text" class="form-control" ng-model="newMEGType.TypeCateg" placeholder="RS or Task">
+					<select type = "text" class="form-control" ng-model="newMEGType.TypeCateg" placeholder="RS or Task">
+						<option>Resting State</option>
+						<option>Task</option>
+					</select>
 				</div>
             </div>
 
@@ -200,7 +258,7 @@ td {
 
 
 
-<br><br><br><br>
+<br><br>
 
 
 
@@ -211,8 +269,8 @@ td {
 
 <button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addMRIType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
 </div>
-<br><br>
-
+	
+	<div class = "pull-right btn btn-link" ng-click = "ToChangelog('MRIType')">View All Recent Changes</div>
 	<div class = "container col-md-12">
 		<table class = "table-stripe table-bordered">
 			<thead>
@@ -233,9 +291,59 @@ td {
 		          <td><a href = "{{MRIType.Desc}}">{{MRIType.Desc}}</a></td>
 		          <td>{{MRIType.Comment}}</td>
 		          <td>
-		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editMRI-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#MRIchangelog-{{$index}}" ng-click = "getChangeLog(MRIType._id)"><span class = "glyphicon glyphicon-list-alt"></span></a></button>
+		          	<button class = "btn btn-xs btn-warning"><a data-toggle="modal" data-target="#editMRI-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
 		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteMRI-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
 		          	
+		          	<!-- view mri changelog -->
+		          	<div class="modal fade" id="MRIchangelog-{{$index}}" tabindex="-1" role="dialog">
+		          		<div class="modal-dialog modal-lg" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">{{MRIType.TypeName}} - Changelog </h4>
+			              </div>
+
+			             <form>
+			              <div class="modal-body">
+			              	<table class = "table table-bordered col-md-12">
+			              		<thead>
+			              			<tr>
+			              				<th class = "col-md-1">User</th>
+			              				<th class = "col-md-2">Date</th>
+			              				<th class = "col-md-1">Action</th>
+			              				<th>Changes</th>
+			              			</tr>
+			              		</thead>
+			              		<tbody>
+			              			<tr ng-repeat = "change in changelog | orderBy: '-Date'">
+			              				<td>{{change.User}}</td>
+			              				<td>{{change.Date | date: 'medium'}}</td>
+			              				<td>{{change.ChangeType}}</td>
+			              				<td>
+			              					<ul style = "text-align: left">
+			              						<li style = "text-align: left" ng-repeat = "key in change.ChangedField">
+			              							<strong>{{key.Key}}:</strong>"{{key.OldValue}}" -> "{{key.NewValue}}"
+			              						</li>
+			              					</ul>
+
+			              				</td>	
+			              			</tr>
+
+			              		</tbody>
+			              	</table>		              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+		          	</div>
+
 		          	<!-- edit mri type-->
 					<div class="modal fade" id="editMRI-{{$index}}" tabindex="-1" role="dialog">
 			          <div class="modal-dialog" role="document">
@@ -372,7 +480,7 @@ td {
 
 
 
-<br><br><br><br>
+<br><br>
 
 
 
@@ -384,9 +492,7 @@ td {
 <button class= "btn btn-primary btn-sm" data-toggle="modal" data-target="#addTestType"><span class = "glyphicon glyphicon-plus"></span> Add Type</button>
 </div>
 
-
-<br><br>
-
+	<div class = "pull-right btn btn-link" ng-click = "ToChangelog('TestType')">View All Recent Changes</div>
 	<div class = "container col-md-12">
 		<table class = "table-stripe table-bordered">
 			<thead>
@@ -406,10 +512,61 @@ td {
 		          <td><a href = "{{testType.TestDesc}}">{{testType.TestDesc}}</a></td>
 		          <td>{{testType.Comment}}</td>
 		          <td>
-		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#editTest-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
+
+		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#testchangelog-{{$index}}" ng-click = "getChangeLog(testType._id)"><span class = "glyphicon glyphicon-list-alt"></span></a></button>
+		          	<button class = "btn btn-xs btn-warning"><a data-toggle="modal" data-target="#editTest-{{$index}}"><span class = "glyphicon glyphicon-pencil"></span></a></button>
 		          	<button class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteTest-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
 		          
 					
+		          	<!-- view test changelog -->
+		          	<div class="modal fade" id="testchangelog-{{$index}}" tabindex="-1" role="dialog">
+		          		<div class="modal-dialog modal-lg" role="document">
+			            <div class="modal-content">
+			              <div class="modal-header">
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			                <h4 class="modal-title" id="myModalLabel">{{testType.TestName}} - Changelog </h4>
+			              </div>
+
+			             <form>
+			              <div class="modal-body">
+			              	<table class = "table table-bordered col-md-12">
+			              		<thead>
+			              			<tr>
+			              				<th class = "col-md-1">User</th>
+			              				<th class = "col-md-2">Date</th>
+			              				<th class = "col-md-1">Action</th>
+			              				<th>Changes</th>
+			              			</tr>
+			              		</thead>
+			              		<tbody>
+			              			<tr ng-repeat = "change in changelog | orderBy: '-Date'">
+			              				<td>{{change.User}}</td>
+			              				<td>{{change.Date | date: 'medium'}}</td>
+			              				<td>{{change.ChangeType}}</td>
+			              				<td>
+			              					<ul style = "text-align: left">
+			              						<li style = "text-align: left" ng-repeat = "key in change.ChangedField">
+			              							<strong>{{key.Key}}:</strong>"{{key.OldValue}}" -> "{{key.NewValue}}"
+			              						</li>
+			              					</ul>
+
+			              				</td>	
+			              			</tr>
+
+			              		</tbody>
+			              	</table>		              	
+				            
+			                    
+			              </div>
+			              <div class="modal-footer">
+			                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+			              </div>
+						</form>
+
+			            </div>
+			          </div>
+		          	</div>
+
 		          	<!-- edit test type-->
 					<div class="modal fade" id="editTest-{{$index}}" tabindex="-1" role="dialog">
 			          <div class="modal-dialog" role="document">

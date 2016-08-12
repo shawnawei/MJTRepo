@@ -48,7 +48,7 @@ td {
 <div style = "width:9%; float:right;">
 <!-- <button class = "btn btn-sm btn-default" ng-click="exportData()" ng-show="(subjects|filter:{selected: true}).length"><span class = "glyphicon glyphicon-save"></span></button> -->
 
-<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-show="(subjects|filter:{selected: true}).length" filename = "subjects_info.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
+<button class = "btn btn-sm btn-default" ng-csv="getArray" csv-header = "getHeader()" ng-disabled="!(subjects|filter:{selected: true}).length" filename = "subjects_info.csv"><span class = "glyphicon glyphicon-save"></span> Export</button>
 </div>
 
 <div style = "width:11%; float:right;">

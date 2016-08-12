@@ -12,7 +12,7 @@ myApp.controller('adminController', ['$rootScope','$state', '$scope', '$http', '
 	}
 	else
 	{
-		console.log("logged in: "+ authenFact.getAccessToken());
+		console.log("logged in: "+ authenFact.getAccessToken().uid);
 		$rootScope.loggedin = true;
 
 		$scope.checkAuthen = function(){
@@ -31,7 +31,7 @@ myApp.controller('adminController', ['$rootScope','$state', '$scope', '$http', '
 					}
 				}
 
-				console.log(adminTypes);
+				//console.log(adminTypes);
 				if (!adminTypes.includes(uid))
 				{
 					$state.go('home');
@@ -104,6 +104,18 @@ myApp.controller('adminController', ['$rootScope','$state', '$scope', '$http', '
 			$http.delete('/raw/MEGTypes/'+ type.TypeID).success(function(response){
 				window.location.href= '/admin/edit_test_types';
 			});
+		}
+
+		$scope.getChangeLog = function(docID){
+			//console.log(docID);
+			$http.get('/raw/changelog/'+ docID).success(function(response){
+				$scope.changelog = response;
+			});
+		}
+
+		$scope.ToChangelog = function(docType){
+			console.log(docType);
+			window.open("/changelog/" + docType);
 		}
 
 

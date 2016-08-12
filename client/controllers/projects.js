@@ -72,7 +72,7 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		$http.get('/raw/getprojectinfo/' + id)
 		.then(function(response){
 			$scope.projectInfo = response.data;
-			console.log(response.data);
+			//console.log(response.data);
 		})
 	}
 
@@ -82,8 +82,40 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		$http.get('/raw/projectsSubjectInfo/' + id)
 		.then(function(response){
 			$scope.subjectInfo = response.data;
-			console.log(response.data);
+			//console.log(response.data);
 		})
+	}
+
+	$scope.findSubject = function(){
+		console.log($scope.searchMRN, $scope.searchFN, $scope.searchLN);
+		if ($scope.searchMRN == null || $scope.searchMRN == '')
+		{
+			$scope.searchMRN = 'All';
+		}
+		if ($scope.searchFN == null || $scope.searchFN == '')
+		{
+			$scope.searchFN = 'All';
+		}
+		if ($scope.searchLN == null || $scope.searchLN == '')
+		{
+			$scope.searchLN = 'All';
+		}
+
+		$scope.nomatch =false;
+		$scope.qualifiedsubjects = [];
+		$http.get('/raw/subjectInfo/' +'All/All/All/All/All/'
+		 + $scope.searchMRN +'/' + $scope.searchFN +'/' + $scope.searchLN + '/All')
+		.then(function(response){
+			console.log(response);
+			if(response.data == "no match!" ){
+				$scope.nomatch = "No matching subject! Make sure you have entered the correct information.";
+				$scope.qualifiedsubjects = [];
+			}
+			else{
+				$scope.qualifiedsubjects = response.data;
+			}
+			
+		});
 	}
 
 
@@ -95,8 +127,8 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		$scope.project.SubjectsID.splice(index,1);
 	}
 
-	$scope.addlastsubject = function(){
-		$scope.project.SubjectsID.push({inProjectID:'', GlobalID:''});
+	$scope.addlastsubject = function(GID){
+		$scope.project.SubjectsID.push({inProjectID:'', GlobalID:GID});
 	}
 
 	$scope.removelastsubject = function(){
@@ -111,13 +143,7 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		$scope.project.AccessAuthen.splice(index,1);
 	}	
 
-	$scope.openSessionPage = function(project, id){
-		var url1 = '/ScanInfo/' + project + '/' + id;
-		var url2 = '/ScanInfo/' + project + '/' + id + '/' + id + '_01/edit';
-		window.open(url1, 'new_window');
-		window.open(url2, 'new_window');
-	}
-
+	
 
 	$scope.getProjects = function(){
 		$http.get('/raw/projects').success(function(response){
@@ -278,7 +304,7 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 					}
 				}
 			}
-			console.log(viewList, editList);
+			//console.log(viewList, editList);
 			$scope.viewList = viewList;
 			$scope.editList = editList;
 			var accessToken = authenFact.getAccessToken().uid;
@@ -304,7 +330,7 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 	}
 
 	$scope.gotosession = true;
-	$scope.updateProject = function(){
+	$scope.updateProject = function(gotosession){
 		//console.log(gotoscansession);
 		var projectID = $stateParams.ProjectID;
 		var viewList = [];
@@ -345,7 +371,18 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 				//console.log("hi" + gotoscansession);
 				$http.put('/raw/projects/'+id, $scope.project)
 				.then(function(response){
-					window.location.href= ('/projects/' + $scope.project.ProjectID);
+					$scope.noerror = true;
+					if (gotosession == false)
+					{
+						window.location.href= ('/projects/' + $scope.project.ProjectID);
+					}
+					else
+					{
+						var projectID = $scope.project.ProjectID;
+						var Subjectid =  $scope.project.SubjectsID[($scope.project.SubjectsID.length)-1].inProjectID;
+						window.location.href = ( '/ScanInfo/' + projectID + '/' + Subjectid + '/' + Subjectid + '_01/edit');
+					}
+					
 				})
 				.catch(function(err){
 					if (err.status == 403)
@@ -418,6 +455,67 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		
 		});
 	}
+
+
+	$scope.updateProjectandSubject = function(){
+		var newsubject = $scope.newsubject;
+		var newsubjectGID = $scope.project.SubjectsID[($scope.project.SubjectsID.length)-1].GlobalID;
+		var newproject = [{ProjectID: $scope.project.ProjectID, 
+			SubjectIDinProject: $scope.project.SubjectsID[($scope.project.SubjectsID.length)-1].inProjectID}];
+		newsubject.Projects = newproject;
+		newsubject.ID = newsubjectGID;
+
+		$http.post('/raw/subjects', newsubject)
+		.then(function(response){
+			//window.location.href= ('/projects/' + $scope.project.ProjectID);
+			$http.put('/raw/projects/'+$scope.project.ProjectID, $scope.project)
+				.then(function(response){
+
+					var projectID = $scope.project.ProjectID;
+					var Subjectid =  $scope.project.SubjectsID[($scope.project.SubjectsID.length)-1].inProjectID;
+					console.log(projectID, Subjectid);
+					window.location.href= ('/ScanInfo/' + projectID + '/' + Subjectid + '/' + Subjectid + '_01/edit');
+				})
+				.catch(function(err){
+					if (err.status == 400)
+					{
+						$scope.error = err.data;
+						console.log(err);
+					}
+				});
+		})
+		.catch(function(err){
+			$scope.adderror = err.data;
+			console.log(err);
+		});
+
+		console.log(newsubject);
+	}
+
+	$scope.ToChangelog = function(docType){
+		//console.log(docType);
+		window.open("/changelog/" + docType);
+	}
+
+	$scope.ToOneChangelog = function(docID){
+		console.log(docID);
+		$http.get('/raw/changelog/'+ docID).success(function(response){
+			$scope.changelog = response;
+			$scope.totalItems = response.length;
+		});
+	}
+
+	// $scope.openSessionPage = function(project, id){
+	// 	if ($scope.noerror)
+	// 	{
+	// 		var url1 = '/ScanInfo/' + project + '/' + id;
+	// 		var url2 = '/ScanInfo/' + project + '/' + id + '/' + id + '_01/edit';
+	// 		window.open(url1, 'new_window');
+	// 		window.open(url2, 'new_window');
+	// 	}
+		
+	// }
+
 	
 
 

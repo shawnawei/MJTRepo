@@ -16,6 +16,8 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 		$rootScope.loggedin = true;
 	}
 
+	
+
 	$scope.subjectID = 'empty';
 	$scope.newSubject = true;
 	$scope.oldSubjectID = $stateParams.ID;
@@ -198,6 +200,7 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 
 	$scope.updateSubject = function(){
 		var id = $stateParams.ID;
+		console.log($scope.subject);
 		$http.put('/raw/subjects/'+id, $scope.subject)
 		.then(function(response){
 			window.location.href= '/subjects/' + $scope.subject.ID;
@@ -230,6 +233,19 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 		$scope.subject.AccessAuthen.splice(index,1);
 	}
 
+	$scope.ToChangelog = function(docType){
+		//console.log(docType);
+		window.open("/changelog/" + docType);
+	}
+
+	$scope.ToOneChangelog = function(docID){
+		console.log(docID);
+		$http.get('/raw/changelog/'+ docID).success(function(response){
+			$scope.changelog = response;
+			$scope.totalItems = response.length;
+		});
+	}
+
 	//=============================== Other stuff ================================
 
 	var subjects = $scope.subjects;
@@ -244,6 +260,29 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 	    $scope.propertyName = propertyName;
 	    $scope.subjects = orderBy($scope.subjects, $scope.propertyName, $scope.reverse);
 	};
+
+	
+  	$scope.currentPage = 1;
+  	$scope.numPerPage = 2;
+  
+	
+  $scope.viewby = 10;
+  $scope.currentPage = 1;
+  $scope.itemsPerPage = $scope.viewby;
+  $scope.maxSize = 5; //Number of pager buttons to show
+
+  $scope.setPage = function (pageNo) {
+    $scope.currentPage = pageNo;
+  };
+
+  $scope.pageChanged = function() {
+    console.log('Page changed to: ' + $scope.currentPage);
+  };
+
+$scope.setItemsPerPage = function(num) {
+  $scope.itemsPerPage = num;
+  $scope.currentPage = 1; //reset to first paghe
+}
 
 
 }]);

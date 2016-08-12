@@ -7,8 +7,11 @@ ul#scanList li
 table {
     border-collapse: collapse;
     border: #D3D3D3;
-    text-align: center
+    text-align: center;
+    table-layout:fixed;
+    width:100%;
 }
+
 
 th {
   text-align: center;
@@ -19,8 +22,10 @@ th {
 
 </style>
 
+<link rel = "stylesheet" href = "./css/errorMessages.css">
+
 <nav>
-  <a ng-init="getScanSession(); getAuthenList(!forbidden)" class="nav-link" href="/projects/{{scanSession.relatedProject}}">To project page</a>
+  <a ng-init="getScanSession(); getAuthenList(!forbidden)" class="nav-link" href="/projects/{{scanSession.relatedProject}}">To Project Page</a>
 </nav>
 
 <br>
@@ -35,7 +40,6 @@ th {
   <div>
     <h3><strong>Scan Sessions For: </strong>{{scanSession.SubjectIDinProject}}</h3>
   </div>
-
 
   <div>
 
@@ -71,43 +75,106 @@ th {
         <div class="panel panel-info" >
         <div class="panel-heading" role="tab" id="heading-{{$index}}"> 
           <h4 class="panel-title"> 
-          <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{sessionID['SessionID']}}</strong></a> 
+          <a class="collapsed" role="button" data-toggle="collapse" data-target="#collapse-{{$index}}" aria-expanded="false" aria-controls="collapse-{{$index}}"><strong>{{sessionID.SessionID}}</strong></a> 
+
           <div class = "pull-right">
-
-
+           
            <a class = "btn" ng-click="exportData(sessionID, scanSession)"><span class = "glyphicon glyphicon-save"></span></a>
 
             <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
 
-            <a class = "btn" ng-hide= "!editable" data-toggle="modal" data-target="#myModal-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a>
+            <a class = "btn" ng-hide= "!editable" ng-click = "ToOneScanChangelog(sessionID._id)"  data-toggle="modal" data-target="#viewchangelog"><span class = "glyphicon glyphicon-calendar"></span></a>
+              
 
+              <!-- view user changelog -->
+              <div class="modal fade" id="viewchangelog" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4><strong>{{sessionID.SessionID}} - Changelog </strong></h4>
+                    </div>
 
-            <!-- Modal -->
-          <div class="modal fade" id="myModal-{{$index}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                  <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
-                </div>
-                <div class="modal-body">
-                      Scan session {{sessionID['SessionID']}} and it's associated scans will be permenantly deleted, are you sure?
-                </div>
-                <div class="modal-footer">
-                  <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>
-                  <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <div class="modal-body" style=" font-weight:normal;text-align: left; word-wrap: break-word">
+
+                      View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option><option>20</option></select> records at a time.
+                      <br><br>
+
+                     <table class = "table table-bordered">
+                        <thead>
+                        <tr>
+                          <th class = "col-md-1">User</th>
+                          <th class = "col-md-1">Date</th>
+                          <th class = "col-md-1">Action</th>
+                          <th class = "col-md-8">Changes</th>
+                        </tr>
+                        </thead> 
+
+                        <tbody>
+                          <tr ng-repeat = "change in changelog | orderBy: '-Date' | filter : paginate">
+                            <td>{{change.User}}</td>
+                            <td>{{change.Date | date: 'short'}}</td>
+                            <td>{{change.ChangeType}}</td>
+                            <td>
+                              <div class = "well well-sm" ng-repeat = "key in change.ChangedField">
+                                <h4>{{key.Key}}</h4>
+
+                                <div class="form-group row">
+                                      <label class="form-control-label col-md-2">Old:</label>
+                                        <div class = "col-md-8">
+                                          {{key.OldValue}}
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                      <label class="form-control-label col-md-2">New:</label>
+                                        <div class = "col-md-8">
+                                          {{key.NewValue}}
+                                        </div>
+                                    </div>
+                              </div>
+                            </td> 
+                          </tr>
+                        </tbody>
+                     </table>
+
+                     </div>
+
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    </div>
+
+                  </div>
                 </div>
               </div>
-            </div>
+
+              <!-- Modal -->
+              <div class="modal fade" id="delete-{{$index}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">WARNING!</h4>
+                  </div>
+                  <div class="modal-body">
+                        Scan session {{sessionID['SessionID']}} and it's associated scans will be permenantly deleted, are you sure?
+                  </div>
+                  <div class="modal-footer">
+                    <a type = "button" class="btn btn-danger" onclick="javascript:window.location.reload()" data-dismiss="modal" ng-click = "removeScanSession(scanSession['relatedProject'], scanSession['SubjectIDinProject'],sessionID['SessionID'])">Delete(!)</a>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+                </div>
+              </div>
+
           </div>
-          </div>
+
           </h4>
         </div>
 
         <div id="collapse-{{$index}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{{$index}}"> 
 
 
-         <div class="panel-body">
+        <div class="panel-body">
   
           <div><h4 style =  "text-align: center"><strong>MEG Scans </strong></h4>
             <p>
@@ -178,8 +245,7 @@ th {
             </table>
            	</p>
           </div>
-            
-
+          
           <br>
           <div><h4 style =  "text-align: center"><strong>Clinical Tests </strong></h4>
             <div>
@@ -209,6 +275,10 @@ th {
             </div>
           </div>
 
+
+          <br><br>
+          <a class = "btn btn-danger btn-xs" ng-hide= "!editable" data-toggle="modal" data-target="#delete-{{$index}}"><span class = "glyphicon glyphicon-trash"> Danger! </span></a>
+
             
          </div> 
         </div>
@@ -219,6 +289,10 @@ th {
    </div>
  
   
+   <br>
+    <div class = "btn btn-link" ng-hide = "!editable" ng-click = "ToScanChangelog(scanSession.SubjectIDinProject)"> View All Recent Changes</div>
+    <br><br>
+
 
  </div>
 </div>

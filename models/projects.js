@@ -129,7 +129,7 @@ module.exports.getProjectByIdSubjectInfo = function(id, _uid){
 }
 
 //add a project
-module.exports.addProject = function(project){
+module.exports.addProject = function(project, uid){
 	var testSubjects = project.SubjectsID;
 
 	return Promise.resolve().then(function (){
@@ -206,10 +206,11 @@ module.exports.addProject = function(project){
 	.then (function() {
 		return Project.createAsync(project);
 	})
-	.then(function(){
+	.then(function(newproject){
 		console.log("add a new subject or add a project to existing subjects");
 		var theSubject = require('./subjects');
-		return theSubject.updateOrAddSubject(project, testSubjects);
+		theSubject.updateOrAddSubject(project, testSubjects, uid);
+		return Promise.resolve(newproject);
 	})
 	.catch(function(err){
 		console.log(err);

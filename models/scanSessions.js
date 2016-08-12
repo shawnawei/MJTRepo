@@ -36,7 +36,7 @@ var SessionIDSchema = new Schema({
 
 	"TestResults":[{
 		"Type": {type:String, ref:'TestTypes'},
-		"Result": String,
+		"Result": Number,
 		"Comment": String,
 		"TestDate": String,
 		"Age": Number
@@ -180,7 +180,7 @@ module.exports.getScanSessionByProjectID = function(projectID, uid){
 }
 
 //add scan sessions
-module.exports.addScanSession = function(scanSession){
+module.exports.addScanSession = function(scanSession, uid){
 	return Promise.resolve().then(function(){
 		var testSession = new ScanSession(scanSession);
 		var error = testSession.validateSync();
@@ -223,7 +223,15 @@ module.exports.addScanSession = function(scanSession){
 	})
 	.then (function(){
 		return ScanSession.createAsync(scanSession);
-	});
+	})
+	.then(function(scanSession){
+		var changelog = require('./changelog');
+		var changeinfo = {DocType: 'ScanSessions', ChangeType: 'add', DocID: scanSession.SubjectIDinProject};
+		var newDoc = scanSession;
+		var oldDoc = 'addnew';
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+		return Promise.resolve(scanSession);
+	})
 }
 
 //edit a scan session document (only update the basic information)
@@ -255,10 +263,6 @@ module.exports.updateScanSessionBasicInfo = function(projectID, subjectID, scanS
 		}
 		return Promise.resolve();
 	})
-	.catch(function(err){
-		console.log("some error with user updated scan + " + err);
-		return Promise.reject(err);
-	})
 	.then(function(){
 		var query = {SubjectIDinProject:subjectID, relatedProject: projectID};
 		var update = {
@@ -269,6 +273,10 @@ module.exports.updateScanSessionBasicInfo = function(projectID, subjectID, scanS
 		};
 		var option = {runValidators: true, context: 'query', multi:true};
 		return ScanSession.updateAsync(query, update, option);
+	})
+	.catch(function(err){
+		console.log("some error with user updated scan + " + err);
+		return Promise.reject(err);
 	});
 	
 }
@@ -322,7 +330,7 @@ module.exports.updateScanSession = function(projectID, subjectID, scanSession){
 }
 
 //edit a single scan session
-module.exports.updateSingleScanSession = function(OldScanSession, subjectID, sessionID, scanSession){
+module.exports.updateSingleScanSession = function(OldScanSession, subjectID, sessionID, scanSession,uid){
 	return Promise.resolve()
 	.then(function(){
 		
@@ -330,6 +338,7 @@ module.exports.updateSingleScanSession = function(OldScanSession, subjectID, ses
 		var scanIDs = (OldScanSession.ScanSessions).map(function(a){return a.SessionID;});
 		var newScanID = scanSession.SessionID;
 		var index = scanIDs.indexOf(sessionID);
+
 		scanIDs.splice(index,1);
 		scanIDs.push(newScanID);
 
@@ -344,15 +353,20 @@ module.exports.updateSingleScanSession = function(OldScanSession, subjectID, ses
 			//console.log("Session ID must not be empty");
 			return Promise.reject("Session ID must not be empty");
 		}
+		
+		//get old session information
+		var oldDoc = OldScanSession.ScanSessions[index];
 
-		return Promise.resolve();
+		console.log(oldDoc);
+		return Promise.resolve(oldDoc);
 	})
 	
-	.then(function(){
+	.then(function(oldDoc){
 		var subject = require('./subjects');
 		var globalID = OldScanSession.SubjectID;
 		var projectID = OldScanSession.relatedProject;
-		return subject.updateSingleScanInSubject(globalID, subjectID, projectID, sessionID, scanSession); 
+		return subject.updateSingleScanInSubject(globalID, subjectID, projectID, sessionID, scanSession,
+		 oldDoc, uid); 
 	})
 	.catch(function(err){
 		console.log("some error with user updated scan + " + err);
@@ -361,21 +375,12 @@ module.exports.updateSingleScanSession = function(OldScanSession, subjectID, ses
 }
 
 //add a single scan session
-module.exports.addSingleScanSession = function(GlobalID, projectID, inProjectID, scanSession){
+module.exports.addSingleScanSession = function(oldScanSession, GlobalID, projectID, inProjectID, scanSession, uid){
 	return Promise.resolve().then(function(){
 		//check user inputed scan Session information 
 	
 		return Promise.resolve();
 	})
-	// .then(function(){
-	// 	//update the subject detail page
-	// 	var subject = require('./subjects'); 
-	// 	return subject.addSubjectScanSession(GlobalID, projectID, scanSession);
-	// })
-	// .catch(function(err){
-	// 	console.log(err + "error with updating subject detail page");
-	// 	return Promise.reject(err);
-	// })
 	.then(function(){
 		var subject = require('./subjects'); 
 		return subject.findOneAsync({ID:GlobalID});
@@ -390,13 +395,44 @@ module.exports.addSingleScanSession = function(GlobalID, projectID, inProjectID,
 		var query = {SubjectIDinProject:inProjectID};
 		var update = {$addToSet:{'ScanSessions':scanSession}};
 		return ScanSession.updateAsync(query, update);
-	});
+	})
+	.then(function(){
+		var query = {
+			SubjectIDinProject: inProjectID, 
+			relatedProject: projectID};
+		return ScanSession.findOneAsync(query);
+	})
+	.then(function(newScanSession){
+
+		console.log(newScanSession);
+		var allsessions = newScanSession.ScanSessions;
+		for (var num in allsessions)
+		{
+			if (allsessions[num].SessionID == scanSession.SessionID)
+			{
+				var newsession = allsessions[num];
+			}
+		}
+
+		console.log(newsession);
+
+		var changelog = require('./changelog');
+		var changeinfo = {DocType: 'SingleSession', ChangeType: 'add_session', DocID: newsession.SessionID};
+		var newDoc = newsession;
+		var oldDoc = 'addnew';
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+
+		var newandold = [];
+		newandold.push(oldScanSession);
+		newandold.push(newScanSession)
+		return Promise.resolve(newandold);
+	})
 	
 }
 
 
 //delete a single scan session
-module.exports.deleteScanSession = function(GlobalID, projectID, subjectID, scanID){
+module.exports.deleteScanSession = function(uid, GlobalID, projectID, subjectID, scanID){
 	return Promise.resolve()
 	// .then(function(){
 	// 	console.log(scanID);
@@ -411,14 +447,41 @@ module.exports.deleteScanSession = function(GlobalID, projectID, subjectID, scan
 	// 	return Promise.reject(err);
 	// })
 	.then(function(){
-		console.log("hi");
 		var query = {SubjectIDinProject:subjectID, 'ScanSessions.SessionID': scanID};
 		var update = {$pull: {'ScanSessions':{SessionID: scanID}}};
 		return ScanSession.updateAsync(query, update);
 	})
+	.then(function(){
+		var query = {
+			SubjectIDinProject: subjectID, 
+			relatedProject: projectID};
+		return ScanSession.findOneAsync(query);
+	})
+	.then(function(oldScanSession){
+
+		console.log(oldScanSession);
+		// var allsessions = oldScanSession.ScanSessions;
+		// for (var num in allsessions)
+		// {
+		// 	if (allsessions[num].SessionID == scanID)
+		// 	{
+		// 		var oldsession = allsessions[num];
+		// 	}
+		// }
+
+		// console.log(oldsession);
+
+		var changelog = require('./changelog');
+		var changeinfo = {DocType: 'ScanSessions', ChangeType: 'delete_session', 
+						DocID: oldScanSession.SubjectIDinProject, DeletedSessionID: scanID};
+		var newDoc = 'deletesession';
+		var oldDoc = oldScanSession;
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+		return Promise.resolve(oldScanSession);
+	})
 	.catch(function(err){
 		console.log("error with deleting scan " + err);
-		return Promise.reject();
+		return Promise.reject("error with deleting scan " + err);
 	})
 	
 }
@@ -585,7 +648,7 @@ module.exports.searchScanSessionsByInfo = function(scanInfo, _uid){
 		return Promise.resolve();
 	})
 	.then(function () {
-		console.log(scanInfo);
+		//console.log(scanInfo);
 
 		var query = queryScanInfo(scanInfo, _uid);
 		//console.log(query);
@@ -715,7 +778,7 @@ function queryScanInfo (scanInfo, _uid){
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind:{path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
 				{$or: [
 					{'ScanSessions.TestResults': {$exists: false}},
@@ -815,7 +878,7 @@ function queryScanInfo (scanInfo, _uid){
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MEGScans'},
+			{$unwind:{path:'$ScanSessions.MEGScans', preserveNullAndEmptyArrays: true}},
 			{$match:
 				{$and: [
 					{'ScanSessions.MEGScans': {$exists: false}},
@@ -823,7 +886,7 @@ function queryScanInfo (scanInfo, _uid){
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind:{path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
 				{$and: [
 					{'ScanSessions.TestResults': {$exists: false}},
@@ -1182,7 +1245,7 @@ function queryScanInfo (scanInfo, _uid){
 				'SubjectID': 1 }
 			},
 
-			{$unwind:'$ScanSessions.MEGScans'},
+			{$unwind:{path:'$ScanSessions.MEGScans', preserveNullAndEmptyArrays: true}},
 			{$match:
 				{$or: [
 					{'ScanSessions.MEGScans.ScanType': {$in:MEGType}},
@@ -1190,7 +1253,7 @@ function queryScanInfo (scanInfo, _uid){
 					]
 				}
 			},
-			{$unwind:'$ScanSessions.TestResults'},
+			{$unwind: {path:'$ScanSessions.TestResults', preserveNullAndEmptyArrays: true}},
 			{$match:
 				{$or: [
 					{'ScanSessions.TestResults.Type': {$in:testType}},
@@ -1390,7 +1453,7 @@ function queryScanInfo (scanInfo, _uid){
 
 
 function calculate_age_at_scan_and_test(scanSession, subjectbirthday){
-	console.log("birthday" + subjectBirthday);
+	//console.log("birthday" + subjectBirthday);
 	var subjectBirthday = moment(subjectbirthday);
 	var test = scanSession.TestResults;
 	var megScans = scanSession.MEGScans;

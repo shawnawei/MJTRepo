@@ -1,0 +1,75 @@
+
+<style>
+ul#scanList li
+{
+	display: inline;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center;
+    width:100%;
+    vertical-align: middle
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:30px;
+  vertical-align: middle
+}
+
+td {
+  height:30px;
+}
+</style>
+
+<div ng-init = "checkAuthen(); getScanChangelog()">
+
+<h2><strong> {{docID}} Scan Sessions History</strong></h2>
+<br>
+<table class = "table table-bordered col-md-12">
+	<thead style ="text-align: center">
+		<tr>
+			<th>User</th>
+			<th class = "col-md-1">Date (m/d/yy)</th>
+			<th class = "col-md-1">Doc ID</th>
+			<th class = "col-md-1">Action</th>
+			<th class = "col-md-8">Changes</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat = "change in allchangelog | orderBy: '-Date'">
+			<td>{{change.User}}</td>
+			<td>{{change.Date | date: 'short'}}</td>
+			<td>{{change.ChangeDocID}}</td>
+			<td>{{change.ChangeType}}</td>
+			<td>
+				<div class = "well" ng-repeat = "key in change.ChangedField">
+					<h4>{{key.Key}}</h4>
+
+					<div class="form-group row">
+			          <label class="form-control-label col-md-1">Old:</label>
+			            <div class = "col-md-6">
+			              {{key.OldValue}}
+			            </div>
+			        </div>
+
+			        <div class="form-group row">
+			          <label class="form-control-label col-md-1">New:</label>
+			            <div class = "col-md-6">
+			              {{key.NewValue}}
+			            </div>
+			        </div>
+
+
+				</div>
+
+			</td>	
+		</tr>
+
+	</tbody>
+</table>
+
+</div>

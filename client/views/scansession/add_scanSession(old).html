@@ -1,0 +1,287 @@
+<!-- COME BACK TO THIS PAGE AND CREATE A LEFT OR RIGHT SIDE NAVIGATION 
+REDESIGN THE PAGE IF TIME PREMITS-->
+<link rel = "stylesheet" href = "./css/errorMessages.css">
+
+
+<div class = "jumbotron vertical-center" ng-init = "checkAuthen(); getNextSessionID()">
+
+    <h2><strong>Add a Session</strong></h2>
+
+
+
+    <div class = "heading"></div>
+    <br>
+      <form ng-submit="addScanForm.$valid && addScanSession()" method = "post" class = "form-horizontal" name = "addScanForm">
+      	<h5>* Required fields</h5>
+
+      	<container>
+      	<br>
+      	<h4>Scan Information</h4>
+      	<br>
+        <div class="form-group row">
+          <label class= "form-control-label col-sm-2">Session ID*:</label>
+          <div class="col-md-6"  ng-class = "{'has-error': addScanForm.sessionID.$touched && addScanForm.sessionID.$invalid, 'has-success':addScanForm.sessionID.$touched && addScanForm.sessionID.$valid}">
+          	<input required type="text" class="form-control" ng-model="newSession.SessionID" name = "sessionID">
+            <div class = "error msg_error" data-ng-messages = "addScanForm.sessionID.$error" data-ng-show = "addScanForm.sessionID.$touched">
+               <span ng-show = "addScanForm.sessionID.$invalid">
+                 <span class = "glyphicon glyphicon-exclamation-sign"></span>
+                  Please give this scan session an unique ID!
+               </span>
+            </div>
+          </div>
+        </div>
+
+        </container>
+        <br>
+
+        <section  ng-init = "getMEGTypes()">
+
+        <div class = "form-group row">
+          <div class = "col-md-2"><h4>MEG Scans</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addMEGScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+        <div class = "well" ng-repeat = "MEGScan in newSession.MEGScans">
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Name:</label>
+            <div class="col-sm-3" ng-class = "{'has-error': addScanForm.meg{{$index}}.$touched && addScanForm.meg{{$index}}.$invalid, 'has-success':addScanForm.meg{{$index}}.$touched && addScanForm.meg{{$index}}.$valid}">
+            	<input required type = "text" class="form-control" ng-model="MEGScan.ScanName" name = "meg{{$index}}">
+              <div class = "error msg_error" data-ng-show = "addScanForm.meg{{$index}}.$touched">
+               <span ng-show = "addScanForm.meg{{$index}}.$invalid">
+                  Scan name is required!
+               </span>
+              </div>
+            </div>
+
+            <label class= "form-control-label col-sm-2">Scan Date:</label>
+            <div class="col-sm-3" ng-class = "{'has-error': addScanForm.megdate{{$index}}.$touched && addScanForm.megdate{{$index}}.$invalid, 'has-success':addScanForm.megdate{{$index}}.$touched && addScanForm.megdate{{$index}}.$valid}">
+              <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MEGScan.ScanDate"  ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "megdate{{$index}}"></datepicker>
+              <div class = "error msg_error" data-ng-show = "addScanForm.megdate{{$index}}.$touched">
+                 <span ng-show = "addScanForm.megdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                 </span>
+                </div>
+            </div>
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMEGScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          </div>
+
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Path:</label>
+            <div class="col-sm-8">
+            <input type = "text" class="form-control" ng-model="MEGScan.ScanPath" placeholder="C:/">
+            </div>
+
+            <label class= "form-control-label col-sm-1">Allowed:</label>
+            <div class="col-sm-1">
+            <input type = "checkbox" class = "form-control" ng-model = "MEGScan.Allowed"> 
+            </div>
+          </div>
+
+         <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Type:</label>
+             <div class = "col-md-3">
+                <select class = "form-control" ng-model="MEGScan.Type">
+                  <option ng-repeat="MEGType in MEGTypes">{{MEGType}}</option>
+                </select>
+              </div>
+
+            <label class= "form-control-label col-md-2">Comment:</label>
+            <div class="col-md-5">
+            <textarea class="form-control" ng-model="MEGScan.Comment" placeholder=" "></textarea>
+            </div>
+          </div>
+
+        </div>
+
+        </section>
+
+
+        <section  ng-init = "getMRITypes()">
+        <div class = "form-group row">
+          <div class = "col-md-2"><h4>MRI Scans</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addMRIScan()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+        <div class = "well" ng-repeat = "MRIScan in newSession.MRIScans">
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Name:</label>
+            <div class="col-sm-3"  ng-class = "{'has-error': addScanForm.mri{{$index}}.$touched && addScanForm.mri{{$index}}.$invalid, 'has-success':addScanForm.mri{{$index}}.$touched && addScanForm.mri{{$index}}.$valid}">
+              <input required type = "text" class="form-control" ng-model="MRIScan.ScanName" name = "mri{{$index}}">
+              <div class = "error msg_error" data-ng-show = "addScanForm.mri{{$index}}.$touched">
+               <span ng-show = "addScanForm.mri{{$index}}.$invalid">
+                  Scan name is required!
+               </span>
+              </div>
+            </div>
+
+            <label class= "form-control-label col-sm-2">Scan Date:</label>
+            <div class="col-sm-3" ng-class = "{'has-error': addScanForm.mridate{{$index}}.$touched && addScanForm.mridate{{$index}}.$invalid, 'has-success':addScanForm.mridate{{$index}}.$touched && addScanForm.mridate{{$index}}.$valid}">
+            <datepicker date-format="yyyy-MM-dd"><input type = "text" class="form-control" ng-model="MRIScan.ScanDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "mridate{{$index}}"></datepicker>
+              <div class = "error msg_error" data-ng-show = "addScanForm.mridate{{$index}}.$touched">
+                 <span ng-show = "addScanForm.mridate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                 </span>
+                </div>
+            </div>
+
+            
+            <div class = "col-md-1 btn-group btn-group-sm">
+               <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeMRIScan($index)"><span class="glyphicon glyphicon-minus"></span></button>
+            </div>
+
+          </div>
+
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Path:</label>
+            <div class="col-sm-8">
+            <input type = "text" class="form-control" ng-model="MRIScan.ScanPath" placeholder="C:/">
+            </div>
+
+            <label class= "form-control-label col-sm-1">Allowed:</label>
+            <div class="col-sm-1">
+            <input type = "checkbox" class = "form-control" ng-model = "MRIScan.Allowed"> 
+            </div>
+          </div>
+
+          <div class="form-group row">
+
+            <label class= "form-control-label col-sm-2">Scan Type:</label>
+            <div class = "col-md-3">
+                <select class = "form-control" ng-model="MRIScan.Type">
+                  <option ng-repeat="MRIType in MRITypes">{{MRIType}}</option>
+                </select>
+              </div>
+
+            <label class= "form-control-label col-md-2">Comment:</label>
+            <div class="col-md-5">
+            <textarea class="form-control" ng-model="MRIScan.Comment" placeholder=" "></textarea>
+            </div>
+          </div>
+
+
+        </div>
+
+        </section>
+
+       <container>
+        
+          <div class = "form-group row" ng-init = "getTestTypes()">
+          <div class = "col-md-2"><h4>Clinical Tests</h4></div>
+          <div class = "col-md-1"> 
+            <button type="button" class="btn btn-sm" ng-click= "addTestType()" ><span class="glyphicon glyphicon-plus"></span></button>
+          </div>
+        </div>
+
+
+        <div class="well" ng-repeat = "test in newSession.TestResults">
+          
+            <div class = "form-group row">
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Type:</label>
+              </div>
+              <div class = "col-md-3" ng-class = "{'has-error': addScanForm.test{{$index}}.$touched && addScanForm.test{{$index}}.$invalid, 'has-success':addScanForm.test{{$index}}.$touched && addScanForm.test{{$index}}.$valid}">
+                <select required class = "form-control" ng-model="test.Type" name = "test{{$index}}">
+                  <option value="">Please select</option>
+                  <option ng-repeat="testType in testTypes">{{testType}}</option>
+                </select>
+                <div class = "error msg_error" data-ng-show = "addScanForm.test{{$index}}.$touched">
+               <span ng-show = "addScanForm.test{{$index}}.$invalid">
+                  Please select a test type!
+               </span>
+              </div>
+              </div>
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Result:</label>
+              </div>
+
+              <div class = "col-md-3">
+                <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
+              </div>
+
+
+              <div class = "col-md-1 btn-group btn-group-sm">
+                <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
+              </div>
+              
+            </div>
+
+            <div class = "form-group row">
+
+              
+              <div class = "col-md-2">
+                <label class= "form-control-label">Test Date:</label>
+              </div>
+
+              <div class = "col-md-3" ng-class = "{'has-error': addScanForm.testdate{{$index}}.$touched && addScanForm.testdate{{$index}}.$invalid, 'has-success':addScanForm.testdate{{$index}}.$touched && addScanForm.testdate{{$index}}.$valid}">
+                <datepicker date-format="yyyy-MM-dd"><input class = "form-control" type="text" ng-model="test.TestDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "testdate{{$index}}"></datepicker>
+                <div class = "error msg_error" data-ng-show = "addScanForm.testdate{{$index}}.$touched">
+                 <span ng-show = "addScanForm.testdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
+                 </span>
+                </div>
+              </div>
+
+
+              <div class = "col-md-2">
+                <label class= "form-control-label">Comment:</label>
+              </div>
+              <div class = "col-md-5">
+                <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
+              </div>
+
+            </div>
+   
+        </div>
+        </container>
+
+         <div class = "col-md-8 col-md-offset-2"> 
+          <div data-ng-show = "error" class= "text-center text-danger">
+            <div class = "alert alert-danger" role="alert">
+              <strong data ng-bind = "error"></strong>
+            </div>
+          </div>
+        </div>
+       
+      <br>
+        <button type="button" ng-disabled = "addScanForm.$invalid" class="btn btn-primary pull-right" data-toggle="modal" data-target="#addscansession">Add Session</button>
+
+
+        <div class="modal fade" id="addscansession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">ARE YOU SURE?</h4>
+                </div>
+                <div class="modal-body">
+                      <p>Scan session <strong>{{newSession.SessionID}}</strong> for <strong>{{SubjectIDinProject}}</strong> will be added to project <strong>{{ProjectID}}</strong> !</p>
+
+                      <p>Invalid/incorrect entries may cause unwanted errors, please double check before submitting!</p>
+                </div>
+                <div class="modal-footer">
+                  <a type = "submit" class="btn btn-danger" data-dismiss="modal" ng-click = "addScanSession()">I am sure (!)</a>
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Check again</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
+      <br>
+    
+      </form>
+  </div>

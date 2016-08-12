@@ -413,71 +413,6 @@ REDESIGN THE PAGE IF TIME PREMITS-->
         </div>
 
 
-        <!-- <div class="well" ng-repeat = "test in scanSession.TestResults">
-          
-            <div class = "form-group row">
-
-              <div class = "col-md-2">
-                <label class= "form-control-label">Test Type:</label>
-              </div>
-              <div class = "col-md-3" ng-class = "{'has-error': editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$invalid, 'has-success':editScanForm.test{{$index}}.$touched && editScanForm.test{{$index}}.$valid}">
-                <select required class = "form-control" ng-model="test.Type" name = "test{{$index}}">
-                <optgroup>
-                  <option value="">Please select</option>
-                  <option>{{test.Type}}</option>
-                </optgroup>
-                <optgroup>
-                  <option ng-repeat="testType in testTypes">{{testType}}</option>
-                </optgroup>
-                </select>
-                <div class = "error msg_error" data-ng-show = "editScanForm.test{{$index}}.$touched">
-               <span ng-show = "editScanForm.test{{$index}}.$invalid">
-                  Please select a test type!
-               </span>
-              </div>
-              </div>
-
-              <div class = "col-md-2">
-                <label class= "form-control-label">Test Result:</label>
-              </div>
-
-              <div class = "col-md-3">
-                <input class = "form-control" type="text" ng-model="test.Result" placeholder="Result">
-              </div>
-
-
-              <div class = "col-md-1 btn-group btn-group-sm">
-                <button type="button" class="btn btn-secondary btn-sm" ng-click = "removeTestType($index)"><span class="glyphicon glyphicon-minus"></span></button>
-              </div>
-
-            </div>
-
-            <div class = "form-group row">
-
-              
-              <div class = "col-md-2">
-                <label class= "form-control-label">Test Date:</label>
-              </div>
-
-              <div class = "col-md-3" ng-class = "{'has-error': editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$invalid, 'has-success':editScanForm.testdate{{$index}}.$touched && editScanForm.testdate{{$index}}.$valid}">
-                <datepicker date-format="yyyy-MM-dd"><input class = "form-control" type="text" ng-model="test.TestDate" ng-pattern = "/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/" name = "testdate{{$index}}"></datepicker>
-                <div class = "error msg_error" data-ng-show = "editScanForm.testdate{{$index}}.$touched">
-                 <span ng-show = "editScanForm.testdate{{$index}}.$invalid">Please enter date in yyyy-MM-dd format (ie. 2015-01-30)
-                 </span>
-                </div>
-              </div>
-
-
-              <div class = "col-md-2">
-                <label class= "form-control-label">Comment:</label>
-              </div>
-              <div class = "col-md-5">
-                <textarea class = "form-control" type="text" ng-model="test.Comment" placeholder="Comment"></textarea>
-              </div>
-
-            </div>   
-        </div> -->
-
         <div class = "container">
           <div class = "col-md-12">
 
@@ -588,18 +523,18 @@ REDESIGN THE PAGE IF TIME PREMITS-->
                         </div>
                     </div>
 
-                    <!-- delete mri-->
-                     <div class="modal fade" id="deleteMRI-{{$index}}" tabindex="-1" role="dialog">
+                    <!-- delete test-->
+                     <div class="modal fade" id="deleteTest-{{$index}}" tabindex="-1" role="dialog">
                         <div class="modal-dialog" role="document">
                         <div class="modal-content">
                           <div class = "modal-header">
-                            Delete {{MRIScan.ScanName}}
+                            Delete {{test.Type}}
                           </div>
                           <div class = "modal-body">
-                            This scan will be permanently deleted, are you sure?
+                            This test type will be permanently deleted, are you sure?
                           </div>
                           <div class = "modal-footer">
-                            <a class="btn btn-danger" data-dismiss="modal" ng-click = "removeMRIScan($index)">I am sure!</a>
+                            <a class="btn btn-danger" data-dismiss="modal" ng-click = "removeTestType($index)">I am sure!</a>
                               <button type="button" class="btn btn-primary" data-dismiss="modal"">Close</button>
                           </div>
                         </div>
@@ -629,7 +564,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
        
       <br>
 
-        <button type="button" ng-disabled = "editScanForm.$invalid" class="btn btn-primary pull-right" data-toggle="modal" data-target="#editscansession">Update Session</button>
+        <button type="button" ng-disabled = "editScanForm.$invalid" class="btn btn-primary pull-right" data-toggle="modal" data-target="#editscansession">Save Changes and Update Session</button>
 
 
         <div class="modal fade" id="editscansession" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">

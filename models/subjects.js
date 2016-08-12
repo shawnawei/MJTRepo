@@ -36,7 +36,7 @@ var subjectSchema = new Schema({
 	//this can't be set as unique because when adding a new subject to project
 	//the MRN is given as null, thus may cause duplicate error when creating
 	//by mongo
-	MRN: Number,
+	MRN: {type:Number, unique: true},
 	Projects:[projectPerSubjectSchema]
 });
 
@@ -45,10 +45,12 @@ var subjectSchema = new Schema({
 subjectSchema.plugin(uniqueValidator);
 projectPerSubjectSchema.plugin(uniqueValidator)
 var allsubjectIDs = [];
+var allsubjectMRNs = [];
 var Subject = module.exports = mongoose.model('Subject', subjectSchema, 'subjectsList');
 Subject.findAsync()
 .then (function(subjects){
 	allsubjectIDs = subjects.map(function (a) {return a.ID;});
+	allsubjectMRNs = subjects.map(function(cv){return cv.MRN;});
 	//console.log(allsubjectIDs);
 })
 
@@ -172,6 +174,7 @@ module.exports.updateSubject = function(id, subject, value){
 	})
 	.then (function(subjects){
 		allsubjectIDs = subjects.map(function (a) {return a.ID;});
+		allsubjectMRNs = subjects.map(function (cv) {return cv.MRN;});
 		//console.log(allsubjectIDs);
 	})
 	.then(function(){
@@ -180,7 +183,7 @@ module.exports.updateSubject = function(id, subject, value){
 		var testSubject = new Subject(subject);
 		var error = testSubject.validateSync();
 		var testSubjectProject = testSubject.Projects;
-		console.log("hi" + subject);
+		//console.log("hi" + subject);
 		//console.log(error);
 
 		if (error != undefined){
@@ -243,7 +246,7 @@ module.exports.updateSubject = function(id, subject, value){
 		    allsubjectIDs.splice(index, 1);
 		}
 
-		console.log(allsubjectIDs, subject.ID);
+		//console.log(allsubjectIDs, subject.ID);
 
 		for (var num in allsubjectIDs)
 		{
@@ -255,12 +258,29 @@ module.exports.updateSubject = function(id, subject, value){
 			}
 		}
 
+		var mrnindex = allsubjectMRNs.indexOf(subject.MRN);
+		if (mrnindex > -1) {
+		    allsubjectMRNs.splice(mrnindex, 1);
+		}
+
+		//console.log(allsubjectMRNs, subject.MRN);
+
+		for (var tnum in allsubjectMRNs)
+		{
+			if (allsubjectMRNs[tnum] == subject.MRN)
+			{
+				console.log("A subject with MRN: " + subject.MRN+ " already exists!");
+				var mrnerr = "A subject with MRN: " + subject.MRN+ " already exists!";
+				return Promise.reject(mrnerr);
+			}
+		}
+
 
 		return Promise.resolve();
 	})
 	.then(function(){
 		var project = require('./projects');
-		console.log(value);
+		//console.log(value);
 		var newid = subject.ID;
 		return project.updateSubject(id, newid, value.old, value.new);
 	})
@@ -270,7 +290,7 @@ module.exports.updateSubject = function(id, subject, value){
 	})
 
 	.then(function(){
-		console.log(subject.DateOfBirth);
+		//console.log(subject.DateOfBirth);
 		var query = {ID:id};
 		var update = {
 			ID: subject.ID,
@@ -357,7 +377,7 @@ module.exports.deleteProject = function (projectID, subjectsID){
 //use when a project is created, check if any of the added subjects exists
 //if subject exist, add the project to the projectes enrolled list under that subject
 //if subject does not exist, create a new subject and include the project in that subject
-module.exports.updateOrAddSubject = function(project, subjectsID){
+module.exports.updateOrAddSubject = function(project, subjectsID, uid){
 	
 	var projectID = project.ProjectID;
 
@@ -407,7 +427,7 @@ module.exports.updateOrAddSubject = function(project, subjectsID){
 								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions":[{SessionID:curPID + '_01', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
-							return scanSessions.addScanSession(newsession);
+							return scanSessions.addScanSession(newsession, uid);
 						})
 						.catch(function(err){
 							return Promise.reject(err);
@@ -427,7 +447,7 @@ module.exports.updateOrAddSubject = function(project, subjectsID){
 								"AccessAuthen": project.AccessAuthen,
 								"ScanSessions":[{SessionID:curPID+'_01', MEGScans: [], MRIScans: [], TestResults: []}] 
 							};
-							return scanSessions.addScanSession(newsession);
+							return scanSessions.addScanSession(newsession, uid);
 						})
 						.catch(function(err){
 							return Promise.reject(err);
@@ -577,7 +597,7 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 							Sex: "Unknown",
 							Handedness: "Unknown",
 							Diagnosis: "Unknown",
-							MRN: 0,
+							MRN: null,
 							Projects:[newProject]
 						};
 
@@ -645,7 +665,8 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 	});
 }*/
 
-module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, projectID, sessionID, scanSession){
+module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, projectID, sessionID,
+ scanSession, oldDoc, uid){
 	return Promise.resolve()
 	
 	// .then(function(){
@@ -664,34 +685,31 @@ module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, proj
 		return Promise.reject(err);
 	})
 	.then(function(oldProjectInfo){
-		console.log(oldProjectInfo);
+		//console.log(oldProjectInfo);
 
 		var bday = moment(oldProjectInfo.DateOfBirth);
 		return Promise.resolve(bday);
 
 	})	
 	.then (function(bday){
-		console.log(bday);
-
-		
 		//assign age at each scan and test
 		calculate_age_at_scan_and_test(scanSession, bday);
 		return Promise.resolve();
 
-		// //update the subject : only the scanIDs
-		// var query = {ID: subjectID, 'Projects.ProjectID': projectID};
-		// var update = {$set: {'Projects.$.ScanSessions': newScanIDs}};
-		// var option = {runValidators: true, context: 'query'};
-		// return Subject.updateAsync(query, update, option);
 	})
 	.then(function(){
-
-		console.log(scanSession);
 		var theScanSession = require('./scanSessions');
 		var query = {SubjectIDinProject:inProjectID, 'ScanSessions.SessionID':sessionID};
 		var update = {$set: {'ScanSessions.$': scanSession}};
 		var option = {runValidators: true, context: 'query'};
 		return theScanSession.findOneAndUpdateAsync(query, update, option);
+	})
+	.then(function(){
+		var changelog = require('./changelog');
+		var changeinfo = {DocType: 'SingleSession', ChangeType: 'update_session', DocID: scanSession.SessionID};
+		var newDoc = scanSession;
+		changelog.addChange(uid, oldDoc, newDoc, changeinfo);
+		return Promise.resolve();
 	})
 	.catch(function(err){
 		console.log(err);
@@ -890,7 +908,7 @@ function querySubjectInfo (sex, handedness, diagnosis, contact, age, mrn,fname, 
 }
 
 function calculate_age_at_scan_and_test(scanSession, subjectbirthday){
-	console.log("birthday" + subjectbirthday);
+	//console.log("birthday" + subjectbirthday);
 	var test = scanSession.TestResults;
 	var megScans = scanSession.MEGScans;
 	var mriScans = scanSession.MRIScans;
