@@ -336,7 +336,6 @@ module.exports.deleteSubject = function(id){
 		var query = {ID:id};
 		return Subject.removeAsync(query);
 	});
-	
 }
 
 //use for posting subject but when error occur with adding subject into the project list
@@ -649,33 +648,11 @@ module.exports.updateSubjectFromProject = function(project, projectID, oldSubjec
 	})
 }
 
-/*module.exports.addSubjectScanSession = function(subjectID, projectID, scanSession){
-	return Promise.resolve()
-	.then(function(){
-		var newScanSession = scanSession.SessionID;
-		console.log(newScanSession);
-		var query = {ID: subjectID, 'Projects.ProjectID': projectID};
-		var update = {$addToSet: {'Projects.$.ScanSessions': newScanSession}};
-		var option = {runValidators: true, context: 'query'};
-		return Subject.updateAsync(query, update, option);
-	})
-	.catch(function(err){
-		console.log(err);
-		return Promise.reject(err);
-	});
-}*/
 
 module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, projectID, sessionID,
  scanSession, oldDoc, uid){
 	return Promise.resolve()
-	
-	// .then(function(){
-	// 	var theScanSession = require('./scanSessions');
-	// 	var query = {SubjectIDinProject:inProjectID, 'ScanSessions.SessionID':sessionID};
-	// 	var update = {$set: {'ScanSessions.$': scanSession}};
-	// 	var option = {runValidators: true, context: 'query'};
-	// 	return theScanSession.findOneAndUpdateAsync(query, update, option);
-	// })
+
 	.then(function(){
 		return Subject.findOneAsync({ID:subjectID, 'Projects.ProjectID': projectID}, 
 			{'DateOfBirth':1});
@@ -717,18 +694,6 @@ module.exports.updateSingleScanInSubject = function(subjectID, inProjectID, proj
 	});
 }
 
-// module.exports.deleteSingleScanInSubject = function(subjectID, projectID, scanSessionID){
-// 	return Promise.resolve()
-// 	.then (function(){
-// 		var query = {ID:subjectID, 'Projects.ProjectID': projectID};
-// 		var update = {$pull: {'Projects.$.ScanSessions': scanSessionID}};
-// 		var option = {};
-// 		return Subject.updateAsync(query, update, option);
-// 	})
-// 	.catch(function(err){
-// 		return Promise.reject(err);
-// 	});
-// }
 
 
 

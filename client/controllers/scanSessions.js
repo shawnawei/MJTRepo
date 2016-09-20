@@ -448,6 +448,35 @@ myApp.controller('scanSessionsController', ['$rootScope', '$state','$scope', '$h
 		});
 	}
 
+	$scope.removeRecord = function(change){
+		console.log(change);
+		var changeID = change._id;
+
+		$http.delete('/raw/changelog/'+ changeID)
+			.success(function(response){
+			});
+		
+	}
+
+	$scope.numPerPage = 1;
+
+	$scope.calculatePageNum = function(numPerPage){
+
+		console.log(numPerPage);
+		var decpageNum = ($scope.totalItems)/(numPerPage);
+		var pageNum = Math.ceil(decpageNum);
+		console.log(pageNum);
+
+		//create an array
+		var pageArray = [];
+		for (var i = 1; i <= pageNum; i++)
+		{
+			pageArray.push(i);
+		}
+		$scope.pageArray = pageArray;
+
+	}
+
 
 
 }]);

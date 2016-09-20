@@ -22,36 +22,6 @@ var xlsxj = require('xlsx-to-json');
 var convert = require('xlsx-to-json-plus');
 var changelog = require('../models/changelog');
 
-// var subjectNum = 0;
-// var projectNum = 0;
-// var scansessionNum = 0;
-
-
-// router.get('/raw/thenumbers', function(req, res){
-
-
-// 	subject.getSubjects()
-// 	.then(function(subjects){
-// 		console.log(subjects.length);
-// 		subjectNum = subjects.length;
-// 		project.getProjects()
-// 		.then(function(projects){
-// 			console.log(projects.length);
-// 			projectNum = projects.length;
-// 			scanSession.getScanSessions()
-// 			.then(function(scanSessions){
-// 				console.log(scanSessions.length);
-// 				scansessionNum = scanSessions.length;
-// 			})
-// 		})
-// 	});
-
-// 	console.log(subjectNum, projectNum, scansessionNum);
-// 	var numbers = {subjectnum: subjectNum, projectnum: projectNum, scansessionnum:scansessionNum};
-// 	res.send(numbers);
-// });
-
-
 
 
 //this is to ensure users cannot directly enter following urls
@@ -1045,36 +1015,6 @@ router.get('/raw/searchsubjects/:ID', ensureAuthenticated, function(req, res) {
 
 });
 
-//get individual subject detail page by inProjectID
-//search subject by in project ID feature
-// router.get('/raw/subjectsInProject/:inProjectID', ensureAuthenticated, function(req, res) {
-// 	var inProjectID = req.params.inProjectID;
-// 	var uid = req.user.uid;
-// 	scanSession.getScanSessionByMatchingSubjectIDinProject(inProjectID, uid)
-// 	.catch(function(err){
-// 		return Promise.reject(err);
-// 	})
-// 	.then(function(scanSessions){
-// 		var globalID = [];
-// 		for (var num in scanSessions)
-// 		{
-// 			globalID.push(scanSessions[num].SubjectID)
-// 		}
-// 		console.log(globalID);
-// 		return subject.searchSubjectsByID(globalID);
-// 	})
-// 	.then(function(subject){
-// 		res.json(subject);
-// 	})
-// 	.catch(function(err){
-// 		console.log(err);
-// 		if (err == "TypeError: Cannot read property 'SubjectID' of null")
-// 		{
-// 			console.log(inProjectID + " does not exists");
-// 		}
-// 		res.send("no match!");
-// 	});
-// });
 
 //get individual subject detail page by inProjectID
 //search subject by in project ID feature
@@ -1126,14 +1066,6 @@ router.get('/raw/subjectInfo/:Sex/:Handedness/:Diagnosis/:Contact/:Age/:MRN/:Fir
 		res.send("no match!");
 	});
 });
-
-
-
-
-
-
-
-
 
 
 
@@ -1233,23 +1165,6 @@ router.get('/raw/FindScanSessionsInfo/:Age/:Allowed/:MEGType/:MRIType/:testType/
 		res.send("no match!");
 	});
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1742,6 +1657,22 @@ router.get('/raw/changelogdoctype/:DocumentType', ensureAuthenticated, function(
 
 });
 
+//remove a recorded user
+router.delete('/raw/changelog/:change_id', ensureAuthenticated, function(req, res) {
+
+	var uid = req.user.uid;
+	var change_id = req.params.change_id;
+
+	changelog.deleteaChange(change_id)
+	.then(function(){
+		res.json("Deleted!");
+	})
+	.catch(function(err){
+		console.log(err);
+	});
+
+});
+
 
 
 
@@ -1880,8 +1811,6 @@ router.get('/raw/convertthistojson',  ensureAuthenticated, function(req, res){
 		    "," //array separator 
   		)
 	 });
-
-
 
 });
 

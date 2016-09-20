@@ -83,7 +83,7 @@ th {
 
             <a class = "btn" ng-hide= "!editable" ng-click = "getAuthenEditList(scanSession.relatedProject,scanSession.SubjectIDinProject,sessionID.SessionID)"><span class = "glyphicon glyphicon-pencil"></span></a>
 
-            <a class = "btn" ng-hide= "!editable" ng-click = "ToOneScanChangelog(sessionID._id)"  data-toggle="modal" data-target="#viewchangelog"><span class = "glyphicon glyphicon-calendar"></span></a>
+            <a class = "btn" ng-hide= "!editable" ng-click = "ToOneScanChangelog(sessionID._id)" data-toggle="modal" data-target="#viewchangelog"><span class = "glyphicon glyphicon-calendar"></span></a>
               
 
               <!-- view user changelog -->
@@ -96,8 +96,25 @@ th {
 
                     <div class="modal-body" style=" font-weight:normal;text-align: left; word-wrap: break-word">
 
-                      View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option><option>20</option></select> records at a time.
-                      <br><br>
+                      View <select ng-model="numPerPage" ng-click = "calculatePageNum(numPerPage)"><option selected = "selected">1</option><option>2</option><option>5</option></select> records at a time.
+
+                      <ul class="pagination pull-right">
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                          </a>
+                        </li>
+
+                        <li ng-repeat = "number in pageArray"><a href="#">{{number}}</a></li>
+
+                        <li class="page-item">
+                          <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                          </a>
+                        </li>
+                      </ul>
 
                      <table class = "table table-bordered">
                         <thead>
@@ -106,6 +123,7 @@ th {
                           <th class = "col-md-1">Date</th>
                           <th class = "col-md-1">Action</th>
                           <th class = "col-md-8">Changes</th>
+                          <th class = "col-md-1">Delete</th>
                         </tr>
                         </thead> 
 
@@ -115,7 +133,7 @@ th {
                             <td>{{change.Date | date: 'short'}}</td>
                             <td>{{change.ChangeType}}</td>
                             <td>
-                              <div class = "well well-sm" ng-repeat = "key in change.ChangedField">
+                              <div class = "well well-sm" ng-repeat = "key in change.ChangedField  track by $index">
                                 <h4>{{key.Key}}</h4>
 
                                 <div class="form-group row">
@@ -133,6 +151,29 @@ th {
                                     </div>
                               </div>
                             </td> 
+                            <td><button ng-disabled = "!adminloggedin" class = "btn btn-xs btn-danger"><a data-toggle="modal" data-target="#deleteHistory-{{$index}}"><span class = "glyphicon glyphicon-remove"></span></a></button>
+
+                            <!-- delete this record-->
+                            <div class="modal fade" id="deleteHistory-{{$index}}" tabindex="-1" role="dialog">
+                                  <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h3 class="modal-title" id="myModalLabel"><strong>WARNING!</strong></h3>
+                                      </div>
+                                      <div class="modal-body">
+                                            This record will be permenantly deleted, are you sure?
+                                      </div>
+                                      <div class="modal-footer">
+                                        <a type = "button" class="btn btn-danger"  data-dismiss="modal" ng-click = "removeRecord(change)">Delete (danger!)</a>
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                                      </div>
+                                    </div>
+                                  </div>
+                            </div>
+
+                            </td>
+
                           </tr>
                         </tbody>
                      </table>

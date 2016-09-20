@@ -434,18 +434,7 @@ module.exports.addSingleScanSession = function(oldScanSession, GlobalID, project
 //delete a single scan session
 module.exports.deleteScanSession = function(uid, GlobalID, projectID, subjectID, scanID){
 	return Promise.resolve()
-	// .then(function(){
-	// 	console.log(scanID);
-	// 	return Promise.resolve();
-	// })
-	// .then(function(){
-	// 	var subject = require('./subjects');
-	// 	return subject.deleteSingleScanInSubject(GlobalID, projectID, scanID);
-	// })
-	// .catch(function(err){
-	// 	console.log("error with delete from subject page + " + err);
-	// 	return Promise.reject(err);
-	// })
+
 	.then(function(){
 		var query = {SubjectIDinProject:subjectID, 'ScanSessions.SessionID': scanID};
 		var update = {$pull: {'ScanSessions':{SessionID: scanID}}};
@@ -507,10 +496,6 @@ module.exports.deleteEntireScanSessionByinProjectID = function(subjectID){
 		return ScanSession.removeAsync(query);
 	})
 }
-
-
-
-
 
 
 //============================ Search ===================================
@@ -1446,9 +1431,6 @@ function queryScanInfo (scanInfo, _uid){
 
 	return query;
 }
-
-
-
 
 
 

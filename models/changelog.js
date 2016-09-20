@@ -136,6 +136,14 @@ module.exports.addChange = function(uid, oldDoc, newDoc, changeInfo){
 }
 
 
+module.exports.deleteaChange = function(changeID){
+	return Promise.resolve().then(function() {
+		return Changelog.removeAsync({_id: changeID});
+	});
+
+}
+
+
 
 function newChangeUpdate (uid, oldDoc, newDoc, changeInfo){
 

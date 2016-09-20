@@ -1,7 +1,5 @@
-var fs = require('fs');
+
 var https = require('https');
-
-
 //load express, path module
 var express = require ('express');
 var path = require('path');
@@ -17,11 +15,7 @@ var ExpressSession = require('express-session');
 var app = express();
 var port = 3000;
 
-/*var server = https.createServer({
-	cert: fs.readFileSync(__dirname + '/my.crt'),
-	key: fs.readFileSync(__dirname + '/my.key')
-}, app);
-*/
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());

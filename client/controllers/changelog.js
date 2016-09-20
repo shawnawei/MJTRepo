@@ -43,21 +43,30 @@ myApp.controller('changelogController', ['$rootScope','$state', '$scope', '$http
 		$scope.getChangelog = function(){
 			var docType = $stateParams.doctype;
 			$scope.docType = docType;
-			console.log(docType);
 			$http.get('/raw/changelogdoctype/'+ docType).success(function(response){
-				console.log(response);
 				$scope.allchangelog = response;
 			});
 		}
 
 		$scope.getScanChangelog = function(){
 			$scope.docID = $stateParams.docID;
-			console.log($scope.docID);
 			$http.get('/raw/changelogs/ScanSessions/'+ $scope.docID).success(function(response){
 				console.log(response);
 				$scope.allchangelog = response;
 			});
 		}
+
+		$scope.removeRecord = function(change){
+			console.log(change);
+			var changeID = change._id;
+
+			$http.delete('/raw/changelog/'+ changeID)
+				.success(function(response){
+					window.location.href= '/changelog/'+ change.DocumentType ;
+				});
+			
+		}
+
 
 
 	}
