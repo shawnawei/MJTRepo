@@ -7,15 +7,13 @@
 "Projects":[
 	{
 		"ProjectID": "WM",
-		"SubjectIDinProject": "WM01",
-		"ScanSessions": ["WM01_A", "WM01_B"]
+		"SubjectIDinProject": "WM01"
 		
 	},
 
 	{
 		"ProjectID": "AA",
-		"SubjectIDinProject": "AA02",
-		"ScanSessions": ["AA02_A","AA02_B"]
+		"SubjectIDinProject": "AA02"
 	}
 ]
 },
@@ -28,8 +26,7 @@
 "Projects":[
 	{
 		"ProjectID": "WM",
-		"SubjectIDinProject": "WM03",
-		"ScanSessions": ["WM03_A", "WM03_B"]
+		"SubjectIDinProject": "WM03"
 		
 	}
 ]
@@ -43,15 +40,13 @@
 "Projects":[
 	{
 		"ProjectID": "POND",
-		"SubjectIDinProject": "POND01",
-		"ScanSessions": [ "POND01_A", "POND01_B"]
+		"SubjectIDinProject": "POND01"
 		
 	},
 
 	{
 		"ProjectID": "WM",
-		"SubjectIDinProject": "WM09",
-		"ScanSessions": ["WM09_A","WM09_B"]
+		"SubjectIDinProject": "WM09"
 		
 	}
 ]
@@ -65,15 +60,13 @@
 "Projects":[
 	{
 		"ProjectID": "WM",
-		"SubjectIDinProject": "WM07",
-		"ScanSessions": [ "WM07_A", "WM07_B"]
+		"SubjectIDinProject": "WM07"
 		
 	},
 
 	{
 		"ProjectID": "AA",
-		"SubjectIDinProject": "AA01",
-		"ScanSessions": ["AA01_A"]	
+		"SubjectIDinProject": "AA01"
 	}
 ]
 }

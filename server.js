@@ -67,7 +67,7 @@ passport.deserializeUser(function(user, done){
 
 //connect to mongoose
 
-mongoose.connect('mongodb://localhost/test', function(err){
+mongoose.connect('mongodb://localhost/MJTData1', function(err){
     if(!err){
         console.log('connected to mongoDB');
     } else{

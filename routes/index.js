@@ -1815,6 +1815,35 @@ router.get('/raw/convertthistojson',  ensureAuthenticated, function(req, res){
 });
 
 
+router.get('/raw/testtojson',  ensureAuthenticated, function(req, res){
+
+	["./Data/MJTdata_subjectlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/subjects"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+	["./Data/MJTdata_projectlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/projects"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+	["./Data/MJTdata_scansessionlist1.xlsx"].forEach(function (element) {	
+	  	convert.toJson(
+		    path.join(__dirname, element),  //excell file 
+		    path.join(__dirname, "./json/scansessions"), //json dir 
+		    1,  //excell head line number 
+		    "," //array separator 
+  		)
+	 });
+
+});
+
 
 
 module.exports = router;

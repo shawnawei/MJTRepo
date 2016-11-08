@@ -505,16 +505,27 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 		});
 	}
 
-	// $scope.openSessionPage = function(project, id){
-	// 	if ($scope.noerror)
-	// 	{
-	// 		var url1 = '/ScanInfo/' + project + '/' + id;
-	// 		var url2 = '/ScanInfo/' + project + '/' + id + '/' + id + '_01/edit';
-	// 		window.open(url1, 'new_window');
-	// 		window.open(url2, 'new_window');
-	// 	}
-		
-	// }
+	$scope.generateGID = function(newSubject){
+
+		$http.get('/raw/subjectInfo/' +'All/All/All/All/All/All/All/All/All')
+		.then(function(response){
+			console.log(response);
+			
+			var subjectIDs = [];
+			for (var subject in response)
+			{
+				subjectIDs.push(subject.ID);
+			}
+
+			console.log(subjectIDs);
+			var randGID = randomIDgenerator(subjectIDs);
+			newSubject.GlobalID = randGID;
+
+			return Promise.resolve(subjectIDs);
+			
+		})
+	}
+
 
 	
 
@@ -631,5 +642,24 @@ myApp.controller('addProjectController', ['$rootScope','$state', '$scope', '$htt
 	}
 
 }]);
+
+function randomIDgenerator (subjectIDs){
+
+	var newID = Math.floor((Math.random()*100000)+1);
+
+	console.log(newID);
+
+	for (var id in subjectIDs)
+	{
+		console.log(id);
+	}
+
+	if (subjectIDs.indexOf(newID) == -1)
+	{
+		var MJTnewID = "MJT"+newID;
+		return MJTnewID;
+	}
+
+}
 
 
