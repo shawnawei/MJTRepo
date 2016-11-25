@@ -54,6 +54,8 @@ router.post('/raw/login', passport.authenticate('ldapauth'), function(req, res){
 });
 
 router.get('/raw/logOut', ensureAuthenticated, function(req, res){
+
+	req.session.destroy();
 	req.logout();
 	res.redirect('/login');
 });

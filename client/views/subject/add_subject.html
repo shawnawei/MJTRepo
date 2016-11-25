@@ -22,15 +22,23 @@ REDESIGN THE PAGE IF TIME PREMITS-->
       <h4>Subject Information</h4><br>
         <div class="form-group row">
           <label class="form-control-label col-md-2">Subject ID* :</label>
-          <div class = "col-md-3" ng-class = "{'has-error': addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$invalid, 'has-success':addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$valid}">
+          <div class = "col-md-2" ng-class = "{'has-error': addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$invalid, 'has-success':addSubjectForm.subjectID.$touched && addSubjectForm.subjectID.$valid}">
             <input required type="text" class="form-control" data-ng-model="subject.ID" name = "subjectID" placeholder="MJT###" ng-pattern = "/^MJT\d{3,6}$/" ng-init = "subject.ID = 'MJT'">
+           
             <div class = "error msg_error" data-ng-messages = "addSubjectForm.subjectID.$error" data-ng-show = "addSubjectForm.subjectID.$touched">
                <span ng-show = "addSubjectForm.subjectID.$invalid">
                  <span class = "glyphicon glyphicon-exclamation-sign"></span>
                   Please give this subject an ID in 'MJT###' format!
                </span>
             </div> 
-          </div>
+
+
+          </div> 
+
+          <div style="margin:0;padding:0" class = "col-md-1 btn btn-xs btn-link" ng-click="generateGID()">Generate</div>
+
+
+
 
           <label class="col-md-2 col-md-offset-1 form-control-label">Sex:</label>
            <div class = "col-md-3">

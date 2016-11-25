@@ -1,10 +1,12 @@
 var myApp = angular.module('myApp', 
 	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv', 'ngMessages',
-	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime', 'ui.bootstrap']);
+	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime', 'ui.bootstrap', 'ngIdle']);
 
 myApp.controller('mainCtrl',  [ '$scope', '$http', '$location','localStorageService', 'authenFact',
  function ($scope, $http, $location, localStorageService, authenFact){
  	console.log('main controller loaded');
+
+ 	console.log(localStorageService);
 
 	if (!authenFact.getAccessToken())
 	{
@@ -18,7 +20,11 @@ myApp.controller('mainCtrl',  [ '$scope', '$http', '$location','localStorageServ
 
 
 myApp.config(function($stateProvider, $urlRouterProvider, 
-	$urlMatcherFactoryProvider, $locationProvider){
+	$urlMatcherFactoryProvider, $locationProvider, IdleProvider, KeepaliveProvider){
+
+	IdleProvider.idle(15*60); // 15 minutes idle
+    IdleProvider.timeout(30); // after 30 seconds idle, time the user out
+    KeepaliveProvider.interval(10); // 5 minute keep-alive ping
 
 
 	$locationProvider.html5Mode(true);
@@ -206,9 +212,61 @@ myApp.config(function($stateProvider, $urlRouterProvider,
 		templateUrl: 'views/changelog/changelogscans.html'
 	})
 
+
 	$urlRouterProvider.otherwise("/home");
 
 });
+
+
+
+// myApp.run(function($rootScope) {
+//   var lastDigestRun = new Date();
+
+//   $rootScope.$watch(function detectIdle() {
+//     lastDigestRun = Date.now();
+//   });
+
+//   setInterval(function(){
+//   	var now = new Date();
+//   	console.log("hey " + now + lastDigestRun);
+//   	if(now - lastDigestRun > 4*1000) // if inactive for 4 seconds, logout
+//   	{
+//   		console.log("timeout");
+//   	}
+//   }, 2*1000);//check every 2 seconds
+// });
+
+
+// myApp.run(function($rootScope) {
+//     $rootScope.$on('IdleTimeout', function() {
+//         // end their session and redirect to login
+//         console.log("timeout");
+//     });
+// });
+
+myApp.run(function($rootScope, Idle, Keepalive, $state, $http, $location, localStorageService, authenFact) {
+
+	//start timing, this is for everytime we refresh the page
+	Idle.watch();
+
+
+	//log out after 15 minutes, with 30 second countdown
+	$rootScope.$on('IdleStart', function(){
+		console.log('counting down');
+	});
+
+
+    $rootScope.$on('IdleTimeout', function() {
+        // end their session and redirect to login
+        console.log('timeout logout');
+        Idle.interrupt();
+        authenFact.removeAccessToken();
+		$http.get('/raw/logOut').success(function(){});
+		$state.go('login');
+		
+
+    });
+})
 
 
 myApp.directive("fileread", [function () {
@@ -229,6 +287,8 @@ myApp.directive("fileread", [function () {
         }
     }
 }]);
+
+
 
 // myApp.run(["$rootScope", "$location", "authenFact", 
 // 	function($rootScope, $location, authenFact){

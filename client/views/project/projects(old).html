@@ -1,0 +1,46 @@
+<style>
+.panel-heading h3 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: normal;
+    width: 75%;
+    padding-top: 8px;
+}
+</style>
+
+<div ng-init="getProjects(); checkAuthen(!addProject);">
+  <div class = "col-md-3">
+    <h2><strong>Projects List</strong></h2>
+  </div>
+  <br>
+   <div class = "form-group-row">
+      <div class = "col-md-6">
+        <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
+      </div>
+      <a class = "btn btn-sm btn-primary col-md-offset-1" ng-click = "checkAuthen(addProject)" ng-hide = "!adminloggedin"><span class = "glyphicon glyphicon-plus"></span> New Project</a>
+    <div class= "clearfix"></div>
+
+  </div>
+
+  <hr>
+  <div>
+    <div class="row">
+      <div ng-repeat="project in projects | filter: searchText">
+        <div class="col-md-3">
+          <div class="col-md-3">
+            <h4>{{project['ProjectID']}}</h4>
+            <a class="btn btn-primary" ng-disabled = "!checkViewable(project.ProjectID)" ui-sref = "projectDetail({ProjectID: project.ProjectID})">View Details</a>
+          </div>            
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+     <br>
+    <div class = "pull-right btn btn-link" ng-hide = "!adminloggedin" ng-click = "ToChangelog('Projects')"> View All Recent Changes</div>
+    <br><br>
+    <hr>
+
+  </div>

@@ -246,6 +246,29 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 		});
 	}
 
+	$scope.generateGID = function(){
+
+		$http.get('/raw/subjectInfo/' +'All/All/All/All/All/All/All/All/All')
+		.success(function(response){
+			console.log(response);
+			
+			var subjectIDs = [];
+			for (var subject in response)
+			{
+				subjectIDs.push(response[subject].ID);
+			}
+
+			console.log(subjectIDs);
+			var randGID = SubrandomIDgenerator(subjectIDs);
+			$scope.subject.ID = randGID;
+
+			return Promise.resolve(subjectIDs);
+			
+		})
+	}
+
+
+
 	//=============================== Other stuff ================================
 
 	var subjects = $scope.subjects;
@@ -405,8 +428,58 @@ myApp.controller('addSubjectController', ['$rootScope','$state', '$scope', '$htt
 				$scope.error = err.data;
 			});
 		}
+
+
+		$scope.generateGID = function(){
+
+			$http.get('/raw/subjectInfo/' +'All/All/All/All/All/All/All/All/All')
+			.success(function(response){
+				console.log(response);
+				
+				var subjectIDs = [];
+				
+				if (response != "no match!")
+				{
+					for (var subject in response)
+					{
+						console.log(response[subject].ID);
+						subjectIDs.push(response[subject].ID);
+					}
+				}
+				
+
+				console.log(subjectIDs);
+				var randGID = SubrandomIDgenerator(subjectIDs);
+				$scope.subject.ID = randGID;
+
+				return Promise.resolve(subjectIDs);
+				
+			})
+		}	
+
 	}
 
 }]);
 
 
+function SubrandomIDgenerator (subjectIDs){
+
+	do
+	{
+		var newID = Math.floor((Math.random()*100000)+1);
+
+		console.log(newID);
+
+		for (var id in subjectIDs)
+		{
+			console.log(subjectIDs[id]);
+		}
+
+		var MJTnewID = "MJT"+newID;
+
+	} while (subjectIDs.indexOf(MJTnewID) != -1)
+
+	return MJTnewID;
+
+
+}

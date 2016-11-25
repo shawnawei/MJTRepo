@@ -2,6 +2,7 @@ var myApp = angular.module('myApp');
 
 myApp.controller('authenController', ['$rootScope','$state', '$scope', '$http', '$location','localStorageService', 'authenFact',
  function ($rootScope,$state, $scope, $http, $location, localStorageService, authenFact){
+
 	console.log('authenController loaded');
 
 	if (!authenFact.getAccessToken())
@@ -44,9 +45,13 @@ myApp.controller('authenController', ['$rootScope','$state', '$scope', '$http', 
 }]);
 
 
-myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$location', 'localStorageService', 'authenFact',
-	function($rootScope, $state, $scope, $http, $location, localStorageService, authenFact){
+myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$location', 'localStorageService', 'authenFact', 'Idle',
+	function($rootScope, $state, $scope, $http, $location, localStorageService, authenFact, Idle){
 	console.log('homeController loaded');
+
+	//start timing, this is for everytime user re-login
+	Idle.watch();
+
 
 	if (!authenFact.getAccessToken())
 	{
@@ -57,6 +62,8 @@ myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$
 	{
 		console.log("logged in as: "+ authenFact.getAccessToken().uid);
 		$rootScope.loggedin = true;
+		$rootScope.timer = 0;
+
 
 		$scope.checkAuthen = function(){
 

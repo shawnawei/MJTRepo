@@ -508,13 +508,13 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 	$scope.generateGID = function(newSubject){
 
 		$http.get('/raw/subjectInfo/' +'All/All/All/All/All/All/All/All/All')
-		.then(function(response){
+		.success(function(response){
 			console.log(response);
 			
 			var subjectIDs = [];
 			for (var subject in response)
 			{
-				subjectIDs.push(subject.ID);
+				subjectIDs.push(response[subject].ID);
 			}
 
 			console.log(subjectIDs);
@@ -645,20 +645,22 @@ myApp.controller('addProjectController', ['$rootScope','$state', '$scope', '$htt
 
 function randomIDgenerator (subjectIDs){
 
-	var newID = Math.floor((Math.random()*100000)+1);
-
-	console.log(newID);
-
-	for (var id in subjectIDs)
+	do
 	{
-		console.log(id);
-	}
+		var newID = Math.floor((Math.random()*100000)+1);
 
-	if (subjectIDs.indexOf(newID) == -1)
-	{
+		console.log(newID);
+
+		for (var id in subjectIDs)
+		{
+			console.log(subjectIDs[id]);
+		}
+
 		var MJTnewID = "MJT"+newID;
-		return MJTnewID;
-	}
+
+	} while (subjectIDs.indexOf(MJTnewID) != -1)
+
+	return MJTnewID;
 
 }
 

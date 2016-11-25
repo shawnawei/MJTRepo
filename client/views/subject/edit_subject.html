@@ -25,7 +25,7 @@ REDESIGN THE PAGE IF TIME PREMITS-->
       <h4>Subject Information</h4><br>
         <div class="form-group row">
           <label class="form-control-label col-md-2">Subject ID* :</label>
-          <div class = "col-md-3"  ng-class = "{'has-error': editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$invalid, 'has-success':editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$valid}">
+          <div class = "col-md-2"  ng-class = "{'has-error': editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$invalid, 'has-success':editSubjectForm.subjectID.$touched && editSubjectForm.subjectID.$valid}">
             <input required type="text" class="form-control" ng-model="subject.ID" name = "subjectID" placeholder="MJT###" ng-pattern = "/^MJT\d{3,6}$/" >
             <div class = "error msg_error" data-ng-messages = "editSubjectForm.subjectID.$error" data-ng-show = "editSubjectForm.subjectID.$touched">
                <span ng-show = "editSubjectForm.subjectID.$invalid">
@@ -34,6 +34,10 @@ REDESIGN THE PAGE IF TIME PREMITS-->
                </span>
             </div>
           </div>
+
+          <div style="margin:0;padding:0" class = "col-md-1 btn btn-xs btn-link" ng-click="generateGID()">New ID (danger!)</div>
+
+
 
           <label class="col-md-2 col-md-offset-1 form-control-label">Sex:</label>
            <div class = "col-md-3">

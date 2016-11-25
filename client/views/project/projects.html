@@ -1,5 +1,5 @@
 <style>
-.panel-heading h3 {
+.panel-heading h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -7,14 +7,56 @@
     width: 75%;
     padding-top: 8px;
 }
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:10px
+}
+
+.arrow-up {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+
+.arrow-down {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
+
+
 </style>
 
+
 <div ng-init="getProjects(); checkAuthen(!addProject);">
-  <div class = "col-md-3">
-    <h2><strong>Projects List</strong></h2>
-  </div>
-  <br>
-   <div class = "form-group-row">
+
+
+  <form class = "row">
+
+    <div class = "col-md-3">
+      <h2><strong> Projects List</strong></h2>
+    </div>
+    <br>
+    <div class = "form-group-row">
       <div class = "col-md-6">
         <input class = "form-control" type= "text" placeholder="Search..." ng-model = "searchText">
       </div>
@@ -22,25 +64,45 @@
     <div class= "clearfix"></div>
 
   </div>
-
+    
+    <br>
+  </form>
   <hr>
+
+
   <div>
-    <div class="row">
-      <div ng-repeat="project in projects | filter: searchText">
-        <div class="col-md-3">
-          <div class="col-md-3">
-            <h4>{{project['ProjectID']}}</h4>
-            <a class="btn btn-primary" ng-disabled = "!checkViewable(project.ProjectID)" ui-sref = "projectDetail({ProjectID: project.ProjectID})">View Details</a>
-          </div>            
-          </div>
-        </div>
-      </div>
-    </div>
+    <table class = "table table-bordered table-hover">
+      <thead>
+        <tr>
+          <th ng-click = "sortBy('ProjectID')">Project ID
+          <span class="sortorder" ng-show="propertyName === 'ProjectID'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('ProjectName')">Project Name
+          <span class="sortorder" ng-show="propertyName === 'ProjectName'" ng-class="{reverse: reverse}"></span></th>
+          <th ng-click = "sortBy('SubjectsID.length')"># of Subjects
+          <span class="sortorder" ng-show="propertyName === 'SubjectsID.length'" ng-class="{reverse: reverse}"></span></th>
+          <th>Descriptions</th>
+          <th>View Details</th>
 
+        </tr>
+      </thead>
 
-     <br>
-    <div class = "pull-right btn btn-link" ng-hide = "!adminloggedin" ng-click = "ToChangelog('Projects')"> View All Recent Changes</div>
-    <br><br>
-    <hr>
-
+      <tbody>
+        <tr ng-repeat = "project in projects | filter: searchText">
+          <td>{{project.ProjectID}}</td>
+          <td>{{project.ProjectName}}</td>
+          <td>{{project.SubjectsID.length}}</td>
+          <td>{{project.ProjectDesc}}</td>
+          <td> 
+            <div><a class="btn btn-xs btn-primary" ng-disabled = "!checkViewable(project.ProjectID)" ui-sref = "projectDetail({ProjectID: project.ProjectID})">View Details</a></div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  
   </div>
+
+    <br>
+    <div class = "pull-right btn btn-link" ng-hide = "!adminloggedin" ng-click = "ToChangelog('Projects')"> View All Recent Changes</div>
+
+
+</div>
