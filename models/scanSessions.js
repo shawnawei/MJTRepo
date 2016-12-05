@@ -48,7 +48,7 @@ var SessionIDSchema = new Schema({
 var ScanSessionsSchema = new Schema({
 	"SubjectID": {type: String, required: true, ref: 'Subject'},
 	"relatedProject": {type: String, ref:'Project'},
-	"SubjectIDinProject": {type: String, unique: true, required: true, ref:'Project'},
+	"SubjectIDinProject": {type: String, required: true, ref:'Project'},
 	"AccessAuthen": [{
 		"uid":{type: String, required: true, ref:'AuthenList'},
 		"ViewOnly": {type: Boolean}

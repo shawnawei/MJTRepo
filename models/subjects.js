@@ -79,8 +79,7 @@ module.exports.addSubject = function(subject){
 		var testSubject = new Subject(subject);
 		var error = testSubject.validateSync();
 		var testSubjectProject = testSubject.Projects;
-		console.log("hi" + error);
-
+		
 		//check the error in mongoose subject schema
 		if (error != undefined){
 

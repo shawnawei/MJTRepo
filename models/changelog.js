@@ -56,7 +56,7 @@ module.exports.addChange = function(uid, oldDoc, newDoc, changeInfo){
 	return Promise.resolve()
 	.then(function(){
 
-		console.log(uid, oldDoc, newDoc, changeInfo);
+		//console.log(uid, oldDoc, newDoc, changeInfo);
 
 		if (changeInfo.ChangeType == 'update_session' && changeInfo.DocType == 'SingleSession')
 		{
@@ -422,7 +422,7 @@ function newScanChangeUpdate (uid, oldDoc, newdoc, changeInfo){
 			"ChangedField":changedField
 		};
 
-		console.log(changedField);
+		//console.log(changedField);
 
 		if (changedField.length != 0)
 		{
