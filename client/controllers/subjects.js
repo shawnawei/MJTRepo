@@ -284,28 +284,18 @@ myApp.controller('subjectsController', ['orderByFilter', '$rootScope','$state', 
 	    $scope.subjects = orderBy($scope.subjects, $scope.propertyName, $scope.reverse);
 	};
 
-	
-  	$scope.currentPage = 1;
-  	$scope.numPerPage = 2;
-  
-	
-  $scope.viewby = 10;
-  $scope.currentPage = 1;
-  $scope.itemsPerPage = $scope.viewby;
-  $scope.maxSize = 5; //Number of pager buttons to show
+//================================= Pagination ===============================
 
-  $scope.setPage = function (pageNo) {
-    $scope.currentPage = pageNo;
-  };
+	$scope.maxSize = 5; //number of page buttons
+	$scope.currentPage = 1;
+	$scope.viewby = 15;
+	$scope.itemsPerPage = $scope.viewby;
 
-  $scope.pageChanged = function() {
-    console.log('Page changed to: ' + $scope.currentPage);
-  };
+	$scope.setItemsPerPage = function(num) {
+	  $scope.itemsPerPage = num;
+	  $scope.currentPage = 1; //reset to first page
+	}
 
-$scope.setItemsPerPage = function(num) {
-  $scope.itemsPerPage = num;
-  $scope.currentPage = 1; //reset to first paghe
-}
 
 
 }]);

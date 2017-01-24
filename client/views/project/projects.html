@@ -65,10 +65,13 @@ th {
 
   </div>
     
-    <br>
+  
   </form>
   <hr>
 
+  View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>5</option><option>10</option><option>20</option><option>50</option></select> projects at a time.
+
+  <br><br>
 
   <div>
     <table class = "table table-bordered table-hover">
@@ -87,7 +90,7 @@ th {
       </thead>
 
       <tbody>
-        <tr ng-repeat = "project in projects | filter: searchText">
+        <tr ng-repeat = "project in projects.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | filter: searchText">
           <td>{{project.ProjectID}}</td>
           <td>{{project.ProjectName}}</td>
           <td>{{project.SubjectsID.length}}</td>
@@ -96,12 +99,17 @@ th {
             <div><a class="btn btn-xs btn-primary" ng-disabled = "!checkViewable(project.ProjectID)" ui-sref = "projectDetail({ProjectID: project.ProjectID})">View Details</a></div>
           </td>
         </tr>
+
       </tbody>
     </table>
-  
+
+    <pagination total-items="projects.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+
+
   </div>
 
     <br>
+
     <div class = "pull-right btn btn-link" ng-hide = "!adminloggedin" ng-click = "ToChangelog('Projects')"> View All Recent Changes</div>
 
 

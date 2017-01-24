@@ -546,6 +546,18 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 	    $scope.subjectInfo = orderBy($scope.subjectInfo, $scope.propertyName, $scope.reverse);
 	};
 
+	//================================= Pagination ===============================
+
+	$scope.maxSize = 5; //number of page buttons
+	$scope.currentPage = 1;
+	$scope.viewby = 10;
+	$scope.itemsPerPage = $scope.viewby;
+
+	$scope.setItemsPerPage = function(num) {
+	  $scope.itemsPerPage = num;
+	  $scope.currentPage = 1; //reset to first page
+	}
+
 
 }]);
 

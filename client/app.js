@@ -1,6 +1,7 @@
 var myApp = angular.module('myApp', 
 	['ui.router', 'LocalStorageModule', 'ngSanitize','ngCsv', 'ngMessages',
-	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime', 'ui.bootstrap', 'ngIdle']);
+	'angularjs-dropdown-multiselect','720kb.datepicker', 'datetime', 'ui.bootstrap', 
+	'ngIdle']);
 
 myApp.controller('mainCtrl',  [ '$scope', '$http', '$location','localStorageService', 'authenFact',
  function ($scope, $http, $location, localStorageService, authenFact){

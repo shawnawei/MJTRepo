@@ -48,9 +48,9 @@ td {
 
 			<tbody>
 				<tr ng-repeat = "User in Users">
-				  <td class = "col-md-2">{{User.uid}}</td>
-		          <td class = "col-md-2">{{User.Type}}</td>
-		          <td class = "col-md-3" ng-init = "getAuthenProjects(User.uid)">
+				  <td class = "col-md-1">{{User.uid}}</td>
+		          <td class = "col-md-1">{{User.Type}}</td>
+		          <td class = "col-md-6" ng-init = "getAuthenProjects(User.uid)">
 		          	<span class = "btn btn-xs field-tip " ng-repeat = "project in userProjectAuthen[$index]">{{project.ProjectID}}
     				<span class="tip-content">
 						View Only: {{project.ViewOnly}}
@@ -58,7 +58,7 @@ td {
 					</span>
 
 		          </td>
-		          <td class = "col-md-3">{{User.Comment}}</td>
+		          <td class = "col-md-2">{{User.Comment}}</td>
 		          <td class = "col-md-2">
 
 		          	<button class = "btn btn-xs btn-info"><a data-toggle="modal" data-target="#userchangelog-{{$index}}" ng-click = "getChangeLog(User._id)"><span class = "glyphicon glyphicon-list-alt"></span></a></button>

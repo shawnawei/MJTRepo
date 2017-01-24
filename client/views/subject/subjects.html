@@ -69,6 +69,10 @@ th {
   </form>
   <hr>
 
+   View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>5</option><option>10</option><option>20</option><option>50</option></select> subjects at a time.
+
+  <br><br>
+
 
   <div>
     <table class = "table table-bordered table-hover">
@@ -95,7 +99,7 @@ th {
       </thead>
 
       <tbody>
-        <tr ng-repeat = "subject in subjects | filter: searchText">
+        <tr ng-repeat = "subject in subjects.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage))  | filter: searchText">
           <td><a class = "btn btn-xs" ng-click = "checkAuthen(subject.ID)">{{subject.ID}}</a></td>
           <td>{{subject.FirstName}}</td>
           <td>{{subject.LastName}}</td>
@@ -110,6 +114,8 @@ th {
         </tr>
       </tbody>
     </table>
+
+    <pagination total-items="subjects.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
   
   </div>
 

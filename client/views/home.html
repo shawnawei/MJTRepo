@@ -60,6 +60,11 @@
 	      	<p><strong>User Type: </strong>{{user.type}} </p>
 	      	<p><strong>User Title: </strong>{{user.title}} </p>
 	      	<p><strong>Accessible Projects:</strong> 
+	      	<br><br>
+
+	      	View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option></select> projects at a time.
+
+	      	<br>
 	      		<table class = "table table-bordered table-hover">
 		      		<thead>
 		      			<th>Project ID</th>
@@ -67,13 +72,15 @@
 		      			<th>Accessibility Level</th>
 		      		</thead>
 		      		<tbody>
-		      			<tr ng-repeat = "project in AuthenProjects">
+		      			<tr ng-repeat = "project in AuthenProjects.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | filter: searchText">
 		      				<td><a class = "closebtn" ng-click = "gotoproject(project.ProjectID)" onclick="$('.profile').modal('hide')">{{project.ProjectID}}</a></td>
 		      				<td>{{project.ProjectName}}</td>
 		      				<td>{{project.AccessAuthen}}</td>
 		      			</tr>
 		      		</tbody>
 	      		</table>
+	      		<pagination total-items="AuthenProjects.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+
 	      	</p>
 	      	
   		</div>

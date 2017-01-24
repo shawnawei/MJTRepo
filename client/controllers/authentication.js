@@ -195,6 +195,18 @@ myApp.controller('homeController', ['$rootScope', '$state','$scope', '$http', '$
 				$state.go('login');
 			}
 			
+		}
+
+		//================================= Pagination ===============================
+
+		$scope.maxSize = 5; //number of page buttons
+		$scope.currentPage = 1;
+		$scope.viewby = 5;
+		$scope.itemsPerPage = $scope.viewby;
+
+		$scope.setItemsPerPage = function(num) {
+		  $scope.itemsPerPage = num;
+		  $scope.currentPage = 1; //reset to first page
 		}	
 	}
 
