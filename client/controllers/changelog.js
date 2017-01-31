@@ -1,7 +1,7 @@
 var myApp = angular.module('myApp');
 
-myApp.controller('changelogController', ['$rootScope','$state', '$scope', '$http', '$location', '$stateParams','authenFact',
- function ($rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
+myApp.controller('changelogController', ['orderByFilter','$rootScope','$state', '$scope', '$http', '$location', '$stateParams','authenFact',
+ function (orderBy, $rootScope, $state, $scope, $http, $location, $stateParams, authenFact){
 	console.log('changelogController loaded');
 
 	if (!authenFact.getAccessToken())
@@ -66,6 +66,35 @@ myApp.controller('changelogController', ['$rootScope','$state', '$scope', '$http
 				});
 			
 		}
+
+		//================================= Pagination ===============================
+
+		$scope.maxSize = 5; //number of page buttons
+		$scope.currentPage = 1;
+		$scope.viewby = 3;
+		$scope.itemsPerPage = $scope.viewby;
+
+		$scope.setItemsPerPage = function(num) {
+		  $scope.itemsPerPage = num;
+		  $scope.currentPage = 1; //reset to first page
+		}
+
+
+
+	//=============================== Other stuff ================================
+
+	var changelogs = $scope.allchangelog;
+   	$scope.propertyName = 'Date';
+  	$scope.reverse = false;
+  	$scope.allchangelog = orderBy(changelogs, $scope.propertyName, $scope.reverse);
+
+  	$scope.sortBy = function(propertyName) {
+	    $scope.reverse = (propertyName !== null && $scope.propertyName === propertyName)
+	        ? !$scope.reverse : false;
+	    $scope.propertyName = propertyName;
+	    $scope.allchangelog = orderBy($scope.allchangelog, $scope.propertyName, $scope.reverse);
+	};
+
 
 
 

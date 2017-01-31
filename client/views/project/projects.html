@@ -77,11 +77,11 @@ th {
     <table class = "table table-bordered table-hover">
       <thead>
         <tr>
-          <th ng-click = "sortBy('ProjectID')">Project ID
+          <th ng-click = "sortProjectBy('ProjectID')">Project ID
           <span class="sortorder" ng-show="propertyName === 'ProjectID'" ng-class="{reverse: reverse}"></span></th>
-          <th ng-click = "sortBy('ProjectName')">Project Name
+          <th ng-click = "sortProjectBy('ProjectName')">Project Name
           <span class="sortorder" ng-show="propertyName === 'ProjectName'" ng-class="{reverse: reverse}"></span></th>
-          <th ng-click = "sortBy('SubjectsID.length')"># of Subjects
+          <th ng-click = "sortProjectBy('SubjectsID.length')"># of Subjects
           <span class="sortorder" ng-show="propertyName === 'SubjectsID.length'" ng-class="{reverse: reverse}"></span></th>
           <th>Descriptions</th>
           <th>View Details</th>

@@ -23,17 +23,68 @@ th {
 td {
   height:30px;
 }
+
+.panel-heading h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: normal;
+    width: 75%;
+    padding-top: 8px;
+}
+
+table {
+    border-collapse: collapse;
+    border: #D3D3D3;
+    text-align: center
+}
+
+th {
+  text-align: center;
+  background-color: #D3D3D3;
+  height:10px
+}
+
+.arrow-up {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid black;
+}
+
+.arrow-down {
+  width:0;
+  height:0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid black;
+}
+
+.sortorder:after {
+  content: '\25b2';   // BLACK UP-POINTING TRIANGLE
+}
+.sortorder.reverse:after {
+  content: '\25bc';   // BLACK DOWN-POINTING TRIANGLE
+}
 </style>
 
 <div ng-init = "checkAuthen(); getChangelog()">
 
 <h2><strong> {{docType}} History</strong></h2>
 <br>
+
+
+ View <select ng-model="viewby" ng-change="setItemsPerPage(viewby)"><option>1</option><option>3</option><option>5</option><option>10</option></select> changes at a time.
+
+
+<div>
 <table class = "table table-bordered col-md-12">
 	<thead style ="text-align: center">
 		<tr>
 			<th>User</th>
-			<th class = "col-md-2">Date (m/d/yy)</th>
+			<th class = "col-md-2" ng-click = "sortBy('Date')">Date (m/d/yy)
+			<span class="sortorder" ng-show="propertyName === 'Date'" ng-class="{reverse: reverse}"></span></th>
 			<th class = "col-md-1">Doc ID</th>
 			<th class = "col-md-1">Action</th>
 			<th class = "col-md-7">Changes</th>
@@ -41,7 +92,7 @@ td {
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat = "change in allchangelog | orderBy: '-Date'">
+		<tr ng-repeat = "change in allchangelog.slice(((currentPage-1)*itemsPerPage), ((currentPage)*itemsPerPage)) | orderBy: '-Date'">
 			<td>{{change.User}}</td>
 			<td>{{change.Date | date: 'short'}}</td>
 			<td>{{change.ChangeDocID}}</td>
@@ -93,5 +144,9 @@ td {
 
 	</tbody>
 </table>
+
+<pagination total-items="allchangelog.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" rotate="false" num-pages="numPages" items-per-page="itemsPerPage"></pagination>
+
+</div>
 
 </div>

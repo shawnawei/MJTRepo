@@ -534,9 +534,12 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 	//=============================== Other stuff ================================
 
 	var subjects = $scope.subjectInfo;
+	var projects = $scope.projects;
    	$scope.propertyName = '_id.SubjectsID';
+   	$scope.projectPropertyName = 'ProjectID';
   	$scope.reverse = false;
   	$scope.subjectInfo = orderBy(subjects, $scope.propertyName, $scope.reverse);
+  	$scope.projects = orderBy(projects, $scope.projectPropertyName, $scope.reverse);
 
   	$scope.sortBy = function(propertyName) {
   		//console.log(propertyName, $scope.subjectInfo);
@@ -546,17 +549,33 @@ myApp.controller('projectsController', ['orderByFilter','$rootScope', '$state', 
 	    $scope.subjectInfo = orderBy($scope.subjectInfo, $scope.propertyName, $scope.reverse);
 	};
 
+	$scope.sortProjectBy = function(projectPropertyName) {
+  		//console.log(propertyName, $scope.subjectInfo);
+	    $scope.reverse = (projectPropertyName !== null && $scope.projectPropertyName === projectPropertyName)
+	        ? !$scope.reverse : false;
+	    $scope.projectPropertyName = projectPropertyName;
+	    $scope.projects = orderBy($scope.projects, $scope.projectPropertyName, $scope.reverse);
+	};
+
 	//================================= Pagination ===============================
 
 	$scope.maxSize = 5; //number of page buttons
 	$scope.currentPage = 1;
 	$scope.viewby = 10;
+	$scope.recordViewby = 10;
 	$scope.itemsPerPage = $scope.viewby;
+	$scope.recordsPerPage = $scope.recordViewby;
 
 	$scope.setItemsPerPage = function(num) {
 	  $scope.itemsPerPage = num;
 	  $scope.currentPage = 1; //reset to first page
 	}
+
+	$scope.setRecordsPerPage = function(num) {
+	  $scope.recordsPerPage = num;
+	  $scope.recordCurrentPage = 1; //reset to first page
+	}
+
 
 
 }]);
